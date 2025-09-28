@@ -2,7 +2,7 @@ import { Brain, Briefcase, GraduationCap, Target } from 'lucide-react';
 
 const About = () => {
   const stats = [
-    { label: 'Years Experience', value: '4+', icon: Briefcase },
+    { label: 'Years Experience', value: '2+', icon: Briefcase },
     { label: 'AI Projects', value: '15+', icon: Brain },
     { label: 'Data Processed', value: '50TB+', icon: Target },
     { label: 'Master\'s GPA', value: '4.0', icon: GraduationCap },
