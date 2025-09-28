@@ -3,16 +3,16 @@ import { Briefcase, Calendar, MapPin } from 'lucide-react';
 const Experience = () => {
   const experiences = [
     {
-      title: 'Gen AI Data Analyst',
+      title: 'Data Scientist',
       company: 'Johnson & Johnson',
       location: 'New Brunswick, New Jersey',
       period: 'February 2025 - Present',
       current: true,
       highlights: [
-        'Built end-to-end content ingestion pipeline with Claude API',
-        'Implemented AI testing workflows and red-teamed Gen-AI chatbot',
-        'Delivered 8+ Power BI dashboards for executive reporting',
-        'Cut average resolution time by ~2 weeks through operations support',
+        'Built end-to-end content ingestion pipeline with Claude API across 5+ departments',
+        'Red-teamed Gen-AI chatbot, identifying 14 vulnerabilities and implementing AI testing workflows',
+        'Delivered 8+ Power BI dashboards with DynamoDB optimization for executive insights',
+        'Reduced incident resolution time by 2 weeks through proactive stakeholder support'
       ],
     },
     {
@@ -32,22 +32,22 @@ const Experience = () => {
       location: 'Spring, TX',
       period: 'July 2024 - November 2024',
       highlights: [
-        'Optimized ETL pipelines using PySpark, reducing execution time 25%',
-        'Built 12+ Power BI dashboards with custom DAX measures',
-        'Orchestrated Airflow DAGs reducing delivery timelines by 3 days',
-        'Analyzed AI PC metrics using automated workflows on AWS EC2',
+        'Reduced ETL pipeline execution time by 25% using PySpark on AWS EMR',
+        'Built 12+ Power BI dashboards and automated Airflow workflows, cutting delivery time by 3 days',
+        'Analyzed AI PC performance metrics using automated AWS EC2 workflows',
+        'Implemented sprint planning and backlog management via Azure DevOps'
       ],
     },
     {
-      title: 'Machine Learning Engineer Intern',
+      title: 'Machine Learning Engineer',
       company: 'ECrent Worldwide Company',
       location: 'Bengaluru, India',
       period: 'July 2021 - June 2022',
       highlights: [
-        'Built recommendation systems contributing to 250 monthly bookings',
-        'Developed RASA NLU chatbot automating 40+ daily queries',
-        'Containerized ML models reducing infrastructure costs 29%',
-        'Engineered A/B testing infrastructure for algorithm optimization',
+        'Contributed to 250+ additional monthly bookings through TensorFlow recommendation systems',
+        'Built RASA chatbot reducing 40+ daily support queries and streamlining customer service',
+        'Containerized ML models on AWS EKS, reducing infrastructure costs by 29% ($17K→$12K monthly)',
+        'Developed Flask APIs for payment gateways and A/B testing infrastructure'
       ],
     },
   ];
