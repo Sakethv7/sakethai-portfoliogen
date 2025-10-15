@@ -4,7 +4,7 @@ const About = () => {
   const stats = [
     { label: 'Years Experience', value: '2+', icon: Briefcase },
     { label: 'AI Projects', value: '15+', icon: Brain },
-    { label: 'Data Processed', value: '50TB+', icon: Target },
+    { label: 'Documents Indexed', value: '10K+', icon: Target },
     { label: 'Master\'s GPA', value: '4.0', icon: GraduationCap },
   ];
 
@@ -21,13 +21,7 @@ const About = () => {
             <div className="glass p-8 rounded-2xl">
               <h3 className="text-2xl font-bold mb-4 text-primary">Data Scientist</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build intelligent search systems that help employees find answers from thousands of company documents instantly. I created a smart Q&A chatbot that understands context, searches through contracts and policies automatically, and delivers accurate responses—reducing resolution time by 2 weeks.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                I built a system that processes PDFs and web content, extracts key information, and stores it in a searchable database covering 10,000+ documents across 5+ departments. The system automatically updates when new documents arrive and uses smart matching to understand what users are asking for with 85%+ accuracy.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                I also ensure the system is secure by testing for vulnerabilities, fixing 14 security issues, and creating dashboards that track how well everything is working. I work with senior leaders to align our technology with business goals and measure success through clear metrics.
+                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build intelligent search systems that help employees find answers from 10,000+ documents instantly. I created a smart Q&A chatbot with 85%+ accuracy that automatically searches contracts and policies, reducing resolution time by 2 weeks and securing the system by identifying and fixing 14 vulnerabilities.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
                 With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP, GSTN, and DRDO, I turn complex data problems into practical AI solutions that make work easier and faster.
