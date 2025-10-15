@@ -19,18 +19,15 @@ const About = () => {
           {/* Left side - Bio */}
           <div className="space-y-6 animate-fade-in">
             <div className="glass p-8 rounded-2xl">
-              <h3 className="text-2xl font-bold mb-4 text-primary">AI-Focused Data Engineer</h3>
+              <h3 className="text-2xl font-bold mb-4 text-primary">Data Scientist</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Currently driving AI innovation at <span className="text-primary font-semibold">Johnson & Johnson</span> as a Gen AI Data Analyst, 
-                where I architect end-to-end content ingestion pipelines and build enterprise-scale chatbot solutions.
+                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build intelligent search systems that help employees find answers from thousands of company documents instantly. I created a smart Q&A chatbot that understands context, searches through contracts and policies automatically, and delivers accurate responses—reducing resolution time by 2 weeks.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                With a Master's in Data Science from Arizona State University (4.0 GPA) and hands-on experience at 
-                HP, GSTN, and DRDO, I specialize in transforming complex data challenges into scalable AI solutions.
+                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP, GSTN, and DRDO, I turn complex data problems into practical AI solutions that make work easier and faster.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                My expertise spans generative AI, RAG systems, cloud architecture, and advanced analytics - 
-                delivering actionable insights that drive business value.
+                My expertise spans AI, RAG systems, database management (Vector, SQL, NoSQL), knowledge graphs, and advanced analytics—delivering insights that drive real business impact.
               </p>
             </div>
 
@@ -38,7 +35,7 @@ const About = () => {
             <div className="glass p-6 rounded-2xl">
               <h4 className="text-lg font-semibold mb-3 text-accent">Current Focus</h4>
               <div className="flex flex-wrap gap-2">
-                {['LLM Integration', 'RAG Systems', 'Enterprise AI', 'Cloud Architecture', 'MLOps'].map((skill) => (
+                {['AI & RAG Systems', 'Vector Databases', 'Knowledge Graphs', 'SQL & NoSQL', 'Advanced Analytics'].map((skill) => (
                   <span
                     key={skill}
                     className="px-3 py-1 text-sm bg-gradient-primary text-primary-foreground rounded-full font-medium"
