@@ -6,16 +6,17 @@ const Skills = () => {
       title: 'AI & Machine Learning',
       icon: Brain,
       skills: [
-        'TensorFlow', 'PyTorch', 'Scikit-learn', 'Hugging Face',
-        'RAG Systems', 'LLM Integration', 'Claude API', 'RASA NLU', 'AWS SageMaker'
+        'Keras', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Hugging Face',
+        'RAG Systems', 'LLM Integration', 'RASA NLU', 'AWS SageMaker',
+        'Retrieval Pipelines', 'Document Ingestion'
       ],
     },
     {
       title: 'Programming',
       icon: Code2,
       skills: [
-        'Python', 'SQL', 'Java', 'C/C++', 'Node.js',
-        'RESTful APIs', 'Spring Boot', 'Flask'
+        'Python', 'SQL', 'Java',
+        'RESTful APIs', 'Flask'
       ],
     },
     {
@@ -38,7 +39,7 @@ const Skills = () => {
       title: 'Databases',
       icon: Terminal,
       skills: [
-        'PostgreSQL', 'MongoDB', 'DynamoDB',
+        'Vector DBs (Chroma, Qdrant)', 'PostgreSQL', 'MongoDB', 'DynamoDB',
         'AWS Redshift', 'Snowflake', 'MySQL'
       ],
     },
@@ -46,7 +47,7 @@ const Skills = () => {
       title: 'Visualization & BI',
       icon: Sparkles,
       skills: [
-        'Power BI', 'Tableau', 'DAX Queries',
+        'Power BI', 'Tableau', 'Einstein AI', 'DAX Queries',
         'Advanced Analytics', 'Dashboard Development'
       ],
     },
