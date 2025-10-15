@@ -4,7 +4,7 @@ const About = () => {
   const stats = [
     { label: 'Years Experience', value: '2+', icon: Briefcase },
     { label: 'AI Projects', value: '15+', icon: Brain },
-    { label: 'Documents Indexed', value: '10K+', icon: Target },
+    { label: 'Data Processed', value: '50TB+', icon: Target },
     { label: 'Master\'s GPA', value: '4.0', icon: GraduationCap },
   ];
 
@@ -21,13 +21,13 @@ const About = () => {
             <div className="glass p-8 rounded-2xl">
               <h3 className="text-2xl font-bold mb-4 text-primary">Data Scientist</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build intelligent search systems that help employees find answers from 10,000+ documents instantly. I created a smart Q&A chatbot with 85%+ accuracy that automatically searches contracts and policies, reducing resolution time by 2 weeks and securing the system by identifying and fixing 14 vulnerabilities.
-              </p>
+                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I collaborated in building intelligent search systems that help employees find answers from thousands of company documents instantly. Our Conversation Gen AI Application understands context, searches through contracts and policies automatically, and delivers accurate responses—reducing manual look up time and
+              evolve with gen ai integrated systems</p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP, GSTN, and DRDO, I turn complex data problems into practical AI solutions that make work easier and faster.
+                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP inc., GSTN, and DRDO. I turn complex data problems into practical AI solutions that make work easier and faster.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                My expertise spans AI, RAG systems, database management (Vector, SQL, NoSQL), knowledge graphs, and advanced analytics—delivering insights that drive real business impact.
+                My expertise spans AI, RAG systems (Retrievers and Ingestion pipelines), Database Management (Vector, SQL, NoSQL), knowledge graphs, and advanced analytics—delivering insights that drive real business impact.
               </p>
             </div>
 
@@ -35,7 +35,7 @@ const About = () => {
             <div className="glass p-6 rounded-2xl">
               <h4 className="text-lg font-semibold mb-3 text-accent">Current Focus</h4>
               <div className="flex flex-wrap gap-2">
-                {['AI & RAG Systems', 'Vector Databases', 'Knowledge Graphs', 'SQL & NoSQL', 'Advanced Analytics'].map((skill) => (
+                {['AI & RAG Systems', 'Vector Databases', 'Knowledge Graphs', 'SQL & NoSQL', 'Advanced Analytics', 'MLOps'].map((skill) => (
                   <span
                     key={skill}
                     className="px-3 py-1 text-sm bg-gradient-primary text-primary-foreground rounded-full font-medium"
