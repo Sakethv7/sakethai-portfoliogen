@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 
 const Hero = () => {
   const [text, setText] = useState('');
-  const fullText = 'AI Data Engineer';
+  const fullText = 'Data Scientist';
   const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
