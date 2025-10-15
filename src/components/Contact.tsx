@@ -10,12 +10,6 @@ const Contact = () => {
       href: 'mailto:sakethv7@gmail.com',
     },
     {
-      icon: Phone,
-      label: 'Phone',
-      value: '623-254-8511',
-      href: 'tel:+16232548511',
-    },
-    {
       icon: Linkedin,
       label: 'LinkedIn',
       value: 'sakethvelidimalla',
