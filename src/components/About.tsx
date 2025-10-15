@@ -24,6 +24,12 @@ const About = () => {
                 Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build intelligent search systems that help employees find answers from thousands of company documents instantly. I created a smart Q&A chatbot that understands context, searches through contracts and policies automatically, and delivers accurate responses—reducing resolution time by 2 weeks.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
+                I built a system that processes PDFs and web content, extracts key information, and stores it in a searchable database covering 10,000+ documents across 5+ departments. The system automatically updates when new documents arrive and uses smart matching to understand what users are asking for with 85%+ accuracy.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                I also ensure the system is secure by testing for vulnerabilities, fixing 14 security issues, and creating dashboards that track how well everything is working. I work with senior leaders to align our technology with business goals and measure success through clear metrics.
+              </p>
+              <p className="text-muted-foreground leading-relaxed mb-4">
                 With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP, GSTN, and DRDO, I turn complex data problems into practical AI solutions that make work easier and faster.
               </p>
               <p className="text-muted-foreground leading-relaxed">
