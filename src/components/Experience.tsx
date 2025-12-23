@@ -22,7 +22,7 @@ const Experience = () => {
       period: 'November 2024 - February 2025',
       highlights: [
         'Architected GitLab CI/CD pipelines with Python automation for SAP landscape deployment, reducing system maintenance windows',
-        'Developed comprehensive Tableau dashboards visualizing SAP infrastructure metrics across 5 distinct client environments',
+        'Built Tableau dashboards to visualize SAP infrastructure metrics across 5 distinct client environments',
         'Led vendor POCs and requirements gathering to align technical infrastructure with business strategy',
       ],
     },
