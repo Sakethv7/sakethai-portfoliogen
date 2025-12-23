@@ -3,52 +3,50 @@ import { Code2, Database, Cloud, Brain, Sparkles, Terminal } from 'lucide-react'
 const Skills = () => {
   const skillCategories = [
     {
-      title: 'AI & Machine Learning',
+      title: 'GenAI & LLMs',
       icon: Brain,
       skills: [
-        'Keras', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'Hugging Face',
-        'RAG Systems', 'LLM Integration', 'RASA NLU', 'AWS SageMaker',
-        'Retrieval Pipelines', 'Document Ingestion'
+        'LangChain', 'LlamaIndex', 'RAG Pipelines', 'Claude API', 'OpenAI Embeddings',
+        'Arize Phoenix', 'FlashRank', 'Qdrant', 'Red Teaming', 'LLM Fallbacks', 'RASA NLU'
       ],
     },
     {
-      title: 'Programming',
-      icon: Code2,
+      title: 'Machine Learning',
+      icon: Sparkles,
       skills: [
-        'Python', 'SQL', 'Java',
-        'RESTful APIs', 'Flask'
+        'TensorFlow', 'PyTorch', 'Hugging Face Transformers', 'Scikit-learn',
+        'AWS SageMaker', 'Feature Engineering', 'A/B Testing'
       ],
     },
     {
       title: 'Data Engineering',
       icon: Database,
       skills: [
-        'PySpark', 'Hadoop', 'Hive', 'MapReduce',
-        'Apache Airflow', 'ETL Pipelines', 'Data Modeling'
+        'PySpark', 'Apache Airflow', 'ETL Pipelines', 'Data Modeling',
+        'Hadoop', 'Hive', 'MapReduce'
       ],
     },
     {
-      title: 'Cloud & Infrastructure',
+      title: 'Programming & APIs',
+      icon: Code2,
+      skills: [
+        'Python', 'SQL', 'RESTful APIs', 'Flask', 'JSON', 'YAML', 'Java'
+      ],
+    },
+    {
+      title: 'Cloud & DevOps',
       icon: Cloud,
       skills: [
-        'AWS (EMR, EC2, S3, Redshift, EKS)', 'Azure DevOps',
-        'Docker', 'Kubernetes', 'CI/CD Pipelines'
+        'AWS (S3, EC2, EMR, Redshift, EKS, Lambda, CloudWatch, DynamoDB)',
+        'Docker', 'Kubernetes', 'GitLab CI/CD', 'Azure DevOps', 'Git'
       ],
     },
     {
       title: 'Databases',
       icon: Terminal,
       skills: [
-        'Vector DBs (Chroma, Qdrant)', 'PostgreSQL', 'MongoDB', 'DynamoDB',
-        'AWS Redshift', 'Snowflake', 'MySQL'
-      ],
-    },
-    {
-      title: 'Visualization & BI',
-      icon: Sparkles,
-      skills: [
-        'Power BI', 'Tableau', 'Einstein AI', 'DAX Queries',
-        'Advanced Analytics', 'Dashboard Development'
+        'Qdrant (Vector)', 'PostgreSQL', 'MongoDB', 'Snowflake',
+        'MySQL', 'AWS Redshift', 'DynamoDB'
       ],
     },
   ];

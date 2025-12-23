@@ -17,15 +17,15 @@ const About = () => {
           {/* Left side - Bio */}
           <div className="space-y-6 animate-fade-in">
             <div className="glass p-8 rounded-2xl">
-              <h3 className="text-2xl font-bold mb-4 text-primary">Data Scientist</h3>
+              <h3 className="text-2xl font-bold mb-4 text-primary">Gen AI Data Scientist</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I collaborated in building intelligent search systems that help employees find answers from thousands of company documents instantly. Our Conversation Gen AI Application understands context, searches through contracts and policies automatically, and delivers accurate responses—reducing manual look up time and
-              evolve with gen ai integrated systems</p>
+                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build enterprise generative AI systems with a focus on RAG, quality/governance metrics, and production reliability. Specialized in translating complex data into trusted, business-critical products.
+              </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP inc., GSTN, and DRDO. I turn complex data problems into practical AI solutions that make work easier and faster.
+                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP Inc., iDwTeam, and ECrent, I design risk-aware inference strategies and implement automated evaluation frameworks for production-grade AI systems.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                My expertise spans AI, RAG systems (Retrievers and Ingestion pipelines), Database Management (Vector, SQL, NoSQL), knowledge graphs, and advanced analytics—delivering insights that drive real business impact.
+                My expertise spans RAG pipelines, LLM integration, vector databases, red-teaming workflows, and production observability—delivering AI solutions that are accurate, reliable, and business-ready.
               </p>
             </div>
 
@@ -33,7 +33,7 @@ const About = () => {
             <div className="glass p-6 rounded-2xl">
               <h4 className="text-lg font-semibold mb-3 text-accent">Current Focus</h4>
               <div className="flex flex-wrap gap-2">
-                {['AI & RAG Systems', 'Vector Databases', 'Knowledge Graphs', 'SQL & NoSQL', 'Advanced Analytics', 'MLOps'].map((skill) => (
+                {['RAG Pipelines', 'LLM Integration', 'Vector Databases', 'Red Teaming', 'Production Observability', 'MLOps'].map((skill) => (
                   <span
                     key={skill}
                     className="px-3 py-1 text-sm bg-gradient-primary text-primary-foreground rounded-full font-medium"
