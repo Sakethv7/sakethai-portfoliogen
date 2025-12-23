@@ -9,10 +9,10 @@ const Experience = () => {
       period: 'February 2025 - Present',
       current: true,
       highlights: [
-        'Building enterprise RAG platforms combining retrieval-based knowledge with LLM reasoning for business-critical use cases',
-        'Implementing automated evaluation frameworks to score response accuracy, grounding, and system reliability',
-        'Designing risk-aware inference strategies and red-teaming workflows to handle low-confidence scenarios and reduce hallucinations',
-        'Developing monitoring dashboards for production observability, tracking latency, usage patterns, and quality signals'
+        'Building JAIDA—an enterprise RAG platform serving 140K+ employees with 10K-25K monthly queries using Qdrant, Claude/OpenAI APIs, and LangChain',
+        'Implementing MCP-based agent routing and contract intelligence systems for automated document analysis',
+        'Designing red-teaming workflows and automated evaluation frameworks to reduce hallucinations and improve response accuracy',
+        'Developing production observability dashboards tracking latency, usage patterns, and quality signals with Arize Phoenix'
       ],
     },
     {
@@ -23,7 +23,7 @@ const Experience = () => {
       highlights: [
         'Architected GitLab CI/CD pipelines with Python automation for SAP landscape deployment, reducing system maintenance windows',
         'Built Tableau dashboards to visualize SAP infrastructure metrics across 5 distinct client environments',
-        'Led vendor POCs and requirements gathering to align technical infrastructure with business strategy',
+        'Led vendor POCs and requirements gathering to align technical infrastructure with business strategy'
       ],
     },
     {
@@ -56,7 +56,7 @@ const Experience = () => {
     <section id="experience" className="py-20 px-4 relative">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
-          <span className="gradient-text">Experience</span>
+          <span className="gradient-text">Professional Experience</span>
         </h2>
 
         <div className="relative">
@@ -77,14 +77,14 @@ const Experience = () => {
               <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pr-12' : 'md:pl-12'} pl-8 md:pl-0`}>
                 <div className="glass p-6 rounded-2xl hover:scale-[1.02] transition-transform animate-fade-in">
                   {exp.current && (
-                    <span className="inline-block px-3 py-1 bg-gradient-primary text-primary-foreground text-xs font-semibold rounded-full mb-3">
+                    <span className="inline-block px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-semibold rounded-full mb-3">
                       Current
                     </span>
                   )}
-                  
+
                   <h3 className="text-xl font-bold text-primary mb-1">{exp.title}</h3>
                   <h4 className="text-lg font-semibold mb-3">{exp.company}</h4>
-                  
+
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />

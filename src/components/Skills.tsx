@@ -19,6 +19,13 @@ const Skills = () => {
       ],
     },
     {
+      title: 'Programming & APIs',
+      icon: Code2,
+      skills: [
+        'Python', 'SQL', 'RESTful APIs', 'Flask', 'JSON', 'YAML', 'Java'
+      ],
+    },
+    {
       title: 'Data Engineering',
       icon: Database,
       skills: [
@@ -27,26 +34,19 @@ const Skills = () => {
       ],
     },
     {
-      title: 'Programming & APIs',
-      icon: Code2,
-      skills: [
-        'Python', 'SQL', 'RESTful APIs', 'Flask', 'JSON', 'YAML', 'Java'
-      ],
-    },
-    {
       title: 'Cloud & DevOps',
       icon: Cloud,
       skills: [
-        'AWS (S3, EC2, EMR, Redshift, EKS, Lambda, CloudWatch, DynamoDB)',
+        'AWS (S3, EC2, EMR, Redshift, EKS, Lambda, CloudWatch)',
         'Docker', 'Kubernetes', 'GitLab CI/CD', 'Azure DevOps', 'Git'
       ],
     },
     {
-      title: 'Databases',
+      title: 'Databases & Analytics',
       icon: Terminal,
       skills: [
         'Qdrant (Vector)', 'PostgreSQL', 'MongoDB', 'Snowflake',
-        'MySQL', 'AWS Redshift', 'DynamoDB'
+        'DynamoDB', 'Power BI (DAX)', 'Tableau'
       ],
     },
   ];
@@ -89,14 +89,16 @@ const Skills = () => {
           })}
         </div>
 
-        {/* Additional certifications or achievements */}
+        {/* Education Section based on Resume */}
         <div className="mt-12 text-center">
           <div className="inline-flex flex-col items-center glass p-8 rounded-2xl">
             <h3 className="text-2xl font-bold mb-4 gradient-text">Education</h3>
             <div className="space-y-2">
-              <p className="text-lg font-semibold">Arizona State University</p>
+              <p className="text-lg font-semibold text-foreground">Arizona State University</p>
               <p className="text-muted-foreground">Master of Science in Information Technology (Data Science)</p>
-              <p className="text-2xl font-bold text-primary">GPA: 4.0/4.0</p>
+              <div className="pt-2">
+                <span className="text-2xl font-bold text-primary">GPA: 4.0/4.0</span>
+              </div>
             </div>
           </div>
         </div>
