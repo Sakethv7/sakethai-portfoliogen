@@ -5,49 +5,49 @@ const Experience = () => {
     {
       title: 'Data Scientist',
       company: 'Johnson & Johnson',
-      location: 'New Brunswick, New Jersey',
+      location: 'New Brunswick, NJ',
       period: 'February 2025 - Present',
       current: true,
       highlights: [
-        'Built end-to-end content ingestion pipeline with Claude API across 5+ departments',
-        'Red-teamed Gen-AI chatbot, identifying 14 vulnerabilities and implementing AI testing workflows',
-        'Delivered 8+ Power BI dashboards with DynamoDB optimization for executive insights',
-        'Reduced incident resolution time by 2 weeks through proactive stakeholder support'
+        'Building enterprise RAG platforms combining retrieval-based knowledge with LLM reasoning for business-critical use cases',
+        'Implementing automated evaluation frameworks to score response accuracy, grounding, and system reliability',
+        'Designing risk-aware inference strategies and red-teaming workflows to handle low-confidence scenarios and reduce hallucinations',
+        'Developing monitoring dashboards for production observability, tracking latency, usage patterns, and quality signals'
       ],
     },
     {
       title: 'Data Analytics Engineer',
       company: 'iDwTeam LLC',
-      location: 'Alpharetta, Georgia',
+      location: 'Alpharetta, GA',
       period: 'November 2024 - February 2025',
       highlights: [
-        'Architected GitLab CI/CD pipelines for SAP deployment',
-        'Built Tableau dashboards for SAP infrastructure metrics',
-        'Led vendor POCs and requirements gathering',
+        'Architected GitLab CI/CD pipelines with Python automation for SAP landscape deployment, reducing system maintenance windows',
+        'Developed comprehensive Tableau dashboards visualizing SAP infrastructure metrics across 5 distinct client environments',
+        'Led vendor POCs and requirements gathering to align technical infrastructure with business strategy',
       ],
     },
     {
       title: 'Data Analytics Engineer',
-      company: 'Hewlett Packard Inc.',
+      company: 'Hewlett Packard Inc. (HP)',
       location: 'Spring, TX',
       period: 'July 2024 - November 2024',
       highlights: [
-        'Reduced ETL pipeline execution time by 25% using PySpark on AWS EMR',
-        'Built 12+ Power BI dashboards and automated Airflow workflows, cutting delivery time by 3 days',
-        'Analyzed AI PC performance metrics using automated AWS EC2 workflows',
-        'Implemented sprint planning and backlog management via Azure DevOps'
+        'Optimized large-scale data pipelines using PySpark on AWS EMR, achieving a 25% reduction in total processing time',
+        'Orchestrated Apache Airflow workflows that accelerated analytics delivery timelines by three business days',
+        'Analyzed AI PC performance signals (BIOS, ToF, power consumption) via automated cloud workflows to drive hardware optimization',
+        'Built executive-ready Power BI dashboards with advanced DAX measures on AWS Redshift for real-time trend analysis'
       ],
     },
     {
-      title: 'Machine Learning Engineer',
+      title: 'Machine Learning Engineer Intern',
       company: 'ECrent Worldwide Company',
       location: 'Bengaluru, India',
       period: 'July 2021 - June 2022',
       highlights: [
-        'Contributed to 250+ additional monthly bookings through TensorFlow recommendation systems',
-        'Built RASA chatbot reducing 40+ daily support queries and streamlining customer service',
-        'Containerized ML models on AWS EKS, reducing infrastructure costs by 29% ($17K→$12K monthly)',
-        'Developed Flask APIs for payment gateways and A/B testing infrastructure'
+        'Deployed TensorFlow and Hugging Face recommendation systems, contributing to 250+ additional monthly bookings',
+        'Containerized ML models using Docker and Kubernetes on AWS EKS, reducing monthly infrastructure costs by 29% ($17K → $12K)',
+        'Developed RASA NLU chatbot with intent classification, automating 40+ daily queries and streamlining customer service',
+        'Engineered A/B testing infrastructure with ML-driven feature importance analysis for algorithm optimization'
       ],
     },
   ];
