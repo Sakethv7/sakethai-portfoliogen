@@ -62,13 +62,13 @@ const Hero = () => {
         </div>
 
         {/* Description */}
-        <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto animate-fade-in opacity-0 [animation-delay:1s] [animation-fill-mode:forwards]">
-          Specializing in generative AI solutions, RAG implementations, and enterprise chatbot development. 
-          Building the future with Python, AWS, and cutting-edge ML technologies.
+        <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto animate-fade-in [animation-delay:1s]">
+          Building production AI systems serving 140K+ employees at Johnson & Johnson.
+          Specializing in RAG pipelines, vector databases, and enterprise LLM applications.
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-wrap gap-4 justify-center mb-16 animate-fade-in opacity-0 [animation-delay:1.5s] [animation-fill-mode:forwards]">
+        <div className="flex flex-wrap gap-4 justify-center mb-16 animate-fade-in [animation-delay:1.2s]">
           <Button
             size="lg"
             className="bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold px-8 py-6 text-lg glow-primary transition-all hover:scale-105"
