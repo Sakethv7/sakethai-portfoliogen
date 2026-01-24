@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ExternalLink, Github, Star, GitFork, Building } from 'lucide-react';
+import { ExternalLink, Github, Star, GitFork } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface Project {
@@ -12,60 +12,21 @@ interface Project {
   topics: string[];
   stargazers_count?: number;
   forks_count?: number;
-  isWork?: boolean;
-  impact?: string;
 }
 
 const Projects = () => {
   const [repos, setRepos] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Featured projects - work and personal
-  const featuredProjects: Project[] = [
-    {
-      id: 1,
-      name: 'JAIDA RAG Platform',
-      description: 'Enterprise conversational AI platform at J&J serving 140K+ employees with 10K-25K monthly queries. Built with Qdrant vector DB, Claude/OpenAI APIs, and advanced retrieval pipelines.',
-      html_url: '#',
-      homepage: '',
-      language: 'Python',
-      topics: ['rag', 'qdrant', 'claude-api', 'langchain'],
-      isWork: true,
-      impact: '140K+ users',
-    },
-    {
-      id: 2,
-      name: 'Contract Intelligence',
-      description: 'Automated contract analysis using MCP-based agent routing and parameter-efficient fine-tuning. Extracts key clauses, identifies risks, and provides intelligent summaries.',
-      html_url: '#',
-      homepage: '',
-      language: 'Python',
-      topics: ['llm', 'mcp', 'fine-tuning', 'nlp'],
-      isWork: true,
-      impact: 'Production',
-    },
-    {
-      id: 3,
-      name: 'RoastRank',
-      description: 'AI-powered coffee recommendation app using machine learning to match user preferences with optimal roasts based on flavor profiles and brewing methods.',
-      html_url: 'https://github.com/Sakethv7/RoastRank',
-      homepage: '',
-      language: 'Python',
-      topics: ['ml', 'recommendations', 'flask'],
-      isWork: false,
-    },
-  ];
-
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        const response = await fetch('https://api.github.com/users/Sakethv7/repos?sort=updated&per_page=6');
+        const response = await fetch('https://api.github.com/users/Sakethv7/repos?sort=updated&per_page=10');
         const data = await response.json();
 
         const filteredRepos = data
           .filter((repo: Project) => !repo.name.includes('Sakethv7') && !repo.name.includes('portfoliogen'))
-          .sort((a: Project, b: Project) => (b.topics?.length || 0) - (a.topics?.length || 0))
-          .slice(0, 3);
+          .slice(0, 6);
 
         setRepos(filteredRepos);
       } catch (error) {
@@ -91,8 +52,6 @@ const Projects = () => {
     return colors[language] || 'text-gray-400';
   };
 
-  const displayProjects = [...featuredProjects, ...repos].slice(0, 6);
-
   return (
     <section id="projects" className="py-20 px-4 relative">
       <div className="max-w-6xl mx-auto">
@@ -112,7 +71,7 @@ const Projects = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayProjects.map((repo, index) => (
+            {repos.map((repo, index) => (
               <div
                 key={repo.id}
                 className="glass p-6 rounded-2xl hover:scale-[1.02] transition-all animate-fade-in hover:border-primary/50"
@@ -126,12 +85,12 @@ const Projects = () => {
                 </div>
 
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                  {repo.description || 'Advanced AI/ML project showcasing cutting-edge technologies and best practices.'}
+                  {repo.description || 'AI/ML project showcasing cutting-edge technologies.'}
                 </p>
 
                 {/* Tech stack */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {(repo.topics || ['ai', 'machine-learning']).slice(0, 4).map((topic) => (
+                  {(repo.topics || []).slice(0, 4).map((topic) => (
                     <span
                       key={topic}
                       className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full"
@@ -149,47 +108,31 @@ const Projects = () => {
                       {repo.language}
                     </span>
                   )}
-                  {repo.isWork ? (
-                    <span className="flex items-center gap-1 text-sm text-accent">
-                      <Building className="w-4 h-4" />
-                      {repo.impact}
+                  {repo.stargazers_count !== undefined && repo.stargazers_count > 0 && (
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Star className="w-4 h-4" />
+                      {repo.stargazers_count}
                     </span>
-                  ) : (
-                    <>
-                      {repo.stargazers_count !== undefined && (
-                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Star className="w-4 h-4" />
-                          {repo.stargazers_count}
-                        </span>
-                      )}
-                      {repo.forks_count !== undefined && (
-                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <GitFork className="w-4 h-4" />
-                          {repo.forks_count}
-                        </span>
-                      )}
-                    </>
+                  )}
+                  {repo.forks_count !== undefined && repo.forks_count > 0 && (
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <GitFork className="w-4 h-4" />
+                      {repo.forks_count}
+                    </span>
                   )}
                 </div>
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  {repo.isWork ? (
-                    <span className="flex-1 text-center text-xs text-muted-foreground py-2 px-3 border border-border/50 rounded-md">
-                      <Building className="w-4 h-4 inline mr-1" />
-                      Enterprise Project
-                    </span>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 border-primary/30 hover:bg-primary/10"
-                      onClick={() => window.open(repo.html_url, '_blank')}
-                    >
-                      <Github className="w-4 h-4 mr-2" />
-                      Code
-                    </Button>
-                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-primary/30 hover:bg-primary/10"
+                    onClick={() => window.open(repo.html_url, '_blank')}
+                  >
+                    <Github className="w-4 h-4 mr-2" />
+                    Code
+                  </Button>
                   {repo.homepage && (
                     <Button
                       variant="outline"
