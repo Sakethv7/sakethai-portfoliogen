@@ -1,8 +1,10 @@
-import { Brain, Briefcase, GraduationCap, Target } from 'lucide-react';
+import { Users, Briefcase, GraduationCap, MessageSquare } from 'lucide-react';
 
 const About = () => {
   const stats = [
-    { label: 'Years Experience', value: '2+', icon: Briefcase },
+    { label: 'Users Served', value: '140K+', icon: Users },
+    { label: 'Monthly Queries', value: '25K+', icon: MessageSquare },
+    { label: 'Years Experience', value: '3+', icon: Briefcase },
     { label: 'Master\'s GPA', value: '4.0', icon: GraduationCap },
   ];
 
@@ -17,15 +19,15 @@ const About = () => {
           {/* Left side - Bio */}
           <div className="space-y-6 animate-fade-in">
             <div className="glass p-8 rounded-2xl">
-              <h3 className="text-2xl font-bold mb-4 text-primary">Gen AI Data Scientist</h3>
+              <h3 className="text-2xl font-bold mb-4 text-primary">Gen AI Data Scientist @ J&J</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build enterprise generative AI systems with a focus on RAG, quality/governance metrics, and production reliability. Specialized in translating complex data into trusted, business-critical products.
+                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build the JAIDA platform—an enterprise RAG system serving 140K+ employees with 10K-25K monthly queries. Using Claude/OpenAI APIs, Qdrant vector database, and production-grade observability.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP Inc., iDwTeam, and ECrent, I design risk-aware inference strategies and implement automated evaluation frameworks for production-grade AI systems.
+                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP Inc., iDwTeam, and ECrent, I design risk-aware inference strategies and implement automated evaluation frameworks for production AI systems.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                My expertise spans RAG pipelines, LLM integration, vector databases, red-teaming workflows, and production observability—delivering AI solutions that are accurate, reliable, and business-ready.
+                My expertise spans RAG pipelines, LLM integration, vector databases, MCP-based agent routing, red-teaming workflows, and production observability—delivering AI that is accurate, reliable, and business-ready.
               </p>
             </div>
 

@@ -1,36 +1,72 @@
 import { useEffect, useState } from 'react';
-import { ExternalLink, Github, Star, GitFork } from 'lucide-react';
+import { ExternalLink, Github, Star, GitFork, Building } from 'lucide-react';
 import { Button } from './ui/button';
 
-interface GitHubRepo {
+interface Project {
   id: number;
   name: string;
   description: string;
   html_url: string;
   homepage: string;
-  stargazers_count: number;
-  forks_count: number;
   language: string;
   topics: string[];
+  stargazers_count?: number;
+  forks_count?: number;
+  isWork?: boolean;
+  impact?: string;
 }
 
 const Projects = () => {
-  const [repos, setRepos] = useState<GitHubRepo[]>([]);
+  const [repos, setRepos] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Featured projects - work and personal
+  const featuredProjects: Project[] = [
+    {
+      id: 1,
+      name: 'JAIDA RAG Platform',
+      description: 'Enterprise conversational AI platform at J&J serving 140K+ employees with 10K-25K monthly queries. Built with Qdrant vector DB, Claude/OpenAI APIs, and advanced retrieval pipelines.',
+      html_url: '#',
+      homepage: '',
+      language: 'Python',
+      topics: ['rag', 'qdrant', 'claude-api', 'langchain'],
+      isWork: true,
+      impact: '140K+ users',
+    },
+    {
+      id: 2,
+      name: 'Contract Intelligence',
+      description: 'Automated contract analysis using MCP-based agent routing and parameter-efficient fine-tuning. Extracts key clauses, identifies risks, and provides intelligent summaries.',
+      html_url: '#',
+      homepage: '',
+      language: 'Python',
+      topics: ['llm', 'mcp', 'fine-tuning', 'nlp'],
+      isWork: true,
+      impact: 'Production',
+    },
+    {
+      id: 3,
+      name: 'RoastRank',
+      description: 'AI-powered coffee recommendation app using machine learning to match user preferences with optimal roasts based on flavor profiles and brewing methods.',
+      html_url: 'https://github.com/Sakethv7/RoastRank',
+      homepage: '',
+      language: 'Python',
+      topics: ['ml', 'recommendations', 'flask'],
+      isWork: false,
+    },
+  ];
 
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        // Fetch user's pinned repos using GitHub GraphQL API
         const response = await fetch('https://api.github.com/users/Sakethv7/repos?sort=updated&per_page=6');
         const data = await response.json();
-        
-        // Filter and sort repos - prioritize those with descriptions and stars
+
         const filteredRepos = data
-          .filter((repo: GitHubRepo) => !repo.name.includes('Sakethv7'))
-          .sort((a: GitHubRepo, b: GitHubRepo) => b.stargazers_count - a.stargazers_count)
-          .slice(0, 6);
-        
+          .filter((repo: Project) => !repo.name.includes('Sakethv7') && !repo.name.includes('portfoliogen'))
+          .sort((a: Project, b: Project) => (b.topics?.length || 0) - (a.topics?.length || 0))
+          .slice(0, 3);
+
         setRepos(filteredRepos);
       } catch (error) {
         console.error('Error fetching repos:', error);
@@ -55,43 +91,7 @@ const Projects = () => {
     return colors[language] || 'text-gray-400';
   };
 
-  const defaultProjects = [
-    {
-      id: 1,
-      name: 'RAG-Chatbot-Enterprise',
-      description: 'Enterprise-grade RAG implementation with Claude API for intelligent document processing and Q&A',
-      html_url: 'https://github.com/Sakethv7',
-      homepage: '',
-      language: 'Python',
-      stargazers_count: 45,
-      forks_count: 12,
-      topics: ['rag', 'claude-api', 'langchain', 'vector-db'],
-    },
-    {
-      id: 2,
-      name: 'AI-Analytics-Pipeline',
-      description: 'End-to-end data pipeline with PySpark and Airflow for ML model training and deployment',
-      html_url: 'https://github.com/Sakethv7',
-      homepage: '',
-      language: 'Python',
-      stargazers_count: 32,
-      forks_count: 8,
-      topics: ['pyspark', 'airflow', 'aws', 'mlops'],
-    },
-    {
-      id: 3,
-      name: 'Real-Estate-Recommendation',
-      description: 'ML-powered recommendation system using TensorFlow and collaborative filtering',
-      html_url: 'https://github.com/Sakethv7',
-      homepage: '',
-      language: 'Python',
-      stargazers_count: 28,
-      forks_count: 6,
-      topics: ['tensorflow', 'recommendation-system', 'ml'],
-    },
-  ];
-
-  const displayProjects = repos.length > 0 ? repos : defaultProjects;
+  const displayProjects = [...featuredProjects, ...repos].slice(0, 6);
 
   return (
     <section id="projects" className="py-20 px-4 relative">
@@ -149,27 +149,47 @@ const Projects = () => {
                       {repo.language}
                     </span>
                   )}
-                  <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Star className="w-4 h-4" />
-                    {repo.stargazers_count}
-                  </span>
-                  <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <GitFork className="w-4 h-4" />
-                    {repo.forks_count}
-                  </span>
+                  {repo.isWork ? (
+                    <span className="flex items-center gap-1 text-sm text-accent">
+                      <Building className="w-4 h-4" />
+                      {repo.impact}
+                    </span>
+                  ) : (
+                    <>
+                      {repo.stargazers_count !== undefined && (
+                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Star className="w-4 h-4" />
+                          {repo.stargazers_count}
+                        </span>
+                      )}
+                      {repo.forks_count !== undefined && (
+                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <GitFork className="w-4 h-4" />
+                          {repo.forks_count}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 border-primary/30 hover:bg-primary/10"
-                    onClick={() => window.open(repo.html_url, '_blank')}
-                  >
-                    <Github className="w-4 h-4 mr-2" />
-                    Code
-                  </Button>
+                  {repo.isWork ? (
+                    <span className="flex-1 text-center text-xs text-muted-foreground py-2 px-3 border border-border/50 rounded-md">
+                      <Building className="w-4 h-4 inline mr-1" />
+                      Enterprise Project
+                    </span>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 border-primary/30 hover:bg-primary/10"
+                      onClick={() => window.open(repo.html_url, '_blank')}
+                    >
+                      <Github className="w-4 h-4 mr-2" />
+                      Code
+                    </Button>
+                  )}
                   {repo.homepage && (
                     <Button
                       variant="outline"
