@@ -85,7 +85,7 @@ const Projects = () => {
                 </div>
 
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                  {repo.description || 'AI/ML project showcasing cutting-edge technologies.'}
+                  {repo.description || 'No description provided.'}
                 </p>
 
                 {/* Tech stack */}
