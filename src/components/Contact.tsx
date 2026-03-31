@@ -32,8 +32,7 @@ const Contact = () => {
 
         <div className="text-center mb-12">
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            I'm always interested in discussing AI innovations, data engineering challenges, 
-            or potential collaboration opportunities. Let's connect and build something amazing together!
+            Open to discussing AI engineering, data science, or collaboration opportunities. Feel free to reach out.
           </p>
         </div>
 

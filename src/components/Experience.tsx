@@ -44,10 +44,10 @@ const Experience = () => {
       location: 'Bengaluru, India',
       period: 'July 2021 - June 2022',
       highlights: [
-        'Deployed TensorFlow and Hugging Face recommendation systems, contributing to 250+ additional monthly bookings',
-        'Containerized ML models using Docker and Kubernetes on AWS EKS, reducing monthly infrastructure costs by 29% ($17K → $12K)',
-        'Developed RASA NLU chatbot with intent classification, automating 40+ daily queries and streamlining customer service',
-        'Engineered A/B testing infrastructure with ML-driven feature importance analysis for algorithm optimization'
+        'Built end-to-end ML systems for real estate pricing and personalized recommendations using TensorFlow, PyTorch, and Hugging Face Transformers',
+        'Containerized ML models with Docker and Kubernetes on AWS EKS, reducing infrastructure costs',
+        'Developed a RASA NLU chatbot for intent classification and entity extraction, exposed via Flask REST APIs',
+        'Evaluated models using precision@k, recall@k, and A/B testing; built NLP pipelines with Word2Vec and sentence embeddings for semantic matching'
       ],
     },
   ];
