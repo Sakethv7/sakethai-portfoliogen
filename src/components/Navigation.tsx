@@ -8,11 +8,11 @@ const Navigation = () => {
 
   const navItems = [
     { label: 'Home', href: '#home' },
-    { label: 'About', href: '#about' },
-    { label: 'Experience', href: '#experience' },
+    { label: 'J&J Production', href: '#production' },
     { label: 'Projects', href: '#projects' },
+    { label: 'Approach', href: '#approach' },
     { label: 'Skills', href: '#skills' },
-    { label: 'Certifications', href: '#certifications' },
+    { label: 'Focus', href: '#focus' },
     { label: 'Contact', href: '#contact' },
   ];
 
