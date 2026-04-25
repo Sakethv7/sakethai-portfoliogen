@@ -1,57 +1,82 @@
-import { useEffect, useState } from 'react';
-import { ExternalLink, Github, Star, GitFork } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 import { Button } from './ui/button';
 
 interface Project {
-  id: number;
   name: string;
   description: string;
-  html_url: string;
-  homepage: string;
+  details: string[];
+  github: string;
+  demo?: string;
+  tags: string[];
   language: string;
-  topics: string[];
-  stargazers_count?: number;
-  forks_count?: number;
 }
 
-const Projects = () => {
-  const [repos, setRepos] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+const projects: Project[] = [
+  {
+    name: 'SDLC Intelligence Agent',
+    description: 'Enterprise PR intelligence system using LangGraph agents to analyze pull requests, detect risky code changes, summarize CI/CD failures, map errors to impacted files, and generate actionable reviewer/debugging recommendations.',
+    details: [
+      'Multi-agent orchestration with LangGraph for end-to-end PR analysis',
+      'Detects risky code changes and maps CI/CD failures to impacted files',
+      'Generates actionable reviewer and debugging recommendations',
+      'Deployed via GitLab-integrated workflows',
+    ],
+    github: 'https://github.com/Sakethv7/SDLC-Intelligence-Agent',
+    tags: ['LangGraph', 'Multi-Agent', 'CI/CD', 'GitLab', 'Python'],
+    language: 'Python',
+  },
+  {
+    name: 'roastrank_CV',
+    description: 'LLM evaluation and benchmarking platform with FastAPI backend, Redis caching, model comparison workflows, ground-truth datasets, regression testing, and visual quality metrics.',
+    details: [
+      'Compares LLM outputs across accuracy, relevance, hallucination risk, and ranking quality',
+      'FastAPI backend with Redis caching for performant eval pipelines',
+      'Regression testing against ground-truth datasets',
+      'Deployed on Hugging Face infrastructure',
+    ],
+    github: 'https://github.com/Sakethv7/roastrank_CV',
+    demo: 'https://huggingface.co/spaces/Sakethv7/roastrank_CV',
+    tags: ['FastAPI', 'LLM Evals', 'Redis', 'Regression Testing', 'Hugging Face'],
+    language: 'Python',
+  },
+  {
+    name: 'SakethWiki',
+    description: 'Personal AI second-brain system grounded in user-owned knowledge, combining document ingestion, semantic search, graph-based memory, entity extraction, and retrieval-augmented Q&A.',
+    details: [
+      'RAG pipeline over personal notes, projects, resumes, career plans, and research',
+      'Graph-based memory with entity extraction for cross-document synthesis',
+      'Semantic search + retrieval-augmented Q&A',
+      'Synthesizes insights across personal knowledge base',
+    ],
+    github: 'https://github.com/Sakethv7/SakethWiki',
+    tags: ['RAG', 'Semantic Search', 'Graph Memory', 'Entity Extraction', 'Python'],
+    language: 'Python',
+  },
+  {
+    name: "Director's Lab",
+    description: "Multimodal AI directing agent — pitch a scene via text, voice, or image to generate a full cinematic storyboard with Gemini-written panels, AI image generation, ambient audio, character dialogue, and a 15-second cinematic clip.",
+    details: [
+      'Multimodal input: text, voice, or image scene pitches',
+      'Gemini-powered storyboard panel writing with AI image generation',
+      'Ambient audio synthesis and character dialogue generation',
+      'Produces 15-second cinematic clips — deployed on Vercel + Google AI Studio',
+    ],
+    github: 'https://github.com/Sakethv7/Directors-Lab',
+    tags: ['Gemini', 'Multimodal AI', 'Storyboard', 'Vercel', 'Google AI Studio'],
+    language: 'TypeScript',
+  },
+];
 
-  useEffect(() => {
-    const fetchRepos = async () => {
-      try {
-        const response = await fetch('https://api.github.com/users/Sakethv7/repos?sort=updated&per_page=10');
-        const data = await response.json();
-
-        const filteredRepos = data
-          .filter((repo: Project) => !repo.name.includes('Sakethv7') && !repo.name.includes('portfoliogen'))
-          .slice(0, 6);
-
-        setRepos(filteredRepos);
-      } catch (error) {
-        console.error('Error fetching repos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRepos();
-  }, []);
-
-  const getLanguageColor = (language: string) => {
-    const colors: { [key: string]: string } = {
-      Python: 'text-blue-400',
-      JavaScript: 'text-yellow-400',
-      TypeScript: 'text-blue-500',
-      Java: 'text-orange-400',
-      HTML: 'text-red-400',
-      CSS: 'text-purple-400',
-      'Jupyter Notebook': 'text-orange-500',
-    };
-    return colors[language] || 'text-gray-400';
+const getLanguageColor = (language: string) => {
+  const colors: { [key: string]: string } = {
+    Python: 'text-blue-400',
+    TypeScript: 'text-blue-500',
+    JavaScript: 'text-yellow-400',
   };
+  return colors[language] || 'text-gray-400';
+};
 
+const Projects = () => {
   return (
     <section id="projects" className="py-20 px-4 relative">
       <div className="max-w-6xl mx-auto">
@@ -59,96 +84,72 @@ const Projects = () => {
           <span className="gradient-text">Featured Projects</span>
         </h2>
 
-        {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="glass p-6 rounded-2xl animate-pulse">
-                <div className="h-6 bg-muted rounded mb-3" />
-                <div className="h-4 bg-muted rounded mb-4" />
-                <div className="h-20 bg-muted rounded" />
+        <div className="grid md:grid-cols-2 gap-6">
+          {projects.map((project, index) => (
+            <div
+              key={project.name}
+              className="glass p-6 rounded-2xl hover:scale-[1.02] transition-all animate-fade-in hover:border-primary/50 flex flex-col"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-xl font-bold text-primary leading-tight">{project.name}</h3>
+                <Github className="w-5 h-5 text-muted-foreground shrink-0 ml-2" />
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {repos.map((repo, index) => (
-              <div
-                key={repo.id}
-                className="glass p-6 rounded-2xl hover:scale-[1.02] transition-all animate-fade-in hover:border-primary/50"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-xl font-bold text-primary line-clamp-1">
-                    {repo.name.replace(/-/g, ' ')}
-                  </h3>
-                  <Github className="w-5 h-5 text-muted-foreground" />
-                </div>
 
-                <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                  {repo.description || 'No description provided.'}
-                </p>
+              <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{project.description}</p>
 
-                {/* Tech stack */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {(repo.topics || []).slice(0, 4).map((topic) => (
-                    <span
-                      key={topic}
-                      className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
+              <ul className="space-y-1.5 mb-4 flex-1">
+                {project.details.map((detail, i) => (
+                  <li key={i} className="text-sm text-muted-foreground flex items-start">
+                    <span className="text-accent mr-2 mt-0.5">▸</span>
+                    <span>{detail}</span>
+                  </li>
+                ))}
+              </ul>
 
-                {/* Stats */}
-                <div className="flex items-center gap-4 mb-4">
-                  {repo.language && (
-                    <span className={`flex items-center gap-1 text-sm ${getLanguageColor(repo.language)}`}>
-                      <span className="w-3 h-3 rounded-full bg-current" />
-                      {repo.language}
-                    </span>
-                  )}
-                  {repo.stargazers_count !== undefined && repo.stargazers_count > 0 && (
-                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Star className="w-4 h-4" />
-                      {repo.stargazers_count}
-                    </span>
-                  )}
-                  {repo.forks_count !== undefined && repo.forks_count > 0 && (
-                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <GitFork className="w-4 h-4" />
-                      {repo.forks_count}
-                    </span>
-                  )}
-                </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
 
-                {/* Actions */}
-                <div className="flex gap-2">
+              <div className="flex items-center gap-4 mb-4">
+                <span className={`flex items-center gap-1 text-sm ${getLanguageColor(project.language)}`}>
+                  <span className="w-3 h-3 rounded-full bg-current" />
+                  {project.language}
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 border-primary/30 hover:bg-primary/10"
+                  onClick={() => window.open(project.github, '_blank')}
+                >
+                  <Github className="w-4 h-4 mr-2" />
+                  Code
+                </Button>
+                {project.demo && (
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-primary/30 hover:bg-primary/10"
-                    onClick={() => window.open(repo.html_url, '_blank')}
+                    className="flex-1 border-accent/30 hover:bg-accent/10"
+                    onClick={() => window.open(project.demo, '_blank')}
                   >
-                    <Github className="w-4 h-4 mr-2" />
-                    Code
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Demo
                   </Button>
-                  {repo.homepage && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 border-accent/30 hover:bg-accent/10"
-                      onClick={() => window.open(repo.homepage, '_blank')}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Demo
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
 
         <div className="text-center mt-12">
           <Button

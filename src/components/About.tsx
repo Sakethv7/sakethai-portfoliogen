@@ -19,15 +19,15 @@ const About = () => {
           {/* Left side - Bio */}
           <div className="space-y-6 animate-fade-in">
             <div className="glass p-8 rounded-2xl">
-              <h3 className="text-2xl font-bold mb-4 text-primary">Gen AI Data Scientist @ J&J</h3>
+              <h3 className="text-2xl font-bold mb-4 text-primary">Data Scientist & GenAI Engineer</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Currently at <span className="text-primary font-semibold">Johnson & Johnson</span>, I build the JAIDA platform—an enterprise RAG system serving 140K+ employees with 10K-25K monthly queries. Using Claude/OpenAI APIs, Qdrant vector database, and production-grade observability.
+                At <span className="text-primary font-semibold">Johnson & Johnson</span>, I contributed to JAIDA—a production-scale RAG system serving ~140,000 internal employees through document chunking, embedding generation, and Qdrant vector indexing. I built LLM evaluation frameworks, observability pipelines, and a three-layer query analytics system using AWS Bedrock as an LLM-as-a-Judge.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                With a Master's in Data Science from Arizona State University (4.0 GPA) and experience at HP Inc., iDwTeam, and ECrent, I focus on building reliable evaluation frameworks, governance pipelines, and production observability for AI systems.
+                With a Master's in Data Science from Arizona State University and experience across HP Inc., iDwTeam, and ECrent, I specialize in end-to-end AI and data pipelines—from retrieval optimization and LLM evaluation to distributed data engineering on Databricks and AWS.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                My work spans RAG pipelines, LLM integration, vector databases, MCP-based agent routing, red-teaming workflows, and production monitoring.
+                My current focus is agentic AI: building multi-agent orchestration systems with LangGraph, MCP, and the Anthropic SDK, alongside LLM observability and automated evaluation frameworks.
               </p>
             </div>
 
