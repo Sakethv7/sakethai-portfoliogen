@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 
 const Hero = () => {
   const [text, setText] = useState('');
-  const fullText = 'Data Scientist';
+  const fullText = 'AI Systems Engineer';
   const [showCursor, setShowCursor] = useState(true);
 
   useEffect(() => {
@@ -63,8 +63,8 @@ const Hero = () => {
 
         {/* Description */}
         <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto animate-fade-in [animation-delay:1s]">
-          Building production AI systems serving 140K+ employees at Johnson & Johnson.
-          Specializing in RAG pipelines, vector databases, and enterprise LLM applications.
+          Building production-grade LLM pipelines, evaluation frameworks, and agentic workflows.
+          RAG · LLMOps · AI Observability · Agentic AI.
         </p>
 
         {/* CTA Buttons */}
@@ -98,7 +98,7 @@ const Hero = () => {
         {/* Floating badges */}
         <div className="absolute -top-20 left-10 animate-float">
           <div className="glass px-4 py-2 rounded-full">
-            <span className="text-sm font-mono text-neon">Gen AI</span>
+            <span className="text-sm font-mono text-neon">LLMOps</span>
           </div>
         </div>
         <div className="absolute -top-10 right-20 animate-float [animation-delay:1s]">
@@ -108,7 +108,7 @@ const Hero = () => {
         </div>
         <div className="absolute bottom-32 -left-10 animate-float [animation-delay:2s]">
           <div className="glass px-4 py-2 rounded-full">
-            <span className="text-sm font-mono text-accent">AWS</span>
+            <span className="text-sm font-mono text-accent">Agentic AI</span>
           </div>
         </div>
       </div>
