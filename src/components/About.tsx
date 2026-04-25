@@ -19,15 +19,15 @@ const About = () => {
           {/* Left side - Bio */}
           <div className="space-y-6 animate-fade-in">
             <div className="glass p-8 rounded-2xl">
-              <h3 className="text-2xl font-bold mb-4 text-primary">Data Scientist & GenAI Engineer</h3>
+              <h3 className="text-2xl font-bold mb-4 text-primary">AI Systems Engineer · LLMOps · Agentic AI</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                At <span className="text-primary font-semibold">Johnson & Johnson</span>, I contributed to JAIDA—a production-scale RAG system serving ~140,000 internal employees through document chunking, embedding generation, and Qdrant vector indexing. I built LLM evaluation frameworks, observability pipelines, and a three-layer query analytics system using AWS Bedrock as an LLM-as-a-Judge.
+                I design, evaluate, and operate AI systems in production—focused on reliability, scalability, and real-world impact. At <span className="text-primary font-semibold">Johnson & Johnson</span>, I contributed to JAIDA, a production RAG system supporting ~140,000 users, building retrieval pipelines, LLM evaluation frameworks, and AI observability systems with Arize Phoenix.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                With a Master's in Data Science from Arizona State University and experience across HP Inc., iDwTeam, and ECrent, I specialize in end-to-end AI and data pipelines—from retrieval optimization and LLM evaluation to distributed data engineering on Databricks and AWS.
+                My approach is retrieval-first and evaluation-driven: RAG architectures, LLM-as-a-judge pipelines, regression testing, and observability-first systems with tracing, latency monitoring, and hallucination detection.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                My current focus is agentic AI: building multi-agent orchestration systems with LangGraph, MCP, and the Anthropic SDK, alongside LLM observability and automated evaluation frameworks.
+                Currently building agentic workflows with LangGraph, MCP, and the Anthropic SDK—multi-agent orchestration systems designed for real-world extensibility.
               </p>
             </div>
 
@@ -35,7 +35,7 @@ const About = () => {
             <div className="glass p-6 rounded-2xl">
               <h4 className="text-lg font-semibold mb-3 text-accent">Current Focus</h4>
               <div className="flex flex-wrap gap-2">
-                {['RAG Pipelines', 'LLM Integration', 'Vector Databases', 'Red Teaming', 'Production Observability', 'MLOps'].map((skill) => (
+                {['RAG Pipelines', 'LLM Evaluation', 'AI Observability', 'Agentic Workflows', 'LLMOps', 'LangGraph'].map((skill) => (
                   <span
                     key={skill}
                     className="px-3 py-1 text-sm bg-gradient-primary text-primary-foreground rounded-full font-medium"

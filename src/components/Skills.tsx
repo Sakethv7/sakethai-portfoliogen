@@ -3,50 +3,47 @@ import { Code2, Database, Cloud, Brain, Sparkles, Terminal } from 'lucide-react'
 const Skills = () => {
   const skillCategories = [
     {
-      title: 'NLP & LLMs',
+      title: 'AI / LLM Systems',
       icon: Brain,
       skills: [
-        'RAG Pipelines', 'LangChain', 'Semantic Search', 'Information Retrieval',
-        'Sentence Embeddings', 'RASA NLU', 'Word2Vec', 'Vector Databases'
+        'LangChain', 'LangGraph', 'OpenAI', 'Anthropic SDK', 'Semantic Search', 'RAG Pipelines'
+      ],
+    },
+    {
+      title: 'AI Observability & Evals',
+      icon: Sparkles,
+      skills: [
+        'Arize Phoenix', 'LLM Evals', 'LLM-as-a-Judge', 'Hallucination Detection',
+        'Regression Testing', 'Tracing', 'Latency Monitoring'
       ],
     },
     {
       title: 'Agentic AI',
-      icon: Sparkles,
-      skills: [
-        'LangGraph', 'Multi-Agent Orchestration', 'Tool Use', 'MCP',
-        'Anthropic SDK', 'FastAPI', 'Subagents', 'Agent Skills'
-      ],
-    },
-    {
-      title: 'ML & Deep Learning',
       icon: Terminal,
       skills: [
-        'PyTorch', 'TensorFlow', 'Scikit-learn', 'AWS SageMaker', 'Transfer Learning'
+        'LangGraph', 'Multi-Agent Orchestration', 'Tool Use', 'MCP',
+        'Anthropic SDK', 'Memory Systems', 'Agent Skills', 'Subagents'
       ],
     },
     {
-      title: 'AI Observability',
-      icon: Code2,
-      skills: [
-        'Arize Phoenix', 'LLM Evals', 'Hallucination Detection',
-        'Automated Regression Testing', 'CloudWatch Tracing', 'LLM as a Judge'
-      ],
-    },
-    {
-      title: 'Data Engineering',
+      title: 'Data & Pipelines',
       icon: Database,
       skills: [
-        'PySpark', 'Apache Airflow', 'ETL Pipelines', 'DynamoDB',
-        'Data Modelling', 'Databricks', 'Data Lakes', 'AWS (S3, EC2, EMR, Bedrock, Redshift)'
+        'PySpark', 'Apache Airflow', 'DynamoDB', 'Databricks', 'ETL Workflows', 'Data Lakes'
       ],
     },
     {
-      title: 'Analytics & Databases',
+      title: 'Infrastructure & Cloud',
       icon: Cloud,
       skills: [
-        'Qdrant', 'PostgreSQL', 'AWS Redshift', 'MySQL',
-        'Power BI (DAX)', 'Tableau', 'Arize Dashboards', 'CloudWatch Metrics'
+        'AWS (S3, EC2, Bedrock, CloudWatch)', 'Docker', 'Python', 'FastAPI', 'REST APIs'
+      ],
+    },
+    {
+      title: 'Vector Databases & Analytics',
+      icon: Code2,
+      skills: [
+        'Qdrant', 'PostgreSQL', 'AWS Redshift', 'Power BI (DAX)', 'Tableau', 'CloudWatch Metrics'
       ],
     },
   ];
