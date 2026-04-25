@@ -3,50 +3,50 @@ import { Code2, Database, Cloud, Brain, Sparkles, Terminal } from 'lucide-react'
 const Skills = () => {
   const skillCategories = [
     {
-      title: 'GenAI & LLMs',
+      title: 'NLP & LLMs',
       icon: Brain,
       skills: [
-        'LangChain', 'LlamaIndex', 'RAG Pipelines', 'Claude API', 'OpenAI Embeddings',
-        'Arize Phoenix', 'FlashRank', 'Qdrant', 'Red Teaming', 'LLM Fallbacks', 'RASA NLU'
+        'RAG Pipelines', 'LangChain', 'Semantic Search', 'Information Retrieval',
+        'Sentence Embeddings', 'RASA NLU', 'Word2Vec', 'Vector Databases'
       ],
     },
     {
-      title: 'Machine Learning',
+      title: 'Agentic AI',
       icon: Sparkles,
       skills: [
-        'TensorFlow', 'PyTorch', 'Hugging Face Transformers', 'Scikit-learn',
-        'AWS SageMaker', 'Feature Engineering', 'A/B Testing'
+        'LangGraph', 'Multi-Agent Orchestration', 'Tool Use', 'MCP',
+        'Anthropic SDK', 'FastAPI', 'Subagents', 'Agent Skills'
       ],
     },
     {
-      title: 'Programming & APIs',
+      title: 'ML & Deep Learning',
+      icon: Terminal,
+      skills: [
+        'PyTorch', 'TensorFlow', 'Scikit-learn', 'AWS SageMaker', 'Transfer Learning'
+      ],
+    },
+    {
+      title: 'AI Observability',
       icon: Code2,
       skills: [
-        'Python', 'SQL', 'RESTful APIs', 'Flask', 'JSON', 'YAML', 'Java'
+        'Arize Phoenix', 'LLM Evals', 'Hallucination Detection',
+        'Automated Regression Testing', 'CloudWatch Tracing', 'LLM as a Judge'
       ],
     },
     {
       title: 'Data Engineering',
       icon: Database,
       skills: [
-        'PySpark', 'Apache Airflow', 'ETL Pipelines', 'Data Modeling',
-        'Hadoop', 'Hive', 'MapReduce'
+        'PySpark', 'Apache Airflow', 'ETL Pipelines', 'DynamoDB',
+        'Data Modelling', 'Databricks', 'Data Lakes', 'AWS (S3, EC2, EMR, Bedrock, Redshift)'
       ],
     },
     {
-      title: 'Cloud & DevOps',
+      title: 'Analytics & Databases',
       icon: Cloud,
       skills: [
-        'AWS (S3, EC2, EMR, Redshift, EKS, Lambda, CloudWatch)',
-        'Docker', 'Kubernetes', 'GitLab CI/CD', 'Azure DevOps', 'Git'
-      ],
-    },
-    {
-      title: 'Databases & Analytics',
-      icon: Terminal,
-      skills: [
-        'Qdrant (Vector)', 'PostgreSQL', 'MongoDB', 'Snowflake',
-        'DynamoDB', 'Power BI (DAX)', 'Tableau'
+        'Qdrant', 'PostgreSQL', 'AWS Redshift', 'MySQL',
+        'Power BI (DAX)', 'Tableau', 'Arize Dashboards', 'CloudWatch Metrics'
       ],
     },
   ];
