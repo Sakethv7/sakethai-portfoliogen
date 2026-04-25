@@ -4,7 +4,8 @@ import { Button } from './ui/button';
 interface Project {
   name: string;
   description: string;
-  details: string[];
+  architecture: string[];
+  problems: string[];
   github: string;
   demo?: string;
   tags: string[];
@@ -14,52 +15,77 @@ interface Project {
 const projects: Project[] = [
   {
     name: 'roastrank_CV',
-    description: 'LLM evaluation and benchmarking platform with FastAPI backend, Redis caching, model comparison workflows, ground-truth datasets, regression testing, and visual quality metrics.',
-    details: [
-      'LLM-as-a-judge evaluation pipelines with automated hallucination detection',
-      'Multi-model benchmarking across accuracy, relevance, and ranking quality',
-      'FastAPI backend with Redis caching for performant eval pipelines',
-      'Regression testing against ground-truth datasets — deployed on Hugging Face',
+    description: 'LLM evaluation and benchmarking platform. Compares model outputs across accuracy, relevance, hallucination risk, and ranking quality using automated pipelines.',
+    architecture: [
+      'User Input → Model Responses',
+      '→ Evaluation Layer (LLM-as-Judge)',
+      '→ Scoring & Ranking',
+      '→ Dashboard',
+      '↓ Ground Truth Dataset',
+      '↓ Regression Testing Suite',
+    ],
+    problems: [
+      'Hallucination: automated detection via judge pipeline',
+      'Manual QA overhead: replaced with regression suite',
+      'Multi-model comparison: unified scoring framework',
     ],
     github: 'https://github.com/Sakethv7/roastrank_CV',
     demo: 'https://huggingface.co/spaces/Sakethv7/roastrank_CV',
-    tags: ['LLM Evals', 'FastAPI', 'Redis', 'Regression Testing', 'Hugging Face'],
+    tags: ['LLM Evals', 'LLM-as-Judge', 'FastAPI', 'Redis', 'Regression Testing'],
     language: 'Python',
   },
   {
     name: 'SDLC Intelligence Agent',
-    description: 'Agentic AI system for PR intelligence — uses LangGraph multi-agent orchestration to analyze pull requests, detect risky code changes, map CI/CD failures to impacted files, and generate debugging recommendations.',
-    details: [
-      'LangGraph-based multi-agent orchestration with structured reasoning workflows',
-      'Tool use for CI/CD log analysis and code change detection',
-      'Maps failures to root causes and generates actionable reviewer recommendations',
-      'Deployed via GitLab-integrated workflows',
+    description: 'Multi-agent PR intelligence system. Analyzes pull requests, detects risky code changes, maps CI/CD failures to impacted files, and generates actionable debugging recommendations.',
+    architecture: [
+      'GitHub PR → Code Analyzer Agent',
+      '→ Failure Detection Agent',
+      '→ Debugging Agent',
+      '→ Recommendations',
+      '↓ Tool Use: CI/CD logs, code diff, file map',
+    ],
+    problems: [
+      'PR review friction: automated risk detection',
+      'CI/CD failures: mapped to root cause files',
+      'Slow debugging: structured agent recommendations',
     ],
     github: 'https://github.com/Sakethv7/SDLC-Intelligence-Agent',
-    tags: ['LangGraph', 'Multi-Agent', 'Tool Use', 'CI/CD', 'Python'],
+    tags: ['LangGraph', 'Multi-Agent', 'Tool Use', 'CI/CD', 'GitLab'],
     language: 'Python',
   },
   {
     name: 'SakethWiki',
-    description: 'Personal AI knowledge system combining RAG, graph-based memory, semantic search, and entity extraction to synthesize insights across notes, projects, resumes, and research.',
-    details: [
-      'RAG pipeline over personal notes, projects, resumes, career plans, and research',
-      'Graph-based memory with entity extraction for cross-document reasoning',
-      'Semantic search + retrieval-augmented Q&A',
-      'Synthesizes insights and surfaces connections across personal knowledge base',
+    description: 'Personal AI knowledge system. Combines RAG, graph-based memory, and entity extraction to synthesize insights across notes, projects, resumes, and research.',
+    architecture: [
+      'Documents → Chunking → Embeddings',
+      '→ Vector DB → Retrieval',
+      '→ LLM → Response',
+      '↑ Graph Memory + Entity Extraction',
+      '↑ Cross-document reasoning layer',
+    ],
+    problems: [
+      'Knowledge fragmentation: unified retrieval across all sources',
+      'Context loss: graph memory preserves entity relationships',
+      'Shallow search: semantic retrieval + entity linking',
     ],
     github: 'https://github.com/Sakethv7/SakethWiki',
-    tags: ['RAG', 'Graph Memory', 'Semantic Search', 'Entity Extraction', 'Python'],
+    tags: ['RAG', 'Graph Memory', 'Semantic Search', 'Entity Extraction'],
     language: 'Python',
   },
   {
-    name: 'Buddy',
-    description: 'Agentic AI assistant with RAG, memory, and tool use — designed for multi-step reasoning, not just chat. Combines retrieval, contextual memory, and decision-making in a modular, extensible architecture.',
-    details: [
-      'Intent routing → retrieval → memory → tool use → LLM response pipeline',
-      'Multi-step reasoning workflows with tool usage (search, retrieval, APIs)',
-      'Memory-aware responses with modular agent design',
-      'Built for real-world extensibility beyond single-turn chatbots',
+    name: 'Buddy — Agentic AI Assistant',
+    description: 'Agentic AI assistant with RAG, memory, and tool use. Designed for multi-step reasoning, not just chat — combines retrieval, contextual memory, and decision-making.',
+    architecture: [
+      'User Query → Intent Router',
+      '→ Retriever → Memory Layer',
+      '→ Tool Use (search, APIs)',
+      '→ LLM → Response',
+      '↓ Modular agent design',
+    ],
+    problems: [
+      'Single-turn limits: multi-step reasoning workflows',
+      'Stateless responses: persistent memory layer',
+      'Tool gaps: extensible tool use (search, retrieval, APIs)',
     ],
     github: 'https://github.com/Sakethv7/Buddy',
     tags: ['Agentic AI', 'RAG', 'Memory', 'Tool Use', 'Multi-Step Reasoning'],
@@ -71,7 +97,6 @@ const getLanguageColor = (language: string) => {
   const colors: { [key: string]: string } = {
     Python: 'text-blue-400',
     TypeScript: 'text-blue-500',
-    JavaScript: 'text-yellow-400',
   };
   return colors[language] || 'text-gray-400';
 };
@@ -80,9 +105,12 @@ const Projects = () => {
   return (
     <section id="projects" className="py-20 px-4 relative">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
-          <span className="gradient-text">Featured Projects</span>
+        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center">
+          <span className="gradient-text">AI Systems Built</span>
         </h2>
+        <p className="text-center text-muted-foreground mb-12 text-base">
+          Architecture · Problems solved · Systems thinking
+        </p>
 
         <div className="grid md:grid-cols-2 gap-6">
           {projects.map((project, index) => (
@@ -91,36 +119,47 @@ const Projects = () => {
               className="glass p-6 rounded-2xl hover:scale-[1.02] transition-all animate-fade-in hover:border-primary/50 flex flex-col"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-2">
                 <h3 className="text-xl font-bold text-primary leading-tight">{project.name}</h3>
                 <Github className="w-5 h-5 text-muted-foreground shrink-0 ml-2" />
               </div>
 
               <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{project.description}</p>
 
-              <ul className="space-y-1.5 mb-4 flex-1">
-                {project.details.map((detail, i) => (
-                  <li key={i} className="text-sm text-muted-foreground flex items-start">
-                    <span className="text-accent mr-2 mt-0.5">▸</span>
-                    <span>{detail}</span>
-                  </li>
+              {/* Architecture flow */}
+              <div className="bg-black/30 rounded-xl p-4 mb-4 font-mono text-xs space-y-0.5">
+                <p className="text-muted-foreground uppercase tracking-widest text-[10px] mb-2">Architecture</p>
+                {project.architecture.map((line, i) => (
+                  <p key={i} className={line.startsWith('↓') || line.startsWith('↑') ? 'text-accent' : 'text-primary/80'}>
+                    {line}
+                  </p>
                 ))}
-              </ul>
+              </div>
 
-              <div className="flex flex-wrap gap-2 mb-4">
+              {/* Problems solved */}
+              <div className="mb-4 flex-1">
+                <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Problems Solved</p>
+                <ul className="space-y-1">
+                  {project.problems.map((p, i) => (
+                    <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                      <span className="text-accent mt-0.5 shrink-0">▸</span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 mb-4">
                 {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full"
-                  >
+                  <span key={tag} className="px-2 py-0.5 text-xs bg-primary/10 text-primary rounded-full">
                     {tag}
                   </span>
                 ))}
               </div>
 
               <div className="flex items-center gap-4 mb-4">
-                <span className={`flex items-center gap-1 text-sm ${getLanguageColor(project.language)}`}>
-                  <span className="w-3 h-3 rounded-full bg-current" />
+                <span className={`flex items-center gap-1 text-xs ${getLanguageColor(project.language)}`}>
+                  <span className="w-2.5 h-2.5 rounded-full bg-current" />
                   {project.language}
                 </span>
               </div>

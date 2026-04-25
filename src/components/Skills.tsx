@@ -3,47 +3,51 @@ import { Code2, Database, Cloud, Brain, Sparkles, Terminal } from 'lucide-react'
 const Skills = () => {
   const skillCategories = [
     {
-      title: 'AI / LLM Systems',
+      title: 'LLM & RAG Systems',
       icon: Brain,
       skills: [
-        'LangChain', 'LangGraph', 'OpenAI', 'Anthropic SDK', 'Semantic Search', 'RAG Pipelines'
-      ],
-    },
-    {
-      title: 'AI Observability & Evals',
-      icon: Sparkles,
-      skills: [
-        'Arize Phoenix', 'LLM Evals', 'LLM-as-a-Judge', 'Hallucination Detection',
-        'Regression Testing', 'Tracing', 'Latency Monitoring'
+        'RAG Pipelines', 'LangChain', 'Semantic Search', 'Vector Indexing',
+        'Sentence Embeddings', 'Retrieval Optimization', 'Qdrant', 'DynamoDB'
       ],
     },
     {
       title: 'Agentic AI',
-      icon: Terminal,
+      icon: Sparkles,
       skills: [
         'LangGraph', 'Multi-Agent Orchestration', 'Tool Use', 'MCP',
-        'Anthropic SDK', 'Memory Systems', 'Agent Skills', 'Subagents'
+        'Anthropic SDK', 'Memory Systems', 'FastAPI', 'Agent Skills'
       ],
     },
     {
-      title: 'Data & Pipelines',
-      icon: Database,
-      skills: [
-        'PySpark', 'Apache Airflow', 'DynamoDB', 'Databricks', 'ETL Workflows', 'Data Lakes'
-      ],
-    },
-    {
-      title: 'Infrastructure & Cloud',
-      icon: Cloud,
-      skills: [
-        'AWS (S3, EC2, Bedrock, CloudWatch)', 'Docker', 'Python', 'FastAPI', 'REST APIs'
-      ],
-    },
-    {
-      title: 'Vector Databases & Analytics',
+      title: 'AI Observability & Evals',
       icon: Code2,
       skills: [
-        'Qdrant', 'PostgreSQL', 'AWS Redshift', 'Power BI (DAX)', 'Tableau', 'CloudWatch Metrics'
+        'Arize Phoenix', 'LLM-as-a-Judge', 'Regression Testing',
+        'Hallucination Detection', 'Latency Tracing', 'CloudWatch Monitoring'
+      ],
+    },
+    {
+      title: 'Data & Pipeline Engineering',
+      icon: Database,
+      skills: [
+        'PySpark', 'Apache Airflow', 'ETL Pipelines', 'Databricks',
+        'Data Lakes', 'AWS EMR', 'AWS S3', 'Data Modeling'
+      ],
+    },
+    {
+      title: 'Cloud & Infrastructure',
+      icon: Cloud,
+      skills: [
+        'AWS Bedrock', 'AWS EC2', 'AWS Redshift', 'CloudWatch',
+        'Docker', 'Python', 'REST APIs', 'Git'
+      ],
+    },
+    {
+      title: 'ML & Deep Learning',
+      icon: Terminal,
+      skills: [
+        'PyTorch', 'TensorFlow', 'Scikit-learn', 'AWS SageMaker',
+        'Word2Vec', 'RASA NLU', 'Transfer Learning'
       ],
     },
   ];
@@ -86,19 +90,6 @@ const Skills = () => {
           })}
         </div>
 
-        {/* Education Section based on Resume */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex flex-col items-center glass p-8 rounded-2xl">
-            <h3 className="text-2xl font-bold mb-4 gradient-text">Education</h3>
-            <div className="space-y-2">
-              <p className="text-lg font-semibold text-foreground">Arizona State University</p>
-              <p className="text-muted-foreground">Master of Science in Information Technology (Data Science)</p>
-              <div className="pt-2">
-                <span className="text-2xl font-bold text-primary">GPA: 4.0/4.0</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
