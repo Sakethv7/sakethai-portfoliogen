@@ -2,6 +2,8 @@ import { Mail, Linkedin, Github, Send, FileText } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Contact = () => {
+  const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;
+
   const contactInfo = [
     {
       icon: Mail,
@@ -74,7 +76,7 @@ const Contact = () => {
               size="lg"
               variant="outline"
               className="border-primary/30 hover:bg-primary/10 hover:border-primary"
-              onClick={() => window.open('/Saketh_Velidimalla_Resume.pdf', '_blank')}
+              onClick={() => window.open(resumeUrl, '_blank')}
             >
               <FileText className="mr-2 h-5 w-5" />
               View Resume
