@@ -8,11 +8,6 @@ const Certifications = () => {
       tags: ['LangGraph', 'Agentic AI', 'Stateful Agents'],
     },
     {
-      title: 'LLM Engineering — Foundations & Production Tracks',
-      issuer: 'Ed Donner',
-      tags: ['LLM Engineering', 'Production AI', 'LLM Systems'],
-    },
-    {
       title: 'AWS Certified Machine Learning Specialty',
       issuer: 'Amazon Web Services',
       tags: ['AWS', 'Machine Learning', 'Cloud AI'],
@@ -32,6 +27,12 @@ const Certifications = () => {
       description: '5-course specialization covering agentic workflows, reflection patterns, tool use, and highly autonomous agent design.',
       tags: ['Agentic AI', 'Multi-Agent Systems', 'Tool Use', 'LLM Orchestration'],
       highlight: true,
+    },
+    {
+      title: 'LLM Engineering — Foundations & Production Tracks',
+      issuer: 'Ed Donner',
+      description: 'Foundations and production tracks covering LLM engineering, deployment, and applied production patterns.',
+      tags: ['LLM Engineering', 'Production AI', 'LLM Systems'],
     },
     {
       title: 'Claude Code in Action',

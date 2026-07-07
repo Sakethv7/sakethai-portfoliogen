@@ -1,4 +1,4 @@
-import { Mail, Linkedin, Github, Send } from 'lucide-react';
+import { Mail, Linkedin, Github, Send, FileText } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Contact = () => {
@@ -61,7 +61,7 @@ const Contact = () => {
         </div>
 
         <div className="flex flex-col items-center gap-6">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4 justify-center">
             <Button
               size="lg"
               className="bg-gradient-primary hover:opacity-90 text-primary-foreground font-semibold glow-primary"
@@ -69,6 +69,15 @@ const Contact = () => {
             >
               <Send className="mr-2 h-5 w-5" />
               Send Email
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-primary/30 hover:bg-primary/10 hover:border-primary"
+              onClick={() => window.open('/Saketh_Velidimalla_Resume.pdf', '_blank')}
+            >
+              <FileText className="mr-2 h-5 w-5" />
+              View Resume
             </Button>
           </div>
 

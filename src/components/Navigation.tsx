@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Code2 } from 'lucide-react';
+import { Menu, X, Code2, FileText } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Navigation = () => {
@@ -61,6 +61,14 @@ const Navigation = () => {
                   {item.label}
                 </Button>
               ))}
+              <Button
+                variant="outline"
+                className="ml-2 border-primary/30 hover:bg-primary/10 hover:border-primary"
+                onClick={() => window.open('/Saketh_Velidimalla_Resume.pdf', '_blank')}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Resume
+              </Button>
             </div>
           </div>
 
@@ -95,6 +103,17 @@ const Navigation = () => {
                 {item.label}
               </Button>
             ))}
+            <Button
+              variant="outline"
+              className="w-full justify-start border-primary/30 hover:bg-primary/10 hover:border-primary"
+              onClick={() => {
+                window.open('/Saketh_Velidimalla_Resume.pdf', '_blank');
+                setIsOpen(false);
+              }}
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Resume
+            </Button>
           </div>
         </div>
       )}

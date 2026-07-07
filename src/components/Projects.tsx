@@ -14,24 +14,24 @@ interface Project {
 
 const projects: Project[] = [
   {
-    name: 'roastrank_CV',
-    description: 'LLM evaluation and benchmarking platform. Compares model outputs across accuracy, relevance, hallucination risk, and ranking quality using automated pipelines.',
+    name: 'roastrank-v2',
+    description: 'LLM evaluation and benchmarking platform with rubric-based scoring, regression testing, six-stage output validation, failure labeling, and audit logging.',
     architecture: [
       'User Input → Model Responses',
       '→ Evaluation Layer (LLM-as-Judge)',
-      '→ Scoring & Ranking',
-      '→ Dashboard',
+      '→ Rubric Scoring & Ranking',
+      '→ Audit Log + Dashboard',
       '↓ Ground Truth Dataset',
       '↓ Regression Testing Suite',
     ],
     problems: [
       'Hallucination: automated detection via judge pipeline',
-      'Manual QA overhead: replaced with regression suite',
-      'Multi-model comparison: unified scoring framework',
+      'Manual QA overhead: replaced with six-stage regression suite',
+      'Multi-model comparison: unified rubric-based scoring framework',
     ],
     github: 'https://github.com/Sakethv7/roastrank_CV',
     demo: 'https://huggingface.co/spaces/Sakethv7/roastrank_CV',
-    tags: ['LLM Evals', 'LLM-as-Judge', 'FastAPI', 'Redis', 'Regression Testing'],
+    tags: ['LLM Evals', 'LLM-as-Judge', 'FastAPI', 'Docker', 'Regression Testing'],
     language: 'Python',
   },
   {
@@ -87,8 +87,27 @@ const projects: Project[] = [
       'Stateless responses: persistent memory layer',
       'Tool gaps: extensible tool use (search, retrieval, APIs)',
     ],
-    github: 'https://github.com/Sakethv7/Buddy',
+    github: 'https://github.com/Sakethv7/buddy',
     tags: ['Agentic AI', 'RAG', 'Memory', 'Tool Use', 'Multi-Step Reasoning'],
+    language: 'Python',
+  },
+  {
+    name: 'AI Digest',
+    description: 'Automated AI news and production-research digest system posting curated summaries to Slack on a scheduled basis.',
+    architecture: [
+      'Source Feeds → Gemini Summarization',
+      '→ Curation & Ranking',
+      '→ Slack Block Kit Formatting',
+      '→ Slack Post',
+      '↓ GitHub Actions Schedule',
+    ],
+    problems: [
+      'Information overload: automated curation of relevant AI/research news',
+      'Manual digest effort: replaced with scheduled automation',
+      'Formatting: Slack Block Kit for readable, structured posts',
+    ],
+    github: 'https://github.com/Sakethv7/ai-digest',
+    tags: ['Automation', 'Gemini', 'Slack Block Kit', 'GitHub Actions'],
     language: 'Python',
   },
 ];
