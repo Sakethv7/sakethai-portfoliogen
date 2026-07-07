@@ -21,10 +21,10 @@ const About = () => {
             <div className="glass p-8 rounded-2xl">
               <h3 className="text-2xl font-bold mb-4 text-primary">AI Systems Engineer · LLMOps · Agentic AI</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                I design, evaluate, and operate AI systems in production—focused on reliability, scalability, and real-world impact. At <span className="text-primary font-semibold">Johnson & Johnson</span>, I contributed to JAIDA, a production RAG system supporting ~140,000 users, building retrieval pipelines, LLM evaluation frameworks, and AI observability systems with Arize Phoenix.
+                I focus on production AI quality systems—LLM evaluation, AI observability, RAG regression testing, and release-quality gates. At <span className="text-primary font-semibold">Johnson & Johnson</span>, I own evaluation, reporting, and cross-system measurement layers for JAIDA, a ServiceNow-based enterprise RAG system serving ~140,000 internal users.
               </p>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                My approach is retrieval-first and evaluation-driven: RAG architectures, LLM-as-a-judge pipelines, regression testing, and observability-first systems with tracing, latency monitoring, and hallucination detection.
+                I specialize in turning ambiguous AI behavior into measurable failure modes, dashboards, and leadership-ready quality signals: LLM-as-a-judge pipelines, regression testing, and observability-first systems with tracing, latency monitoring, and hallucination detection.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Currently building agentic workflows with LangGraph, MCP, and the Anthropic SDK—multi-agent orchestration systems designed for real-world extensibility.
