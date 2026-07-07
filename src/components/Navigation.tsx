@@ -31,6 +31,8 @@ const Navigation = () => {
     setIsOpen(false);
   };
 
+  const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all ${scrolled ? 'glass' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,7 +66,7 @@ const Navigation = () => {
               <Button
                 variant="outline"
                 className="ml-2 border-primary/30 hover:bg-primary/10 hover:border-primary"
-                onClick={() => window.open('/Saketh_Velidimalla_Resume.pdf', '_blank')}
+                onClick={() => window.open(resumeUrl, '_blank')}
               >
                 <FileText className="w-4 h-4 mr-2" />
                 Resume
@@ -107,7 +109,7 @@ const Navigation = () => {
               variant="outline"
               className="w-full justify-start border-primary/30 hover:bg-primary/10 hover:border-primary"
               onClick={() => {
-                window.open('/Saketh_Velidimalla_Resume.pdf', '_blank');
+                window.open(resumeUrl, '_blank');
                 setIsOpen(false);
               }}
             >
