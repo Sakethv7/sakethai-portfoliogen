@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Work from "./pages/Work";
+import Collection from "./pages/Collection";
+import Experience from "./pages/Experience";
 
 const queryClient = new QueryClient();
 
@@ -16,7 +19,11 @@ const App = () => (
       <HashRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/work" element={<Work />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/writing" element={<Collection type="writing" />} />
+          <Route path="/research" element={<Collection type="research" />} />
+          <Route path="/notes" element={<Collection type="notes" />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>
