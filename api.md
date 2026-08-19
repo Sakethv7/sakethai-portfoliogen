@@ -4,6 +4,8 @@ These are local application contracts, not network APIs.
 
 ## Core types
 
+> **Drift warning.** The types in this section describe the intended content model, not the shipped one. `src/data/portfolio.ts` implements a flatter `WorkItem` (string-literal categories, no `role`/`period`/`outcomes`/`evidence`), a three-kind `PublicationItem` without slugs or tags, and an `ActivityItem` without `id` or `category`. Reconciling the two means deciding whether to grow the code or shrink the contract, which is out of scope for the contact change. Read the code as authoritative until then.
+
 ```ts
 type PublicationKind =
   | 'writing'
@@ -90,18 +92,65 @@ interface ResumeAsset {
 
 ## Route contracts
 
+Routes registered in `src/App.tsx` today:
+
 ```text
 /#/                         Homepage
 /#/work                     Work collection
-/#/work/:slug               Work case study
 /#/experience               Complete professional chronology
 /#/writing                  Writing and build logs
-/#/writing/:slug            Writing detail
 /#/research                 Research collection
-/#/research/:slug           Research detail
 /#/notes                    Notes collection
-/#/notes/:slug              Note detail
+/#/*                        Not found
 ```
+
+Detail routes (`/#/work/:slug`, `/#/writing/:slug`, `/#/research/:slug`, `/#/notes/:slug`) were previously listed here as though they existed. They do not. Any link written against them resolves to the not-found route. They remain the intended Phase 2 design and will be restored to this table when they are actually registered.
+
+The homepage contact section is a scroll target within `/#/`, not a route. See ADR-012.
+
+### Not-found contract
+
+- Renders inside `PortfolioShell`, inheriting the site palette and navigation.
+- Recovery link uses `react-router` `Link`, never a raw `href`, so it resolves under the deployed base path.
+- Logs the attempted pathname once per navigation.
+
+## Contact contract
+
+```ts
+interface ContactChannel {
+  label: string;
+  value: string;              // shown verbatim as page text
+  href: string;               // mailto:, https:, or base-composed asset path
+  copyable?: boolean;         // renders a clipboard control beside the value
+}
+```
+
+Required behavior:
+
+- `value` is rendered as readable text for every channel. It is never replaced by an icon, hidden behind an interaction, or obfuscated.
+- The email channel sets `copyable`. Its copy control writes `value` — not `href` — to the clipboard.
+- A resolved clipboard write shows a transient confirmation that reverts after roughly two seconds. The pending timer is cleared on unmount.
+- A rejected clipboard write surfaces the failure. It is never swallowed, because a silent failure is indistinguishable from success.
+- `mailto:` and clipboard are both permitted to fail without degrading the section: the visible `value` is the guaranteed path.
+- External `href` values are HTTPS and carry `rel="noreferrer"` with `target="_blank"`.
+- The résumé `href` is composed from `import.meta.env.BASE_URL`.
+
+## Document asset contracts
+
+Static metadata in `index.html`, all of which must survive being served from a subpath:
+
+```text
+link rel="icon"     base-path-composed, resolves to public/favicon.ico
+og:image            absolute deployed URL to the social card
+og:url              absolute deployed URL to the site root
+twitter:card        summary_large_image, valid only while og:image exists
+```
+
+Required behavior:
+
+- No URL pointing back at this site is written as a raw absolute path. It is either router-managed or composed from the Vite base.
+- `twitter:card` may declare `summary_large_image` only while a reachable `og:image` exists; otherwise shares render an empty card.
+- `og:url` is hardcoded to the deployed origin and must be edited if the deployment target changes.
 
 ## Homepage query contracts
 
