@@ -1,6 +1,7 @@
 import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
+import { ContactSection } from '@/components/ContactSection';
 import { activity, publications, work } from '@/data/portfolio';
 import { experiences } from '@/data/experience';
 
@@ -15,7 +16,8 @@ const Index = () => {
         <Link className="primary-link" to="/work">Explore the work <ArrowRight /></Link>
         <a href={`${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`} download="Saketh_Velidimalla_Resume.pdf">Download résumé</a>
         <a href="https://github.com/Sakethv7" target="_blank" rel="noreferrer">GitHub</a>
-        <a href="mailto:sakethv7@gmail.com">Contact</a>
+        {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
+        <a href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Contact</a>
       </div>
       <p className="current-line"><span>Current thesis</span> Stack to silicon: connecting production AI reliability with industrial systems, edge inference, and compute.</p>
     </section>
@@ -67,6 +69,8 @@ const Index = () => {
         </li>)}</ol>
       </aside>
     </section>
+
+    <ContactSection />
   </PortfolioShell>;
 };
 

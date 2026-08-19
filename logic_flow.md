@@ -20,8 +20,62 @@ Visitor arrives
     ├── scans experience preview
     │      ├── opens complete chronology
     │      └── downloads recruiter resume
-    └── opens GitHub, LinkedIn, or contact
+    └── reaches the contact section
+           ├── reads the address
+           ├── copies the address
+           ├── opens a mail client
+           └── opens GitHub or LinkedIn
 ```
+
+## Contact flow
+
+The controlling property is that no step depends on the one before it. A visitor who reads the section and does nothing else still leaves with the address.
+
+```text
+Contact section renders
+        │
+        ├── address is on screen as text ──────────── terminal success
+        │
+        ├── visitor clicks the address
+        │        └── mailto: handed to the OS
+        │                 ├── handler registered ──> compose window
+        │                 └── no handler ─────────> nothing happens,
+        │                                            address still on screen
+        │
+        └── visitor clicks copy
+                 ├── clipboard write resolves ─────> confirm for ~2s, then reset
+                 └── clipboard write rejects ─────> report the failure,
+                                                     address still on screen
+```
+
+*The `mailto:` and the clipboard are both allowed to fail. The visible address is what makes that acceptable.*
+
+Rules:
+
+1. The address is never hidden behind a click, a hover, or an obfuscation scheme.
+2. The copy control reports its result. A silent copy is indistinguishable from a failed one.
+3. Copy confirmation is transient state that resets on a timer; leaving a component unmounted mid-timer must not warn.
+4. The clipboard write can reject — denied permission, insecure context — and that rejection is surfaced, not swallowed.
+5. The section is reachable by keyboard in reading order, and the copy control is a real button with an accessible name.
+
+## Not-found flow
+
+```text
+Unknown hash route
+        │
+        ├── log the attempted path
+        ├── render inside PortfolioShell
+        │        └── site navigation stays available
+        └── offer router navigation home
+                 └── never a raw href="/", which
+                     leaves the project subpath
+```
+
+Rules:
+
+1. The page inherits the site's dark palette. A light-background page inside a dark site reads as a crash, not as a 404.
+2. Recovery uses `Link`, so it resolves under the deployed base path.
+3. The shell stays rendered, so a visitor who lands here from a stale link can reach any section without going back.
 
 ## Homepage selection logic
 
