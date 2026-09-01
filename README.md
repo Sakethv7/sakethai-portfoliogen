@@ -1,73 +1,52 @@
-# Welcome to your Lovable project
+# Saketh AI Portfolio
 
-## Project info
+Static React/Vite portfolio for applied AI systems work: production analytics,
+RAG evaluation, agent tooling, and public project writeups.
 
-**URL**: https://lovable.dev/projects/79412f94-0946-48d3-9a89-0aca9b7ecafb
+## Stack
 
-## How can I edit this code?
+- React 18, TypeScript, Vite
+- Tailwind CSS and shadcn/ui primitives
+- HashRouter for GitHub Pages compatibility
+- `gh-pages` deployment from the generated `dist/` folder
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/79412f94-0946-48d3-9a89-0aca9b7ecafb) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Local Development
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Verification
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run build
+npm run lint
+```
 
-**Use GitHub Codespaces**
+Current note: `npm run build` passes. `npm run lint` still reports pre-existing
+shadcn template issues in `src/components/ui/*` and `tailwind.config.ts`; those
+are not part of the route-splitting change.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Routes
 
-## What technologies are used for this project?
+The app uses hash routes so GitHub Pages can serve every page from one static
+`index.html`.
 
-This project is built with:
+- `/`
+- `/work`
+- `/experience`
+- `/writing`
+- `/research`
+- `/notes`
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Non-home routes are lazy-loaded. This keeps the first JavaScript chunk smaller
+for visitors who only land on the homepage.
 
-## How can I deploy this project?
+## Deployment
 
-Simply open [Lovable](https://lovable.dev/projects/79412f94-0946-48d3-9a89-0aca9b7ecafb) and click on Share -> Publish.
+```sh
+npm run deploy
+```
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Do not deploy until the production build has been checked locally.
