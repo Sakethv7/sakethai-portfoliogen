@@ -100,6 +100,10 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .copy-email[data-state='copied'] { color: hsl(var(--accent)); border-color: hsl(var(--accent)); }
 .copy-email[data-state='error'] { color: hsl(var(--destructive)); border-color: hsl(var(--destructive)); }
 .contact-status { min-height: 1.4em; margin: 16px 0 0; color: hsl(var(--muted-foreground)); font-size: .8rem; }
+.resume-header { padding-bottom: 40px; }
+.resume-viewer { padding-top: 40px; }
+.resume-embed { display: block; width: 100%; height: min(1100px, 85vh); border: 1px solid hsl(var(--border)); background: hsl(var(--card)); }
+.resume-fallback { color: hsl(var(--muted-foreground)); max-width: 640px; }
 .not-found h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); }
 .not-found > p:not(.eyebrow) { color: hsl(var(--muted-foreground)); font-size: 1.15rem; max-width: 640px; }
 .site-footer { min-height: 160px; padding-block: 45px; display: flex; justify-content: space-between; align-items: start; color: hsl(var(--muted-foreground)); font-size: .85rem; }

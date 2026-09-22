@@ -1,5 +1,6 @@
 import { ArrowDown, Download, Linkedin, MapPin } from 'lucide-react';
 import type { CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { experiences } from '@/data/experience';
 
@@ -30,6 +31,6 @@ export default function Experience() {
         {index < experiences.length - 1 && <ArrowDown className="timeline-arrow" aria-hidden="true" />}
       </article>)}
     </section>
-    <section className="editorial-section experience-cta"><div><p className="eyebrow">Recruiter packet</p><h2>Prefer the one-page version?</h2><p>Download the current résumé with direct links to LinkedIn, GitHub, and this portfolio.</p></div><a className="primary-link" href={resumeUrl} download="Saketh_Velidimalla_Resume.pdf"><Download /> Download résumé</a></section>
+    <section className="editorial-section experience-cta"><div><p className="eyebrow">Recruiter packet</p><h2>Prefer the one-page version?</h2><p>Download the current résumé with direct links to LinkedIn, GitHub, and this portfolio.</p></div><div className="hero-links"><a className="primary-link" href={resumeUrl} download="Saketh_Velidimalla_Resume.pdf"><Download /> Download résumé</a><Link to="/resume">View it here</Link></div></section>
   </PortfolioShell>;
 }

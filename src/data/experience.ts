@@ -17,9 +17,9 @@ export const experiences: ExperienceItem[] = [
   {
     id: 'johnson-johnson', company: 'Johnson & Johnson', title: 'Data Scientist', employmentType: 'Contract',
     period: 'Feb 2025 – Present', location: 'New Brunswick, New Jersey', workMode: 'On-site', current: true,
-    summary: 'AI quality, observability, and data systems for enterprise assistant, an enterprise RAG and support-automation platform serving approximately 140,000 internal users.',
+    summary: 'AI quality, observability, and data systems for an enterprise RAG and support-automation platform serving approximately 140,000 internal users.',
     highlights: [
-      'Designed enterprise assistant routing and outcome taxonomies connecting self-service answers, knowledge gaps, live-agent handoffs, and ServiceNow case creation.',
+      'Designed routing and outcome taxonomies connecting self-service answers, knowledge gaps, live-agent handoffs, and ServiceNow case creation.',
       'Built Databricks ETL and Power BI measurement layers that connect interaction data, traces, API payloads, latency, token usage, and downstream workflows.',
       'Built a Phoenix and AWS Bedrock evaluation harness for relevance, answer quality, hallucination risk, retrieval failure, latency, and regression testing.',
       'Turned root-cause findings into KPI definitions, lineage, governance guidance, runbooks, dashboards, and leadership reporting.',

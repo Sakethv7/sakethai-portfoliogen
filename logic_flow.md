@@ -163,3 +163,88 @@ When adding something to the homepage:
 1. Identify which existing item it replaces or deepens.
 2. If it is not stronger or more current, keep it on its collection/detail page.
 3. Never expand the homepage simply because another credential or project exists.
+
+## Visual upgrade flows (proposed 2026-09-22)
+
+### Bento layout resolution
+
+Layout is decided entirely by CSS at each breakpoint. No JavaScript measures anything, so there is no layout shift after hydration.
+
+```text
+Viewport width
+      │
+      ├── ≥ 1024px ──> 4-col grid, named areas place tiles (see architecture.md)
+      ├── 640–1023px ─> 2-col grid, identity + flagship span both columns
+      └── < 640px ───> 1-col flow, tiles in DOM order
+                             │
+                             └── DOM order == reading order == tab order
+                                 (identity → now → metric → flagship → wiki
+                                  → lekhni → thesis → experience → résumé)
+```
+
+*Visual placement changes by breakpoint; reading order never does.*
+
+Rules:
+
+1. No tile is hidden at any breakpoint. If something doesn't fit on mobile, it wasn't needed on desktop either.
+2. Tile row height is a token (`--tile-row`), not content-driven, on desktop only. Below 1024px, rows size to content, so long copy never clips.
+3. Tile content comes from `src/data/*`. A tile whose record is missing renders nothing. It never shows a placeholder.
+
+### Motion lifecycle
+
+```text
+Page load
+   │
+   ├── prefers-reduced-motion: reduce ?
+   │        └── yes ──> all elements render in final state; stop
+   │
+   ├── Hero stagger (CSS only, runs once)
+   │        eyebrow (0ms) → h1 (60) → thesis (120) → CTAs (180) → tiles (240 + 40·i)
+   │        each: opacity 0→1, translateY 12px→0, 480ms, ease-out
+   │
+   ├── Scroll reveal (below-fold sections)
+   │        @supports (animation-timeline: view()) ?
+   │           ├── yes ──> fade/rise tied to scroll position, entry 0%–cover 25%
+   │           └── no ───> visible immediately (no JS fallback, by design)
+   │
+   └── Pointer enters bento grid  [@media (hover: hover) only]
+            │
+            ├── pointermove (delegated, one listener on grid)
+            │      └── find closest [data-tile] → set --mx, --my on it
+            ├── CSS paints radial-gradient at (--mx, --my) on ::before
+            └── pointerleave ──> ::before opacity → 0 (200ms)
+```
+
+*Every branch ends with all content visible. Motion only decides how it arrives.*
+
+Rules:
+
+1. No content starts invisible without a guaranteed path to visible. The hero stagger uses `animation-fill-mode: both` with a finite duration. Scroll reveal exists only inside `@supports`, so unsupported browsers never see the hidden starting state.
+2. Only `opacity` and `transform` animate, except the spotlight gradient (see ADR-019).
+3. No animation loops forever except the NOW tile's live dot, which animates only `opacity`/`transform`.
+4. Programmatic scrolling (the hero's Contact link) reads `prefers-reduced-motion` and uses `behavior: 'auto'` when set. This fixes the current bug, where `'smooth'` is hardcoded.
+5. Hover effects never move text. Borders, glows, and icons may move; paragraphs may not.
+
+### Focus flow
+
+```text
+Keyboard user presses Tab
+      │
+      └── :focus-visible element
+             ├── 2px outline, --accent color, 3px offset
+             └── if inside a bento tile ──> tile gets :focus-within border state
+                                             (same visual as hover, minus spotlight)
+```
+
+Rule: every hover affordance has a focus equivalent, except the pointer-positional spotlight, which has no keyboard meaning.
+
+### Upgrade delivery sequence
+
+```text
+Phase 0  cleanup      remove providers, dead modules, unused font  → verify: budget table, all routes render
+Phase 1  tokens       tokens.css, index.css onto tokens            → verify: visual diff per route, no overflow at 375/768/1280
+Phase 2  bento        site.ts, BentoTile, BentoHero, Index         → verify: DOM order, tab order, 3 breakpoints, a11y tree
+Phase 3  motion       stagger, reveal, spotlight, focus, fixes     → verify: reduced-motion emulation, Performance panel shows no paint loops
+```
+
+Each phase is one commit, reviewable and revertible on its own.

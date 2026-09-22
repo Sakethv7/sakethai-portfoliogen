@@ -9,7 +9,7 @@ const Experience = () => {
       period: 'February 2025 – Present',
       current: true,
       highlights: [
-        'Own evaluation, analytics, reporting, and observability layers for enterprise assistant, a ServiceNow-based enterprise RAG question-answering system serving ~140,000 internal users across HR, procurement, finance, case management, and content governance',
+        'Own evaluation, analytics, reporting, and observability layers for a ServiceNow-based enterprise RAG question-answering system serving ~140,000 internal users across HR, procurement, finance, case management, and content governance',
         'Built a production LLM evaluation and observability loop using rule-based classification, AWS Bedrock / Llama 3.2 judging, keyword fallback, and Arize Phoenix traces to detect retrieval faults, no-context sessions, routing gaps, hallucination patterns, and latency anomalies across thousands of daily queries',
         'Built an LLM-driven content regression pipeline comparing generated answers against ground truth and retrieved ServiceNow knowledge-base context to detect answer drift, retrieval misses, hallucination risk, and low-quality source articles before release',
         'Architected cross-system analytics with ServiceNow, Genesys, and business operations stakeholders, connecting AI assistant sessions, support redirects, case creation, and survey feedback; surfaced a 50–60% downstream case conversion rate used in leadership prioritization',

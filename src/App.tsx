@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 const Work = lazy(() => import("./pages/Work"));
 const Collection = lazy(() => import("./pages/Collection"));
 const Experience = lazy(() => import("./pages/Experience"));
+const Resume = lazy(() => import("./pages/Resume"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/writing" element={<Collection type="writing" />} />
             <Route path="/research" element={<Collection type="research" />} />
             <Route path="/notes" element={<Collection type="notes" />} />
+            <Route path="/resume" element={<Resume />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

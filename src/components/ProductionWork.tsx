@@ -33,7 +33,7 @@ const ProductionWork = () => {
           </span>
         </div>
         <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center">
-          <span className="gradient-text">Johnson & Johnson — enterprise assistant</span>
+          <span className="gradient-text">Johnson & Johnson — Enterprise RAG</span>
         </h2>
         <p className="text-center text-muted-foreground mb-4 text-lg">
           Enterprise RAG platform · ~140,000 users · Production LLMOps

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AlertCircle, Check, Copy, Download, Github, Linkedin, Mail } from 'lucide-react';
 
 const email = 'sakethv7@gmail.com';
@@ -49,6 +50,7 @@ export function ContactSection() {
       <li>
         <span className="contact-channel-label">Résumé</span>
         <a className="contact-channel-value" href={resumeUrl} download="Saketh_Velidimalla_Resume.pdf"><Download aria-hidden="true" />Saketh_Velidimalla_Resume.pdf</a>
+        <Link className="copy-email" to="/resume">View</Link>
       </li>
     </ul>
     <p aria-live="polite" className="contact-status">

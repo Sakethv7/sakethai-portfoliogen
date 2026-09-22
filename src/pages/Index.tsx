@@ -14,7 +14,7 @@ const Index = () => {
       <p className="hero-thesis">I build observable and reliable AI systems—from retrieval, evaluation, and agent workflows toward intelligent industrial machines and edge compute.</p>
       <div className="hero-links">
         <Link className="primary-link" to="/work">Explore the work <ArrowRight /></Link>
-        <a href={`${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`} download="Saketh_Velidimalla_Resume.pdf">Download résumé</a>
+        <Link to="/resume">View résumé</Link>
         <a href="https://github.com/Sakethv7" target="_blank" rel="noreferrer">GitHub</a>
         {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
         <a href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Contact</a>
