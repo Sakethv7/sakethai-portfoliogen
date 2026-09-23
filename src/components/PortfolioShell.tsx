@@ -2,7 +2,8 @@ import { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
-const links = [['/', 'Home'], ['/work', 'Work'], ['/experience', 'Experience'], ['/writing', 'Writing'], ['/research', 'Research'], ['/notes', 'Notes']];
+// Writing, Research, and Notes routes still exist; add them back here when the first post ships.
+const links = [['/', 'Home'], ['/work', 'Work'], ['/experience', 'Experience']];
 
 export function PortfolioShell({ children }: { children: ReactNode }) {
   const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;

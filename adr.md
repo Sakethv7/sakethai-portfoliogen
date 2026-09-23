@@ -257,3 +257,13 @@ The not-found page is also restyled into `PortfolioShell`. It currently ships Ta
 **Why:** It adds no dependency and keeps the PDF's own clickable links. The browsers that fail are exactly the ones where an in-page 8.5×11 frame is unreadable anyway, and opening in a new tab uses their full-screen viewer.
 
 **Given up:** A consistent look across browsers. Each browser's viewer chrome differs, and the embed can't be themed to match the dark site. Mobile visitors don't get an in-page preview.
+
+## ADR-022: Recruiter pass — show evidence, hide empty surfaces
+
+**Context:** A recruiter-eye review on 2026-09-22 found that two of three flagship cards were private, three of six nav tabs held only planned or empty content, recent activity led with non-engineering projects, the "Current thesis" line claimed industrial and edge work the site did not evidence, and the portfolio's experience bullets were weaker than the résumé's.
+
+**Options:** Leave the "building in public" framing as is; merge Writing, Research, and Notes into one tab; or hide them until content exists. For flagships: keep Lekhni, or promote SDLC Intelligence Agent or RoastRank.
+
+**Decision:** Flagships are Enterprise AI quality, SakethWiki, and RoastRank (it has a live demo; the home card now renders demo links). Lekhni moves to Developer tools. Writing, Research, and Notes leave the primary nav and the home page; their routes and `publications` data stay so they can return with the first post. The thesis line is relabelled "Where I'm heading". Activity drops the poetry and Sanskrit entries, which remain under Creative builds. Experience bullets match the canonical base résumé, which is the same PDF the site serves.
+
+**Given up:** Visible evidence of a writing practice, the "planned work shown honestly" signal, Lekhni's place on the home page, and a fuller activity list (two items remain). Portfolio copy must now be kept in sync with the base résumé by hand.

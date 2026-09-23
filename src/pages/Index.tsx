@@ -2,7 +2,7 @@ import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { ContactSection } from '@/components/ContactSection';
-import { activity, publications, work } from '@/data/portfolio';
+import { activity, work } from '@/data/portfolio';
 import { resumeExperiences } from '@/data/experience';
 
 const Index = () => {
@@ -19,7 +19,7 @@ const Index = () => {
         {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
         <a href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Contact</a>
       </div>
-      <p className="current-line"><span>Current thesis</span> Stack to silicon: connecting production AI reliability with industrial systems, edge inference, and compute.</p>
+      <p className="current-line"><span>Where I'm heading</span> Stack to silicon: connecting production AI reliability with industrial systems, edge inference, and compute.</p>
     </section>
 
     <section className="editorial-section experience-preview">
@@ -44,6 +44,7 @@ const Index = () => {
           <p className="item-index">0{index + 1}</p><h3>{item.title}</h3><p>{item.summary}</p>
           <div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
           <div className="card-links">
+            {item.demo && <a href={item.demo} target="_blank" rel="noreferrer"><ExternalLink /> Live demo</a>}
             {item.github && <a href={item.github} target="_blank" rel="noreferrer"><Github /> Repository</a>}
             {item.private && <span className="private-label">Private / case study forthcoming</span>}
           </div>
@@ -51,23 +52,14 @@ const Index = () => {
       </div>
     </section>
 
-    <section className="editorial-section two-column-section">
-      <div>
-        <div className="section-heading compact"><div><p className="eyebrow">Publishing system</p><h2>Writing & research</h2></div></div>
-        <p className="section-intro">The public research record starts honestly: planned work is visible as planned, and published work will carry evidence.</p>
-        <div className="publication-list">{publications.map((item) => <article key={item.title}>
-          <div className="meta-line"><span>{item.kind}</span><span>{item.status}</span></div>
-          <h3>{item.title}</h3><p>{item.summary}</p>
-        </article>)}</div>
-        <div className="inline-links"><Link to="/writing">Writing <ArrowRight /></Link><Link to="/research">Research <ArrowRight /></Link></div>
-      </div>
-      <aside className="activity-panel">
-        <p className="eyebrow">Recent activity</p><h2>Meaningful momentum</h2><p className="activity-note">Releases and artifacts—not commit streaks.</p>
-        <ol className="activity-list">{activity.map((item) => <li key={`${item.date}-${item.title}`}>
-          <time>{item.date}</time><div><h3>{item.title}</h3><p>{item.summary}</p>
-          {item.href && <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Evidence for ${item.title}`}><ExternalLink /></a>}</div>
-        </li>)}</ol>
-      </aside>
+    {/* Writing & research block hidden until the first post ships; publications data and routes remain. */}
+    <section className="editorial-section">
+      <div className="section-heading"><div><p className="eyebrow">Recent activity</p><h2>Meaningful momentum</h2></div></div>
+      <p className="section-intro">Releases and artifacts—not commit streaks.</p>
+      <ol className="activity-list">{activity.map((item) => <li key={`${item.date}-${item.title}`}>
+        <time>{item.date}</time><div><h3>{item.title}</h3><p>{item.summary}</p>
+        {item.href && <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Evidence for ${item.title}`}><ExternalLink /></a>}</div>
+      </li>)}</ol>
     </section>
 
     <ContactSection />

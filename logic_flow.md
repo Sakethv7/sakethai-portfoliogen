@@ -179,7 +179,7 @@ Viewport width
                              │
                              └── DOM order == reading order == tab order
                                  (identity → now → metric → flagship → wiki
-                                  → lekhni → thesis → experience → résumé)
+                                  → roastrank → thesis → experience → résumé)
 ```
 
 *Visual placement changes by breakpoint; reading order never does.*

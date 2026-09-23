@@ -21,10 +21,14 @@ export const experiences: ExperienceItem[] = [
     period: 'Feb 2025 – Present', location: 'New Brunswick, New Jersey', workMode: 'On-site', current: true,
     summary: 'AI quality, observability, and data systems for an enterprise RAG and support-automation platform serving approximately 140,000 internal users.',
     highlights: [
-      'Designed routing and outcome taxonomies connecting self-service answers, knowledge gaps, live-agent handoffs, and ServiceNow case creation.',
-      'Built Databricks ETL and Power BI measurement layers that connect interaction data, traces, API payloads, latency, token usage, and downstream workflows.',
-      'Built a Phoenix and AWS Bedrock evaluation harness for relevance, answer quality, hallucination risk, retrieval failure, latency, and regression testing.',
-      'Turned root-cause findings into KPI definitions, lineage, governance guidance, runbooks, dashboards, and leadership reporting.',
+      'Owned evaluation, analytics, reporting, and observability for a production enterprise RAG system serving approximately 140,000 internal users across knowledge retrieval, case-management, and content-governance workflows.',
+      'Built a three-layer LLM-as-judge pipeline on AWS Bedrock / Llama 3.2 combining rule-based classifiers, batch LLM categorization, and keyword fallbacks to evaluate thousands of queries daily.',
+      'Built LLM regression tests with ground-truth benchmarks, judge-based similarity scoring, and cross-run tracking to detect relevance, hallucination, latency, and retrieval-quality regressions before deployment.',
+      'Designed containment, query-resolution, repeat-user, and satisfaction metrics from session and query evidence, then used cross-system analysis to separate immediate friction from delayed unresolved needs.',
+      'Connected enterprise RAG traces, DynamoDB records, API payloads, and ServiceNow workflow tables to separate AI, routing, knowledge, and downstream-intake failure modes with row-level evidence.',
+      'Built DynamoDB-to-Databricks data pipelines and Power BI semantic models with schema checks, Delta/Parquet validation, KPI definitions, lineage notes, and leadership reporting.',
+      'Integrated enterprise AI interaction evidence with unified ServiceNow intake-event data across case creation, external forms, and live-agent channels, preserving row-level Q&A, article, taxonomy, action, target, and case evidence for review.',
+      'Conducted cross-system spike analysis linking RAG failures to downstream case patterns, including greeting-drop analysis, no-answer clusters, and same-day versus delayed escalation buckets.',
     ],
   },
   {
@@ -38,13 +42,14 @@ export const experiences: ExperienceItem[] = [
     ],
   },
   {
-    id: 'hp', company: 'HP', title: 'Data Science Engineer', employmentType: 'Contract',
+    id: 'hp', company: 'Hewlett Packard Inc.', title: 'Data Science Engineer', employmentType: 'Contract',
     period: 'Jul 2024 – Nov 2024', location: 'Spring, Texas', workMode: 'On-site',
     summary: 'Distributed data pipelines and business-facing telemetry analytics for hardware engineering teams.',
     highlights: [
-      'Built Airflow DAGs running PySpark transformations from S3 telemetry into Redshift views for Power BI reporting.',
-      'Optimized AWS EMR processing by approximately 25% through query optimization and repartitioning.',
-      'Translated power, sensor, BIOS, and utilization telemetry into KPIs used by hardware, software, and chip-design stakeholders.',
+      'Built Airflow DAGs running PySpark transformations from S3 PC telemetry into Redshift views for Power BI reporting across hardware, software, power, sensor, and BIOS data.',
+      'Optimized PySpark processing on AWS EMR, reducing runtime by approximately 25% through query optimization, repartitioning, and pipeline tuning.',
+      'Built engineering KPI reports that helped hardware, software, and chip-design stakeholders compare telemetry trends, prioritize defects, and support roadmap and funding decisions.',
+      'Translated raw hardware telemetry into stable analytical tables and Power BI measures so engineering teams could inspect component-level trends without relying on ad-hoc extracts.',
     ],
   },
   {
@@ -58,13 +63,14 @@ export const experiences: ExperienceItem[] = [
     ],
   },
   {
-    id: 'ecrent', company: 'ECrent Worldwide Company Limited', title: 'Machine Learning Engineer', employmentType: 'Full-time',
+    id: 'ecrent', company: 'ECrent Worldwide Company', title: 'Machine Learning Engineer', employmentType: 'Full-time',
     period: 'Jul 2021 – Jun 2022', location: 'Bengaluru, Karnataka, India', workMode: 'Remote',
-    summary: 'Recommendation, prediction, and conversational ML systems for a real-estate marketplace.',
+    summary: 'Recommendation and semantic-ranking systems for a real-estate marketplace.',
     highlights: [
-      'Built a content-based property recommendation system using structured attributes and listing descriptions.',
-      'Combined Word2Vec text embeddings with structured features, ranked candidates by similarity, and evaluated results with Precision@K and Recall@K.',
-      'Built regression and classification models for price and booking likelihood and deployed a Rasa NLU assistant for intent and entity extraction.',
+      'Built and deployed a content-based recommendation system for real-estate listings using structured attributes and text descriptions to generate personalized suggestions.',
+      'Implemented semantic-similarity ranking with Word2Vec embeddings and evaluated results with Precision-at-K and Recall-at-K.',
+      'Integrated top-N retrieval into the application backend for real-time Flask API serving.',
+      'Prepared feature extraction and evaluation scripts that made recommendation changes measurable before exposing ranked listings through the application workflow.',
     ],
   },
 ];

@@ -241,7 +241,7 @@ Desktop ≥ 1024px — 4 columns, 6 rows of --tile-row
 │                                       │ METRIC   (1×1)  │
 │                                       │ ~140k users     │
 ├───────────────────────┬───────────────┼─────────────────┤
-│ FLAGSHIP: ENT. RAG (2×2)│ SakethWiki    │ Lekhni          │
+│ FLAGSHIP: ENT. RAG (2×2)│ SakethWiki    │ RoastRank       │
 │ summary · tags ·      │ (1×1)         │ (1×1)           │
 │ "private case study"  ├───────────────┴─────────────────┤
 │                       │ THESIS  (2×1)                   │
@@ -257,7 +257,7 @@ Mobile < 640px   — 1 column; DOM order = reading order.
 
 *Size encodes importance: identity and the flagship get the biggest cells, and the one real metric gets its own tile so it is seen at a glance.*
 
-The DOM order is identity, now, metric, enterprise-RAG flagship, SakethWiki, Lekhni, thesis, experience strip, résumé. That order also works as the single-column mobile order and the screen-reader order. `grid-template-areas` moves tiles visually without changing it. This matters because CSS Grid can place items anywhere, and if visual order drifts from DOM order, keyboard and screen-reader users navigate a different page than sighted users see.
+The DOM order is identity, now, metric, enterprise-RAG flagship, SakethWiki, RoastRank, thesis, experience strip, résumé. That order also works as the single-column mobile order and the screen-reader order. `grid-template-areas` moves tiles visually without changing it. This matters because CSS Grid can place items anywhere, and if visual order drifts from DOM order, keyboard and screen-reader users navigate a different page than sighted users see.
 
 ### Component changes
 
