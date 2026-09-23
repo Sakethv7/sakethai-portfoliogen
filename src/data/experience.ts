@@ -9,6 +9,8 @@ export interface ExperienceItem {
   location: string;
   workMode: 'On-site' | 'Remote';
   current?: boolean;
+  // Not on the résumé: listed only in the LinkedIn-style full history.
+  linkedinOnly?: boolean;
   summary: string;
   highlights: string[];
 }
@@ -27,7 +29,7 @@ export const experiences: ExperienceItem[] = [
   },
   {
     id: 'idwteam', company: 'iDwTeam LLC', title: 'Data Science Engineer', employmentType: 'Full-time',
-    period: 'Nov 2024 – Feb 2025', location: 'Alpharetta, Georgia', workMode: 'Remote',
+    period: 'Nov 2024 – Feb 2025', location: 'Alpharetta, Georgia', workMode: 'Remote', linkedinOnly: true,
     summary: 'AI-enabled HR operations analytics combining unstructured query analysis, lakehouse modeling, and stakeholder-facing dashboards.',
     highlights: [
       'Built an HR operations analytics prototype using synthetic and proxy data to simulate enterprise workflows.',
@@ -47,7 +49,7 @@ export const experiences: ExperienceItem[] = [
   },
   {
     id: 'asu', company: 'Arizona State University', title: 'Data Science Graduate Assistant', employmentType: 'Part-time',
-    period: 'Feb 2023 – May 2024', location: 'Tempe, Arizona', workMode: 'On-site',
+    period: 'Feb 2023 – May 2024', location: 'Tempe, Arizona', workMode: 'On-site', linkedinOnly: true,
     summary: 'Applied NLP research for educational analytics and student-feedback analysis.',
     highlights: [
       'Researched transformer models and semantic-similarity methods for identifying at-risk students.',
@@ -66,3 +68,5 @@ export const experiences: ExperienceItem[] = [
     ],
   },
 ];
+
+export const resumeExperiences = experiences.filter((item) => !item.linkedinOnly);

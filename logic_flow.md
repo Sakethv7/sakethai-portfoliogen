@@ -117,7 +117,7 @@ Recruiter may then
 
 Rules:
 
-1. Present precedes past roles; overlapping HP and ASU dates are preserved rather than forced into a false non-overlap.
+1. Present precedes past roles.
 2. Employment type is visible so contract, full-time, and part-time work are not conflated.
 3. The animation never hides content or controls reading order.
 4. No internship is published until its title, organization, dates, and source evidence are supplied or found in an approved artifact.

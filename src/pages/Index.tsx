@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { ContactSection } from '@/components/ContactSection';
 import { activity, publications, work } from '@/data/portfolio';
-import { experiences } from '@/data/experience';
+import { resumeExperiences } from '@/data/experience';
 
 const Index = () => {
   const featured = work.filter((item) => item.featured).slice(0, 3);
@@ -28,7 +28,7 @@ const Index = () => {
         <Link to="/experience">View the chronology <ArrowRight /></Link>
       </div>
       <div className="experience-preview-list">
-        {experiences.slice(0, 3).map((item) => <article key={item.id}>
+        {resumeExperiences.slice(0, 3).map((item) => <article key={item.id}>
           <time>{item.period}</time><div><h3>{item.title}</h3><p>{item.company}</p></div>
         </article>)}
       </div>

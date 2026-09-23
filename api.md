@@ -171,7 +171,7 @@ Required behavior:
 - Featured work is capped at three on the homepage.
 - Unknown slugs return the not-found route.
 - Experience records sort by `startDate` descending and use stable IDs.
-- The initial verified sequence is J&J, iDwTeam, HP, ASU Graduate Assistant, and ECrent. Date overlap is valid and preserved.
+- `experiences` holds every role (J&J, iDwTeam, HP, ASU, ECrent). `resumeExperiences` filters out `linkedinOnly` records and feeds the home strip and main timeline (J&J → HP → ECrent). The "Full history" list renders all of `experiences` as one-line rows.
 
 ## Content validation rules
 

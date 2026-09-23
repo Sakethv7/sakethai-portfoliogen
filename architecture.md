@@ -30,9 +30,7 @@ Work
 Experience
 ├── Animated chronological neural path
 ├── J&J (current)
-├── iDwTeam
 ├── HP
-├── ASU Graduate Assistant (part-time)
 ├── ECrent
 └── Downloadable recruiter resume
 
@@ -199,7 +197,7 @@ Consider GitHub release ingestion or a build-time feed only after the manual led
 - No unverifiable research, production, or performance claim introduced.
 - Homepage scan test: identity, strongest work, recent output, and contact path understandable within 30 seconds.
 - Experience order, role titles, employment type, dates, and locations reconciled against the supplied LinkedIn screenshots.
-- J&J, HP, and ECrent descriptions reconciled against the approved resume; iDwTeam and ASU copy remains bounded to supplied LinkedIn evidence.
+- The main timeline and home strip mirror the résumé: J&J, HP, and ECrent, reconciled against the approved resume. iDwTeam and the ASU graduate-assistant role carry `linkedinOnly: true` and appear only in the compact "Full history" list at the bottom of the Experience page, which links out to LinkedIn.
 - Resume PDF opens directly, downloads with a meaningful filename, and contains working LinkedIn, GitHub, and portfolio links.
 - The email address is readable as text without clicking anything, and the copy control reports success.
 - A production build is served from a subpath and checked for favicon load, social card metadata, and not-found navigation.
@@ -250,7 +248,7 @@ Desktop ≥ 1024px — 4 columns, 6 rows of --tile-row
 │                       │ Stack to silicon …              │
 ├───────────────────────┴───────────────┬─────────────────┤
 │ EXPERIENCE STRIP  (3 × 1)             │ RÉSUMÉ  (1×1)   │
-│ J&J → iDwTeam → HP  · chronology →    │ download · copy │
+│ J&J → HP → ECrent  · chronology →     │ download · copy │
 └───────────────────────────────────────┴─────────────────┘
 
 Tablet 640–1023px — 2 columns; identity spans 2, flagship spans 2.
