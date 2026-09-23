@@ -32,8 +32,6 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
 
   useEffect(() => {
     if (!record) return;
-    // HashRouter keeps the previous page's scroll position; articles must open at the top.
-    window.scrollTo({ top: 0, behavior: 'instant' });
     let active = true;
     setHtml(null);
     setMissing(false);

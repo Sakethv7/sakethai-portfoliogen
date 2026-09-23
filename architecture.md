@@ -368,7 +368,7 @@ import.meta.glob('src/content/*.md', ?raw)  ──►  marked(markdown)  ──�
 - The Enterprise AI card swaps "Private / case study forthcoming" for a "Read the case study" link.
 - **Writing returns to the nav only when at least one post has status Published.** The nav reads this from the data, so it can't show an empty tab again (ADR-022 stays true automatically).
 - The home "Writing & research" block stays hidden. One post doesn't fill it. Revisit at three.
-- Article pages reset scroll to the top on open. HashRouter keeps the previous page's scroll position, so without this a cross-link from the bottom of one article opens the next one mid-page. The reset is instant, because the site sets `scroll-behavior: smooth` and a smooth reset would animate on every navigation.
+- Every route change resets scroll to the top (`ScrollToTop` in `App.tsx`, 2026-09-23). HashRouter keeps the previous page's scroll position, so without this a link from the bottom of one page opens the next one mid-page. The reset also runs on back/forward: plain `<a href="#/...">` links inside article Markdown arrive as back/forward-style (`POP`) navigations, and the browser doesn't restore scroll for hash routes anyway. The cost is that Back returns to the top of the previous page, not to where the reader was. The reset is instant because the site sets `scroll-behavior: smooth`. In-page scrolls such as the homepage Contact link don't change the route, so they're unaffected.
 - The case study shipped without an outcomes section (Saketh's call, 2026-09-23). Add one when shareable results are confirmed.
 
 ### Confidentiality boundary for the case study
@@ -407,6 +407,6 @@ These are recorded rather than resolved, because resolving them is a larger task
 
 **Per-article link previews won't work under HashRouter (new, 2026-09-22).** When LinkedIn builds a preview card it fetches the URL without running JavaScript and without the part after `#`. Every article link therefore previews as the homepage's title and image. Fixing it needs either real paths (`BrowserRouter` plus a GitHub Pages 404 redirect trick) or pre-rendered HTML per article. Both are larger changes. For now the LinkedIn post text has to carry the pitch itself.
 
-**Scroll position carries across all other routes too (new, 2026-09-23).** Only article pages reset scroll. Going from the bottom of Work to Experience, for example, still lands mid-page. A single app-level reset on route change would fix every page. It was left out of this change to keep it scoped.
+**Back doesn't restore scroll position (new, 2026-09-23).** Since every route change resets to the top, Back lands at the top of the previous page. Restoring it would mean saving the position per history entry and reapplying it after lazy pages finish rendering. That's worth doing only if readers start moving back and forth between long pages.
 
 **Case study outcomes are unconfirmed (new, 2026-09-22).** The résumé states scope (~140,000 users, thousands of queries evaluated daily) but no before/after results. The draft marks every place an outcome would go with `[CONFIRM]`. A case study without outcomes is still worth publishing, but it is weaker. Saketh decides what is shareable.
