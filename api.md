@@ -101,10 +101,18 @@ Routes registered in `src/App.tsx` today:
 /#/writing                  Writing and build logs
 /#/research                 Research collection
 /#/notes                    Notes collection
+/#/resume                   Résumé viewer
 /#/*                        Not found
 ```
 
-Detail routes (`/#/work/:slug`, `/#/writing/:slug`, `/#/research/:slug`, `/#/notes/:slug`) were previously listed here as though they existed. They do not. Any link written against them resolves to the not-found route. They remain the intended Phase 2 design and will be restored to this table when they are actually registered.
+Registered (ADR-023, shipped 2026-09-23):
+
+```text
+/#/work/:slug               Case study. Resolves only when the WorkItem has `caseStudy`.
+/#/writing/:slug            Post. Resolves only when status is Published (any status in `vite dev`).
+```
+
+Detail routes (`/#/research/:slug`, `/#/notes/:slug`) remain unbuilt. `/#/work/:slug` and `/#/writing/:slug` are proposed above. Earlier versions of this file listed all four as though they existed. They did not. Any link written against them resolves to the not-found route. They remain the intended Phase 2 design and will be restored to this table when they are actually registered.
 
 The homepage contact section is a scroll target within `/#/`, not a route. See ADR-012.
 
@@ -172,6 +180,36 @@ Required behavior:
 - Unknown slugs return the not-found route.
 - Experience records sort by `startDate` descending and use stable IDs.
 - `experiences` holds every role (J&J, iDwTeam, HP, ASU, ECrent). `resumeExperiences` filters out `linkedinOnly` records and feeds the home strip and main timeline (J&J → HP → ECrent). The "Full history" list renders all of `experiences` as one-line rows.
+
+## Long-form content contract (ADR-023, shipped 2026-09-23)
+
+Additions to the shipped types in `src/data/portfolio.ts`. Existing fields are unchanged.
+
+```ts
+interface WorkItem {
+  // ...existing fields
+  caseStudy?: string;          // slug of src/content/<slug>.md; presence enables /#/work/:slug
+}
+
+interface PublicationItem {
+  // ...existing fields
+  slug: string;                // unique across publications; names src/content/<slug>.md
+  date?: string;               // ISO date, required when status is 'Published'
+}
+
+// src/pages/Article.tsx
+loadBody(slug: string): Promise<string | null>   // raw Markdown, or null if no file matches
+```
+
+Invariants:
+
+- Every `caseStudy` and every publication `slug` has a matching `src/content/<slug>.md`. A missing file renders NotFound and logs `console.error` in development.
+- `marked` output is inserted with `dangerouslySetInnerHTML`. This is allowed only because every Markdown file is committed to this repo. Any external content source requires a sanitizer first (ADR-023).
+- The nav includes Writing if and only if `publications.some((p) => p.status === 'Published')`.
+- The `Article` chunk, including `marked`, is lazy, and each Markdown body is its own chunk. Neither `marked` nor article text may land in the entry bundle. Measured at ship: entry +0.3 kB gz (route definitions and card links), `Article` chunk 14.9 kB gz, each body ~2 kB gz. (Note: the entry bundle already exceeds its 65 kB budget at ~107.7 kB gz, because the cleanup in ADR-020 has not shipped. This change neither fixes nor worsens that.)
+- Case-study text follows the confidentiality boundary in `architecture.md`. No internal system, team, or metric names. No numbers beyond the published résumé without Saketh's confirmation.
+
+Error shape: there is no error UI beyond NotFound. A failed chunk load (e.g. network drop mid-navigation) also resolves to NotFound rather than a blank page.
 
 ## Content validation rules
 

@@ -46,7 +46,8 @@ const Index = () => {
           <div className="card-links">
             {item.demo && <a href={item.demo} target="_blank" rel="noreferrer"><ExternalLink /> Live demo</a>}
             {item.github && <a href={item.github} target="_blank" rel="noreferrer"><Github /> Repository</a>}
-            {item.private && <span className="private-label">Private / case study forthcoming</span>}
+            {item.caseStudy && <Link to={`/work/${item.slug}`}><ArrowRight /> Read the case study</Link>}
+            {item.private && !item.caseStudy && <span className="private-label">Private / case study forthcoming</span>}
           </div>
         </article>)}
       </div>

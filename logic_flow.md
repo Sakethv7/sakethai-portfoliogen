@@ -89,12 +89,28 @@ Rules:
 
 ## Detail-page flow
 
-1. Read the route collection and slug.
-2. Find the matching typed record.
-3. Render title, type, date, status, summary, and evidence links.
-4. Render the long-form body or case study.
-5. Show related artifacts sharing tags or project identifiers.
-6. Return a real not-found page when no record matches.
+> **Shipped 2026-09-23 (ADR-023).** The first version ships steps 1–4 and 6. Step 5, related artifacts, waits until there are enough pages to relate.
+
+1. Read the route collection (`work` or `writing`) and the `:slug` from the URL.
+2. Find the matching record in `portfolio.ts`. For `work`, the record must have a `caseStudy` file. For `writing`, its status must be `Published` in production builds. In `vite dev`, planned posts are reachable too, so drafts can be previewed before they go live.
+3. Render title, kind, date, summary, and evidence links from the record.
+4. Load the Markdown body for that slug (its own chunk), convert it with `marked`, and render it inside the article layout. While it loads, show the header with an empty body, not a spinner, so the page doesn't jump.
+5. Show related artifacts sharing tags or project identifiers. *(Deferred.)*
+6. Return the real not-found page when no record matches, the record fails step 2, or the Markdown file is missing. A missing file is a build mistake, so it also logs a console error in development.
+
+State for one visit:
+
+```text
+route matched ──► record found? ──no──► NotFound
+                      │ yes
+                      ▼
+              header rendered, body empty
+                      │ Markdown chunk loads
+                      ├── ok ─────► body rendered
+                      └── fails ──► NotFound (dev: console.error)
+```
+
+*Caption: the only failure a visitor can see is the not-found page. There is no half-rendered article state.*
 
 ## Experience flow
 
@@ -139,6 +155,14 @@ Create artifact
     ├── preview desktop and mobile
     └── publish site
 ```
+
+Concrete steps for a post, once ADR-023 ships:
+
+1. Write `src/content/<slug>.md`.
+2. Add a `publications` record with `slug`, `date`, `summary`, and status `Planned` while drafting.
+3. Preview it locally at `/#/writing/<slug>`; planned posts are reachable in development only.
+4. Flip status to `Published` and push to main. The Writing tab reappears in the nav automatically, because the nav shows it only when a published post exists.
+5. Share the canonical URL in a LinkedIn post (ADR-024).
 
 ## Activity ingestion flow
 

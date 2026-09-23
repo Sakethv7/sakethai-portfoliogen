@@ -3,17 +3,19 @@ export type WorkCategory = 'Flagship systems' | 'Developer tools' | 'Experiments
 export interface WorkItem {
   slug: string; title: string; summary: string; category: WorkCategory; tags: string[];
   github?: string; demo?: string; private?: boolean; featured?: boolean; updated?: string;
+  caseStudy?: string; // slug of src/content/<slug>.md; enables /#/work/:slug
 }
 
 export interface PublicationItem {
-  title: string; kind: 'Engineering note' | 'Research note' | 'Build log';
+  slug: string; title: string; kind: 'Engineering note' | 'Research note' | 'Build log';
   status: 'Planned' | 'In progress' | 'Published'; summary: string;
+  date?: string; // required once Published
 }
 
 export interface ActivityItem { date: string; title: string; summary: string; href?: string; }
 
 export const work: WorkItem[] = [
-  { slug: 'enterprise-ai-quality', title: 'Enterprise AI quality systems', summary: 'Evaluation, observability, failure triage, and cross-system analytics for an enterprise RAG assistant serving approximately 140,000 internal users.', category: 'Flagship systems', tags: ['LLMOps', 'RAG evaluation', 'Observability'], private: true, featured: true },
+  { slug: 'enterprise-ai-quality', title: 'Enterprise AI quality systems', summary: 'Evaluation, observability, failure triage, and cross-system analytics for an enterprise RAG assistant serving approximately 140,000 internal users.', category: 'Flagship systems', tags: ['LLMOps', 'RAG evaluation', 'Observability'], private: true, featured: true, caseStudy: 'enterprise-ai-quality' },
   { slug: 'sakethwiki', title: 'SakethWiki', summary: 'A curation-first personal knowledge system combining ingestion, retrieval memory, trace-driven evaluation, and review-gated knowledge evolution.', category: 'Flagship systems', tags: ['RAG', 'Memory', 'Evaluation'], github: 'https://github.com/Sakethv7/SakethWiki', featured: true, updated: '2026-08-11' },
   { slug: 'roastrank', title: 'RoastRank', summary: 'A resume-evaluation experiment using an LLM judge, FastAPI, Redis-backed scoring, and a public leaderboard.', category: 'Flagship systems', tags: ['LLM evaluation', 'FastAPI', 'Redis'], github: 'https://github.com/Sakethv7/roastrank_CV', demo: 'https://huggingface.co/spaces/Wanderingcoder/RoastRank', featured: true, updated: '2025-12-23' },
   { slug: 'lekhni', title: 'Lekhni', summary: 'A local-first recording-to-transcript-to-notes system with model traces, session history, and safeguards for long technical conversations.', category: 'Developer tools', tags: ['Local-first AI', 'Transcription', 'Knowledge workflow'], github: 'https://github.com/Sakethv7/lekhni-app', updated: '2026-08-28' },
@@ -36,9 +38,9 @@ export const work: WorkItem[] = [
 ];
 
 export const publications: PublicationItem[] = [
-  { title: 'Evaluating retrieval failures separately from generation failures', kind: 'Research note', status: 'Planned', summary: 'A proposed failure taxonomy and evaluation design grounded in production RAG quality work.' },
-  { title: 'Building a review-gated personal knowledge system', kind: 'Engineering note', status: 'Planned', summary: 'Architecture and lessons from SakethWiki: ingestion, provenance, memory, evaluation, and human review.' },
-  { title: 'From recording to durable knowledge with Lekhni', kind: 'Build log', status: 'Planned', summary: 'The local-first pipeline, long-transcript safeguards, traces, and permission boundaries behind Lekhni.' },
+  { slug: 'retrieval-vs-generation-failures', title: 'Evaluating retrieval failures separately from generation failures', kind: 'Engineering note', status: 'Published', date: '2026-09-23', summary: 'Score retrieval and generation separately, so a bad answer points to the step that broke and the fix that applies.' },
+  { slug: 'review-gated-knowledge-system', title: 'Building a review-gated personal knowledge system', kind: 'Engineering note', status: 'Planned', summary: 'Architecture and lessons from SakethWiki: ingestion, provenance, memory, evaluation, and human review.' },
+  { slug: 'lekhni-recording-to-knowledge', title: 'From recording to durable knowledge with Lekhni', kind: 'Build log', status: 'Planned', summary: 'The local-first pipeline, long-transcript safeguards, traces, and permission boundaries behind Lekhni.' },
 ];
 
 export const activity: ActivityItem[] = [
@@ -48,3 +50,5 @@ export const activity: ActivityItem[] = [
 ];
 
 export const workCategories: WorkCategory[] = ['Flagship systems', 'Developer tools', 'Experiments & learning', 'Creative builds'];
+
+export const hasPublishedWriting = publications.some((item) => item.status === 'Published');

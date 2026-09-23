@@ -1,9 +1,10 @@
 import { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Github, Linkedin, Mail } from 'lucide-react';
+import { hasPublishedWriting } from '@/data/portfolio';
 
-// Writing, Research, and Notes routes still exist; add them back here when the first post ships.
-const links = [['/', 'Home'], ['/work', 'Work'], ['/experience', 'Experience']];
+// Writing appears once a post is Published (ADR-022). Research and Notes stay hidden until they have content.
+const links = [['/', 'Home'], ['/work', 'Work'], ['/experience', 'Experience'], ...(hasPublishedWriting ? [['/writing', 'Writing']] : [])];
 
 export function PortfolioShell({ children }: { children: ReactNode }) {
   const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;

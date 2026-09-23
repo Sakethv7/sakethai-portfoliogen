@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { publications } from '@/data/portfolio';
 
@@ -13,7 +14,7 @@ export default function Collection({ type }: { type: keyof typeof descriptions }
   return <PortfolioShell>
     <header className="page-header editorial-section"><p className="eyebrow">Public work</p><h1>{title}</h1><p>{description}</p></header>
     <section className="editorial-section collection-list">{items.length ? items.map((item) => <article key={item.title}>
-      <div className="meta-line"><span>{item.kind}</span><span>{item.status}</span></div><h2>{item.title}</h2><p>{item.summary}</p>
+      <div className="meta-line"><span>{item.kind}</span><span>{item.status === 'Published' ? item.date : item.status}</span></div><h2>{item.status === 'Published' ? <Link to={`/writing/${item.slug}`}>{item.title}</Link> : item.title}</h2><p>{item.summary}</p>
     </article>) : <div className="honest-empty"><p className="eyebrow">Nothing published yet</p><h2>This shelf starts empty on purpose.</h2><p>New notes will appear here only when there is a real, dated artifact to read.</p></div>}</section>
   </PortfolioShell>;
 }

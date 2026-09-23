@@ -1,4 +1,5 @@
-import { ExternalLink, Github } from 'lucide-react';
+import { ArrowRight, ExternalLink, Github } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { work, workCategories } from '@/data/portfolio';
 
@@ -13,7 +14,8 @@ export default function Work() {
           {item.updated && <time>Updated {item.updated}</time>}
           {item.github && <a href={item.github} target="_blank" rel="noreferrer"><Github /> Code</a>}
           {item.demo && <a href={item.demo} target="_blank" rel="noreferrer"><ExternalLink /> Demo</a>}
-          {item.private && <span>Private work</span>}
+          {item.caseStudy && <Link to={`/work/${item.slug}`}><ArrowRight /> Case study</Link>}
+          {item.private && !item.caseStudy && <span>Private work</span>}
         </div>
       </article>)}</div>
     </section>)}

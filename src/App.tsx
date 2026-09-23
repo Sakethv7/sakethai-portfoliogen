@@ -11,6 +11,7 @@ const Collection = lazy(() => import("./pages/Collection"));
 const Experience = lazy(() => import("./pages/Experience"));
 const Resume = lazy(() => import("./pages/Resume"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Article = lazy(() => import("./pages/Article"));
 
 const queryClient = new QueryClient();
 
@@ -24,8 +25,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/work" element={<Work />} />
+            <Route path="/work/:slug" element={<Article collection="work" />} />
             <Route path="/experience" element={<Experience />} />
             <Route path="/writing" element={<Collection type="writing" />} />
+            <Route path="/writing/:slug" element={<Article collection="writing" />} />
             <Route path="/research" element={<Collection type="research" />} />
             <Route path="/notes" element={<Collection type="notes" />} />
             <Route path="/resume" element={<Resume />} />

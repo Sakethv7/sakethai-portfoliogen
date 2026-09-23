@@ -322,7 +322,64 @@ All motion is progressive enhancement, per ADR-010. Under `prefers-reduced-motio
 | Web fonts | ≤ 2 families | 2 (1 unused) | 2 (both used) |
 | Infinite paint-triggering animations | 0 | 5 | 0 |
 
-## Open questions and code/doc drift
+## Long-form pages: first case study and first post (shipped 2026-09-23)
+
+### Why this exists
+
+The homepage's first flagship card, Enterprise AI quality systems, is the strongest evidence on the site and the only one that leads nowhere. It says "case study forthcoming". The Writing tab is hidden (ADR-022) because nothing is published. Both problems have the same fix: a way to publish one long page of prose. This section adds the smallest version of the "Phase 2: Detail system" that was planned but never built.
+
+### Complexity tier
+
+**Single-process static tool, unchanged.** The site stays a client-rendered Vite SPA on GitHub Pages. Two routes and two Markdown files are added. There is no server, CMS, database, or build-time content pipeline. A higher tier would buy scheduled publishing or per-article server rendering, and neither is needed for two pages.
+
+### What gets added
+
+A **detail route** is a URL pattern with a variable part, such as `/#/writing/:slug`. The `:slug` is a short, URL-safe name for one item, like `retrieval-vs-generation-failures`. The page reads the slug from the URL, finds the matching record, and renders it.
+
+| Piece | Where | What it does |
+|---|---|---|
+| `/#/work/:slug` | `App.tsx`, new `Article` page | Case study for a Work item that has one. Only `enterprise-ai-quality` does at first. |
+| `/#/writing/:slug` | same `Article` page | One published post. |
+| Markdown bodies | `src/content/<slug>.md` | The prose itself, one file per page. |
+| Metadata | `portfolio.ts` | Title, date, summary, and which Markdown file to load. |
+| Renderer | `marked`, inside the lazy `Article` chunk | Turns Markdown into HTML. See ADR-023. |
+
+### Data flow
+
+```text
+visitor opens /#/writing/retrieval-vs-generation-failures
+      │
+      ▼
+Article page (lazy chunk: page code + marked)
+      │  reads :slug from the URL
+      ▼
+portfolio.ts record ──► no match or status ≠ Published ──► NotFound
+      │ match
+      ▼
+import.meta.glob('src/content/*.md', ?raw)  ──►  marked(markdown)  ──►  rendered article
+```
+
+*Caption: the URL picks a record, the record picks a Markdown file, and the file is converted to HTML in the browser. Nothing is fetched from a server except the page's own JavaScript chunk.*
+
+`import.meta.glob` is a Vite feature that finds files matching a pattern at build time and turns each one into a separate chunk. So each article's text downloads only when someone opens that article, and the homepage bundle does not grow.
+
+### What changes on existing pages
+
+- The Enterprise AI card swaps "Private / case study forthcoming" for a "Read the case study" link.
+- **Writing returns to the nav only when at least one post has status Published.** The nav reads this from the data, so it can't show an empty tab again (ADR-022 stays true automatically).
+- The home "Writing & research" block stays hidden. One post doesn't fill it. Revisit at three.
+- Article pages reset scroll to the top on open. HashRouter keeps the previous page's scroll position, so without this a cross-link from the bottom of one article opens the next one mid-page. The reset is instant, because the site sets `scroll-behavior: smooth` and a smooth reset would animate on every navigation.
+- The case study shipped without an outcomes section (Saketh's call, 2026-09-23). Add one when shareable results are confirmed.
+
+### Confidentiality boundary for the case study
+
+The case study describes employer work, so it gets a written boundary instead of case-by-case judgment. It may say: the problem, the approach, the architecture in generic terms (LLM-as-judge, regression tests, trace-linked failure analysis), public tool names already on the résumé (AWS Bedrock, Databricks, Power BI, Arize Phoenix, ServiceNow), and the ~140,000-user scale already on the résumé. It may not say: the internal system name, team or org names, internal metric names, screenshots, real queries, or any number that isn't already on the published résumé unless Saketh confirms it is shareable.
+
+### Where posts live and how they travel
+
+The portfolio is the **canonical** copy, meaning the one original that other copies point back to. A LinkedIn post then links to it (ADR-024). Medium or dev.to cross-posts are optional later and should state the canonical URL.
+
+
 
 These are recorded rather than resolved, because resolving them is a larger task than the current change.
 
@@ -347,3 +404,9 @@ These are recorded rather than resolved, because resolving them is a larger task
 **Sixty-two modules are unreachable from the entry point.** Thirteen pre-redesign components (`Hero`, `Navigation`, `About`, `Projects`, `Skills`, `Certifications`, `Contact`, `Footer`, `ParticleBackground`, `ProductionWork`, `SystemDesign`, `CurrentFocus`, and the old `Experience`), `App.css`, `use-mobile.tsx`, and forty-five unused shadcn primitives. They still fall inside the Tailwind content globs, so they inflate the generated stylesheet. Deletion is deferred to a separate, explicitly requested pass.
 
 **Three unused providers are mounted in `App.tsx`** — `QueryClientProvider` with no queries, plus `Toaster`, `Sonner`, and `TooltipProvider` with no consumers. Deferred to the same pass.
+
+**Per-article link previews won't work under HashRouter (new, 2026-09-22).** When LinkedIn builds a preview card it fetches the URL without running JavaScript and without the part after `#`. Every article link therefore previews as the homepage's title and image. Fixing it needs either real paths (`BrowserRouter` plus a GitHub Pages 404 redirect trick) or pre-rendered HTML per article. Both are larger changes. For now the LinkedIn post text has to carry the pitch itself.
+
+**Scroll position carries across all other routes too (new, 2026-09-23).** Only article pages reset scroll. Going from the bottom of Work to Experience, for example, still lands mid-page. A single app-level reset on route change would fix every page. It was left out of this change to keep it scoped.
+
+**Case study outcomes are unconfirmed (new, 2026-09-22).** The résumé states scope (~140,000 users, thousands of queries evaluated daily) but no before/after results. The draft marks every place an outcome would go with `[CONFIRM]`. A case study without outcomes is still worth publishing, but it is weaker. Saketh decides what is shareable.

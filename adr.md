@@ -267,3 +267,34 @@ The not-found page is also restyled into `PortfolioShell`. It currently ships Ta
 **Decision:** Flagships are Enterprise AI quality, SakethWiki, and RoastRank (it has a live demo; the home card now renders demo links). Lekhni moves to Developer tools. Writing, Research, and Notes leave the primary nav and the home page; their routes and `publications` data stay so they can return with the first post. The thesis line is relabelled "Where I'm heading". Activity drops the poetry and Sanskrit entries, which remain under Creative builds. Experience bullets match the canonical base résumé, which is the same PDF the site serves.
 
 **Given up:** Visible evidence of a writing practice, the "planned work shown honestly" signal, Lekhni's place on the home page, and a fuller activity list (two items remain). Portfolio copy must now be kept in sync with the base résumé by hand.
+
+## ADR-023: Long-form pages are Markdown files rendered with `marked` in a lazy route chunk
+
+**Context:** The site needs its first long pages, a case study and a post. Content today is short strings in `portfolio.ts`. Long prose needs headings, lists, links, and code, and Saketh needs to be able to write it without touching JSX.
+
+**Options:**
+
+| Option | Authoring | Cost | Risk |
+|---|---|---|---|
+| One TSX component per article | Prose inside JSX | 0 kB | Writing means editing code; easy to break |
+| Typed block arrays in `portfolio.ts` | Awkward (`{type:'p', text:…}`) | 0 kB | Unpleasant to write anything long |
+| Markdown + `react-markdown` | Plain Markdown | ~35–45 kB gz | Heaviest; plugin ecosystem not needed |
+| Markdown + `marked` | Plain Markdown | ~12 kB gz | Outputs an HTML string, inserted with `dangerouslySetInnerHTML` |
+
+**Decision:** Markdown files in `src/content/`, rendered with `marked` inside the lazily loaded `Article` page. The Markdown is loaded through `import.meta.glob(..., { query: '?raw' })` so each article is its own chunk.
+
+**Why:** Markdown is how Saketh already writes (SakethWiki, Obsidian). `marked` is the smallest renderer that handles the full syntax, and loading it only on article routes keeps it out of the homepage bundle entirely. Inserting an HTML string is normally an XSS risk, meaning a way for someone else's text to run as code in the page. Here every Markdown file is written by Saketh and committed to the repo, so the input is trusted.
+
+**Given up:** A new runtime dependency (the first since the cleanup work). Protection against untrusted Markdown: if content ever comes from anywhere other than this repo, a sanitizer such as DOMPurify must be added first. React components inside articles (MDX) are not possible with this choice.
+
+## ADR-024: The portfolio is the canonical home for posts; LinkedIn carries the reach
+
+**Context:** The first post needs a home. The candidates are the portfolio, a LinkedIn article, Medium or dev.to, or a Substack.
+
+**Options:** Publish only on LinkedIn (most reach, no site traffic). Publish on Medium (discoverable, but the reader never sees the résumé or projects). Publish on the portfolio and share a LinkedIn post linking to it.
+
+**Decision:** The portfolio holds the canonical copy. A short LinkedIn post, not a LinkedIn article, summarizes the argument and links to it. Cross-posting elsewhere is optional and must name the portfolio URL as canonical.
+
+**Why:** A recruiter who finishes the post on the portfolio is one click from the case study, projects, and résumé. On LinkedIn or Medium they are one click from someone else's content. The portfolio also can't be deprecated or paywalled out from under the post.
+
+**Given up:** Reach. LinkedIn's feed favors posts that keep readers on LinkedIn, so a post with an outbound link travels less far than a native article. The link preview will show the homepage card, not the article (HashRouter, see architecture open questions). The portfolio has no comments, subscriptions, or analytics.
