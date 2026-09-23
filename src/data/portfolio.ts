@@ -39,8 +39,8 @@ export const work: WorkItem[] = [
 
 export const publications: PublicationItem[] = [
   { slug: 'retrieval-vs-generation-failures', title: 'Evaluating retrieval failures separately from generation failures', kind: 'Engineering note', status: 'Published', date: '2026-09-23', summary: 'Score retrieval and generation separately, so a bad answer points to the step that broke and the fix that applies.' },
-  { slug: 'review-gated-knowledge-system', title: 'Building a review-gated personal knowledge system', kind: 'Engineering note', status: 'Planned', summary: 'Architecture and lessons from SakethWiki: ingestion, provenance, memory, evaluation, and human review.' },
-  { slug: 'lekhni-recording-to-knowledge', title: 'From recording to durable knowledge with Lekhni', kind: 'Build log', status: 'Planned', summary: 'The local-first pipeline, long-transcript safeguards, traces, and permission boundaries behind Lekhni.' },
+  { slug: 'review-gated-knowledge-system', title: 'Building a review-gated personal knowledge system', kind: 'Engineering note', status: 'Published', date: '2026-09-23', summary: 'Five decisions behind SakethWiki: notes as the source of truth, review before every write, pages that evolve, slow learning from corrections, and what the lean refactor removed.' },
+  { slug: 'lekhni-recording-to-knowledge', title: 'From recording to durable knowledge with Lekhni', kind: 'Build log', status: 'Published', date: '2026-09-23', summary: 'How Lekhni turns recordings into typed notes: reusing an open-source recorder, one session contract, intent-based note types, traces, health checks, and a reviewed handoff to SakethWiki.' },
 ];
 
 export const activity: ActivityItem[] = [
