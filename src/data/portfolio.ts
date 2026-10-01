@@ -45,6 +45,7 @@ export const publications: PublicationItem[] = [
   { slug: 'agentic-retrieval', title: 'When an agent should search instead of retrieve', kind: 'Engineering note', status: 'Published', date: '2026-09-23', summary: 'Where a tool-driven search loop beats one-shot top-k, where it loses, when to skip retrieval entirely, and the new failure modes an agent introduces.' },
   { slug: 'rerank-before-you-generate', title: 'Rerank before you generate', kind: 'Engineering note', status: 'Published', date: '2026-09-30', summary: 'What Anthropic, Databricks, Spotify Research and Voyage AI report about reranking after retrieval, why a dedicated reranker comes before an LLM one, how a rerank step makes retrieval failures easier to trace, and how to test it.' },
   { slug: 'retrieval-quality-review', title: 'You can\'t review an eval you can\'t find', kind: 'Engineering note', status: 'Published', date: '2026-10-01', summary: 'A weekly retrieval quality review, and what has to exist first: an eval pipeline with an address, run metadata, visible evaluators, a traceable judge, and tracing that spans retrieval, reranking, generation and latency.' },
+  { slug: 'calibrate-your-llm-judge', title: 'Calibrate the judge before you trust the score', kind: 'Engineering note', status: 'Published', date: '2026-10-01', summary: 'Why raw agreement misleads, what true positive rate, true negative rate and kappa tell you, how to build a small labeled set, the known judge biases, and how to keep calibration attached to every run.' },
 ];
 
 export const activity: ActivityItem[] = [
