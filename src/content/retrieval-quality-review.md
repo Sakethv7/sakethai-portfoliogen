@@ -27,19 +27,19 @@ The fix is small. Every run writes a few facts alongside its scores, so the resu
 | Metric definitions, with a link | Each number keeps one meaning |
 | Link to the traces for the judged requests | Takes you from a score to its evidence |
 
-Tools already support part of this. In Phoenix, experiments are launched from client code that names the dataset, the task and the evaluators, then logs the scores per row. That is useful, but it means the experiment name is often your only clue. Put the job name and repo path in that name or in its metadata so a run can be traced to code. That last step is my suggestion. It is not something the tool does for you.
+Tools already support part of this. In Phoenix, [experiments are launched from client code](https://arize.com/docs/phoenix/datasets-and-experiments/how-to-experiments/run-experiments) that names the dataset, the task and the evaluators, then logs the scores per row. That is useful, but it means the experiment name is often your only clue. Put the job name and repo path in that name or in its metadata so a run can be traced to code. That last step is my suggestion. It is not something the tool does for you.
 
 ## Make the evaluators visible and configurable
 
-Where do the evaluators live? In one tool, the answer can be a single screen. Langfuse defines judge evaluators as rules in the UI: a filter for which traces to evaluate, a sampling rate, and which evaluators apply. You change what gets judged in one place instead of editing a script.
+Where do the evaluators live? In one tool, the answer can be a single screen. Langfuse defines [judge evaluators as rules](https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge) in the UI: a filter for which traces to evaluate, a sampling rate, and which evaluators apply. You change what gets judged in one place instead of editing a script.
 
 Whether you use a tool or your own code, two properties matter. The configuration should sit in one findable place, not be spread across notebooks. And changing it should not need a deploy by the one person who remembers how the job works.
 
-The judge itself should also be traceable. Langfuse records a full trace for every judge execution, so you can open one and read the judge prompt, its output, token usage and latency. A judge you cannot inspect is a source of scores you have to take on faith. This is the same reason an LLM judge needs a [calibration check against human labels](#/writing/retrieval-vs-generation-failures): the judge is a model too, and it can be wrong.
+The judge itself should also be traceable. Langfuse [records a full trace for every judge execution](https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge), so you can open one and read the judge prompt, its output, token usage and latency. A judge you cannot inspect is a source of scores you have to take on faith. This is the same reason an LLM judge needs a [calibration check against human labels](#/writing/retrieval-vs-generation-failures): the judge is a model too, and it can be wrong.
 
 ## Trace the whole path, including latency
 
-A retrieval review needs more than the final score. It needs the steps in order, each with its own timing. The OpenInference conventions, used by Phoenix and others, define span kinds for exactly this: `RETRIEVER`, `RERANKER`, `LLM`, `TOOL` and `AGENT`. A retriever span carries each returned document with its id, content and score. A reranker span carries its input documents, its output documents, the model name and the top-k setting. LLM spans carry token counts.
+A retrieval review needs more than the final score. It needs the steps in order, each with its own timing. The [OpenInference conventions](https://arize-ai.github.io/openinference/spec/semantic_conventions.html), used by Phoenix and others, define span kinds for exactly this: `RETRIEVER`, `RERANKER`, `LLM`, `TOOL` and `AGENT`. A retriever span carries each returned document with its id, content and score. A reranker span carries its input documents, its output documents, the model name and the top-k setting. LLM spans carry token counts.
 
 With those in place, a slow answer and a wrong answer both have an address. You can see whether time went to retrieval, [reranking](#/writing/rerank-before-you-generate), or generation. You can see whether the right document was retrieved and whether it survived to the prompt. If the assistant is an [agent that searches](#/writing/agentic-retrieval), the same trace shows each tool call and the point where it stopped.
 
