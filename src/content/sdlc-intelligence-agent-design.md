@@ -34,7 +34,11 @@ Every other event is ignored with a clear response. The webhook checks GitLab's 
 
 ## What I would change
 
-Three things. First, correct the claim above in the repo, and either grow the policy set or drop retrieval for something simpler. Second, the webhook handler runs the agents inside the HTTP request, so GitLab waits on the model calls. I would put a queue between the webhook and the agents. That is my reasoning about the design, not something I hit in testing. Third, the tests check formatting, verdict handling, and retrieval. They do not score whether the findings are right. I have not measured how often the Security Agent is correct, and I would not trust it as a gate without that.
+Three things. First, retrieval: I have corrected the claim above in my repos, and the next step is to either grow the policy set or drop retrieval for something simpler. Second, the webhook handler runs the agents inside the HTTP request, so GitLab waits on the model calls. I would put a queue between the webhook and the agents. That is my reasoning about the design, not something I hit in testing. Third, the tests check formatting, verdict handling, and retrieval. They do not score whether the findings are right. I have not measured how often the Security Agent is correct, and I would not trust it as a gate without that.
+
+## Corrections after I wrote this
+
+Checking my own claims turned up three more problems, all fixed in my repos. The cost tracker used Haiku 3 prices under the Haiku 4.5 name, so Haiku cost estimates were four times too low, and my docs said Haiku was 12 times cheaper than Sonnet when current list prices make it about 3 times. The Insight agent set its recurrence-risk label by looking for the words HIGH or LOW anywhere in the model's answer, so a phrase like "high confidence" could set the wrong level. It now reads the risk section the prompt asks for. My earlier portfolio summary also said the agent connects failures to impacted files, which it does not. It reads job log tails and recent failure history.
 
 The agents are also published to the hackathon's GitLab AI Catalog, and the webhook server ships as a container for Cloud Run.
 
