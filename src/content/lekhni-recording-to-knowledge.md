@@ -1,14 +1,16 @@
 I record a lot of talks, calls, and study sessions. For a long time the recordings turned into transcripts, and the transcripts turned into nothing. A transcript is a record of what was said, not what I learned from it. Nobody rereads an hour of text.
 
-[Lekhni](https://github.com/Sakethv7/lekhni-app) (लेखनी, "pen") is the local app I built to close that gap. It takes a recording, a transcript, or pasted notes and turns them into structured notes. Then it hands the parts worth keeping to my knowledge base, [SakethWiki](#/writing/review-gated-knowledge-system). Everything runs on my Mac.
+Lekhni (लेखनी, "pen") is the local app I built to close that gap. It takes a recording, a transcript, or pasted notes and turns them into structured notes. Then it hands the parts worth keeping to my knowledge base, [SakethWiki](#/writing/review-gated-knowledge-system). Everything runs on my Mac.
 
 This is a build log: what the pieces are, and the decisions that kept it small.
 
-## Don't rebuild the hard part
+## Don't rebuild the hard part, until it gets in the way
 
 Recording on macOS is the hardest part of this whole problem. You need microphone and system audio, permissions, and on-device transcription. [Quill](https://github.com/digimata/quill), an MIT-licensed open-source recorder, already does all of that and writes each session to a folder.
 
-So Lekhni has two halves. Capture is Quill's job. Lekhni's job starts once a session folder exists: turning it into notes, tracking quality, and deciding what's worth keeping. A future native recorder could replace Quill, but only once Quill actually gets in the way. Rebuilding working audio capture first would have been months of solved problems.
+So Lekhni started as two halves. Capture was Quill's job. Lekhni's job began once a session folder existed: turning it into notes, tracking quality, and deciding what's worth keeping. I put off building a recorder because it would have been months of solved problems.
+
+That held for a while. Then the separate recorder became the thing that got in my way. Starting a note meant switching between a menu-bar app and the notes window. On 2026-09-23 I moved Quill's capture code into Lekhni itself, under its MIT license, so recording, typing scratch notes and reading the finished notes all happen in one window. The two halves are still separate processes. They still meet at the session folder.
 
 ## One session contract for every input
 
@@ -58,6 +60,5 @@ Technical notes include a **Reusable Patterns** section. When the health report 
 
 - Transcribing uploaded audio files directly, so they don't wait on a separate step
 - Search across all sessions, not just browsing them
-- A native shell that makes capture, notes, and memory feel like one app
 
-*Code and design notes: [github.com/Sakethv7/lekhni-app](https://github.com/Sakethv7/lekhni-app).*
+*The full design is in [the system design write-up](#/writing/lekhni-system-design). The code lives in a private repository.*
