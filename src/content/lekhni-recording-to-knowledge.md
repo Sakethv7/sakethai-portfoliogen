@@ -10,7 +10,7 @@ Recording on macOS is the hardest part of this whole problem. You need microphon
 
 So Lekhni started as two halves. Capture was Quill's job. Lekhni's job began once a session folder existed: turning it into notes, tracking quality, and deciding what's worth keeping. I put off building a recorder because it would have been months of solved problems.
 
-That held for a while. Then the separate recorder became the thing that got in my way. Starting a note meant switching between a menu-bar app and the notes window. On 2026-09-23 I moved Quill's capture code into Lekhni itself, under its MIT license, so recording, typing scratch notes and reading the finished notes all happen in one window. The two halves are still separate processes. They still meet at the session folder.
+That held for a while. Then the separate recorder became the thing that got in my way. Starting a note meant switching between a menu-bar app and the notes window. On 2026-09-23 I moved Quill's capture code into Lekhni itself, under its MIT license. Now recording, typing scratch notes and reading the finished notes all happen in one window. The two halves are still separate processes. They still meet at the session folder.
 
 ## One session contract for every input
 
@@ -34,13 +34,13 @@ So each note has a type, and each type has its own structure:
 
 A YouTube video is technically a "talk", but what I want from it might be system design notes. The type follows what I'm trying to learn, not the file format.
 
-Long recordings get one more safeguard. An hour-long transcript is split into overlapping chunks before the final notes are written, so the result doesn't depend on a single giant call to a small local model.
+Long recordings get one more safeguard. Lekhni splits an hour-long transcript into overlapping chunks before it writes the final notes. The result then does not depend on a single giant call to a small local model.
 
 ## Traces, not vibes
 
 Every generation logs the backend, model, prompt version, input size, raw output, and latency. Every edit I make in the UI logs a diff. When a prompt change makes notes worse, I can see exactly which change did it.
 
-On top of that sits a small eval set: synthetic transcripts with known decisions, action items, and open questions, and a check that each one shows up in the notes. There's also a 30-second smoke test that runs one real session end to end.
+On top of that sits a small eval set. It holds synthetic transcripts with known decisions, action items, and open questions. A check tests whether each one shows up in the notes. There's also a 30-second smoke test that runs one real session end to end.
 
 What Lekhni doesn't do is fix itself. The traces and evals are evidence for me to act on. Nothing rewrites a prompt without my decision.
 

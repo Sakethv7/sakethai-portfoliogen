@@ -41,7 +41,7 @@ For investigating individual failures, I deployed Arize Phoenix to trace halluci
 
 This is the part that answered "why". I joined the assistant's traces, DynamoDB interaction records, API payloads, and ServiceNow workflow tables at the row level. With that, a single user session can be followed from question, to answer, to what happened next.
 
-That made it possible to separate AI failures from routing, knowledge, and intake failures. It also enabled spike analysis: when case volume jumped, I could check whether assistant failures came first, and split escalations into same-day friction versus needs that stayed unresolved and came back later.
+That made it possible to separate AI failures from routing, knowledge, and intake failures. It also enabled spike analysis. When case volume jumped, I could check whether assistant failures came first. I could also split escalations into same-day friction versus needs that stayed unresolved and came back later.
 
 ### 4. A measurement layer people actually used
 

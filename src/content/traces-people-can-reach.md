@@ -30,13 +30,13 @@ The fix for unread traces is mostly plumbing, not tooling.
 
 Traces are usually built for the people who wrote the system. But many failures belong to someone else. A knowledge gap belongs to the person who owns the content. A routing mistake might belong to whoever owns the taxonomy.
 
-Those people won't read a JSON span tree. Give them a plain view: the question, the documents that came back, the answer, and a label for what went wrong. If a content owner can open that view and see that no document covers the question, the gap gets fixed without a ticket passing through three teams.
+Those people won't read a JSON span tree. Give them a plain view: the question, the documents that came back, the answer, and a label for what went wrong. If a content owner can open that view and see that no document covers the question, the owner can close the gap. No ticket needs to pass through three teams.
 
 ## A trace alone isn't enough
 
 A trace tells you what the model did. It doesn't tell you what happened next. Did the user rephrase and ask again? Open a case? Give up?
 
-On a production assistant I evaluate, the most useful work was joining traces with interaction records and ticketing data at the row level, so one session could be read from question to answer to outcome. That's what separated AI failures from routing and intake failures. The traces were necessary, but the join is what made them explain anything. The [case study](#/work/enterprise-ai-quality) covers how that was built.
+On a production assistant I evaluate, the most useful work was joining traces with interaction records and ticketing data at the row level. This let me read one session from question to answer to outcome. That's what separated AI failures from routing and intake failures. The traces were necessary, but the join is what made them explain anything. The [case study](#/work/enterprise-ai-quality) covers how that was built.
 
 ## Don't build the viewer yourself
 

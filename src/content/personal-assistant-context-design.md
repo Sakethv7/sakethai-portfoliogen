@@ -1,10 +1,10 @@
 Most chat assistants keep a growing message history and replay it on every turn. That makes them hard to reason about. The answer depends on a transcript you can't see. I wanted a personal assistant where I can always point at the file that fed a wrong answer.
 
-This note covers a local-first assistant I'm building around that idea: the design, where it came from, what it costs, and what I'm still working out.
+This note covers a local-first assistant I'm building around that idea. It describes the design, where it came from, what it costs, and what I'm still working out.
 
 ## Where it came from
 
-I started it in late April 2026 as a terminal assistant that knew who I was, what I was working on, and what my goals were. The first version was just that: a command that gathers my context and asks a local model a question.
+I started it in late April 2026 as a terminal assistant. It knew who I was, what I was working on, and what my goals were. The first version was just that: a command that gathers my context and asks a local model a question.
 
 The goal was never only question answering. I build with microcontrollers and sensors, and I wanted a software colleague for hands-busy work. Before I start, it briefs me on the day and the open risks. While I build, it watches the signals and speaks up only when something changes. After I finish, it wraps the session into a journal entry and next steps. I wrote that loop down as build, observe, speak, log, summarize.
 

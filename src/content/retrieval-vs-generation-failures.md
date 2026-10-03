@@ -36,7 +36,7 @@ These are **knowledge gaps**, and they belong to whoever owns the content, not t
 
 **Use an LLM judge, but check the judge.** Judging retrieval relevance and answer faithfulness by hand doesn't scale, so an LLM judge usually does it. Before trusting its labels, compare them against a sample you've labeled by hand. If they disagree often, fix the judge's instructions first.
 
-**Track it over time.** A single run tells you where things stand today. Tracking the four cells across runs tells you whether a prompt or index change made things better or just moved failures from one cell to another.
+**Track it over time.** A single run tells you where things stand today. Track the four cells across runs. This tells you whether a prompt or index change made things better or just moved failures from one cell to another.
 
 **Put cheap checks first.** Not every query needs a model to classify it. Rules can handle the obvious cases, and the LLM judge only needs to see what's left.
 
@@ -44,5 +44,5 @@ These are **knowledge gaps**, and they belong to whoever owns the content, not t
 
 The payoff is that a bad number stops being a mystery. "Answer quality dropped 5%" leads to a meeting. "Retrieval failures doubled after Tuesday's re-index" leads to a fix.
 
-This note grew out of evaluating a production RAG assistant used by roughly 140,000 people, where separating failure modes turned out to be the most useful part of the work. The case study covers how that breakdown was built: [Measuring an enterprise RAG assistant](#/work/enterprise-ai-quality).
+This note grew out of evaluating a production RAG assistant used by roughly 140,000 people. There, separating failure modes turned out to be the most useful part of the work. The case study covers how that breakdown was built: [Measuring an enterprise RAG assistant](#/work/enterprise-ai-quality).
 

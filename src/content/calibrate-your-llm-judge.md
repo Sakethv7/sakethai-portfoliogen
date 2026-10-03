@@ -8,7 +8,7 @@ Several of my other notes say "spot-check the judge against human labels." This 
 
 You want to know how often the judge agrees with a person whose judgment you trust. That sounds like one number. It is at least three.
 
-**Raw agreement.** The share of cases where judge and human give the same label. It is easy to compute and easy to fool. Hamel Husain gives the standard example in his [guide to LLM judges](https://hamel.dev/blog/posts/llm-judge/index.html): if only 5% of answers are bad, a judge that says "pass" every time agrees with the human 95% of the time and catches nothing. Hallucination is exactly this kind of metric. Most answers are fine, so a lazy judge looks accurate.
+**Raw agreement.** The share of cases where judge and human give the same label. It is easy to compute and easy to fool. Hamel Husain gives the standard example in his [guide to LLM judges](https://hamel.dev/blog/posts/llm-judge/index.html). If only 5% of answers are bad, a judge that says "pass" every time agrees with the human 95% of the time and catches nothing. Hallucination is exactly this kind of metric. Most answers are fine, so a lazy judge looks accurate.
 
 **True positive and true negative rates.** Husain's fix is to report two numbers. How many of the human-labeled failures did the judge catch? How many of the human-labeled passes did it correctly pass? A judge needs to be good at both. The first tells you whether you can trust it to find problems. The second tells you whether it will flood you with false alarms.
 
@@ -20,7 +20,7 @@ The pattern in those numbers is the useful part. Judges can match people on some
 
 You do not need thousands of labeled examples. You need a few hundred good ones, labeled carefully.
 
-Husain suggests starting with about 30 examples to discover how your assistant fails, then aiming for roughly 100 examples per failure mode when you validate, with a similar number of passes and failures. Yan reports the EvalGen workflow advising users to look at at least 20 examples before settling on criteria.
+Husain suggests starting with about 30 examples to discover how your assistant fails. When you validate, aim for roughly 100 examples per failure mode, with a similar number of passes and failures. Yan reports the EvalGen workflow advising users to look at at least 20 examples before settling on criteria.
 
 Three habits make the labels worth having.
 
@@ -44,7 +44,7 @@ Those tests are about comparing two answers, and many retrieval scores grade one
 
 Published advice splits here, which is worth knowing.
 
-Husain argues for binary pass or fail. His reasoning is that a binary choice forces everyone to decide what matters, and it makes the true positive and negative rates clean. Databricks, in its [best practices for RAG evaluation](https://databricks.com/blog/LLM-auto-eval-best-practices-RAG), prefers low-precision integer scales such as 0 to 3 over both binary and wide ranges like 0 to 100. They report that this kept human and judge rankings consistent and made the grades easier to explain. They also write out a rubric with an example for each score. With a GPT-4 judge they saw above 80% agreement with humans on correctness and readability, and above 95% when a one-point difference was allowed.
+Husain argues for binary pass or fail. His reasoning is that a binary choice forces everyone to decide what matters, and it makes the true positive and negative rates clean. Databricks prefers low-precision integer scales such as 0 to 3 over both binary and wide ranges like 0 to 100. It says so in its [best practices for RAG evaluation](https://databricks.com/blog/LLM-auto-eval-best-practices-RAG). They report that this kept human and judge rankings consistent and made the grades easier to explain. They also write out a rubric with an example for each score. With a GPT-4 judge they saw above 80% agreement with humans on correctness and readability, and above 95% when a one-point difference was allowed.
 
 Both can be right for their setting. My own reading is to start binary for failure types like hallucination, where you want a clear alarm. Use a short integer scale where grades matter, such as relevance. Either way, write an example for each score. Then let your labeled set decide, because that is what it is for.
 
@@ -67,7 +67,7 @@ When agreement stays low, fix the rubric before you swap the model. A vague rubr
 
 A calibration done once and forgotten goes stale. The judge prompt changes. The model gets upgraded. The assistant starts answering a new kind of question.
 
-So store the calibration with every run. For each scoring job, record the judge model, the prompt version, the date of the last calibration, and the true positive and negative rates from it. This is the same idea as the run metadata in [You can't review an eval you can't find](#/writing/retrieval-quality-review). A score without its judge version can't be compared to last month's. When the prompt changes, re-run the held-out check before trusting the new trend.
+So store the calibration with every run. For each scoring job, record the judge model, the prompt version, the date of the last calibration, and its true positive and negative rates. This is the same idea as the run metadata in [You can't review an eval you can't find](#/writing/retrieval-quality-review). A score without its judge version can't be compared to last month's. When the prompt changes, re-run the held-out check before trusting the new trend.
 
 Also keep a few of the labeled examples as a permanent check. If a prompt edit changes how the judge scores them, you find out the same day.
 

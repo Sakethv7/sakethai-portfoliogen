@@ -1,6 +1,6 @@
 Most evaluation setups produce scores. Fewer produce a habit. A dashboard shows average relevance, answer correctness and hallucination scores, someone glances at it, and nothing changes. The numbers sit in the middle and stay there.
 
-A **retrieval quality review** is the habit. It is a short, regular meeting where the people who own the assistant open the worst-scoring queries from the last week and decide what to fix. It is not a report. It is a working session over real rows.
+A **retrieval quality review** is the habit. It is a short, regular meeting. The people who own the assistant open the worst-scoring queries from the last week and decide what to fix. It is not a report. It is a working session over real rows.
 
 It only works if one thing is true first: you can find the pipeline that produced the scores. That sounds obvious. It is often not the case.
 
@@ -35,7 +35,7 @@ Where do the evaluators live? In one tool, the answer can be a single screen. La
 
 Whether you use a tool or your own code, two properties matter. The configuration should sit in one findable place, not be spread across notebooks. And changing it should not need a deploy by the one person who remembers how the job works.
 
-The judge itself should also be traceable. Langfuse [records a full trace for every judge execution](https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge), so you can open one and read the judge prompt, its output, token usage and latency. A judge you cannot inspect is a source of scores you have to take on faith. This is the same reason an LLM judge needs a [calibration check against human labels](#/writing/retrieval-vs-generation-failures): the judge is a model too, and it can be wrong.
+The judge itself should also be traceable. Langfuse [records a full trace for every judge execution](https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge), so you can open one and read the judge prompt, its output, token usage and latency. A judge you cannot inspect is a source of scores you have to take on faith. This is the same reason an LLM judge needs a [calibration check against human labels](#/writing/retrieval-vs-generation-failures). The judge is a model too, and it can be wrong.
 
 ## Trace the whole path, including latency
 
@@ -43,21 +43,21 @@ A retrieval review needs more than the final score. It needs the steps in order,
 
 With those in place, a slow answer and a wrong answer both have an address. You can see whether time went to retrieval, [reranking](#/writing/rerank-before-you-generate), or generation. You can see whether the right document was retrieved and whether it survived to the prompt. If the assistant is an [agent that searches](#/writing/agentic-retrieval), the same trace shows each tool call and the point where it stopped.
 
-The point of all this structure is navigation. A reviewer should be able to move in one direction without a search: a low score, to its trace, to the retrieved and reranked documents, to the judge's own reasoning, to the job and prompt version that produced the score.
+The point of all this structure is navigation. A reviewer should be able to move in one direction without a search. The path runs from a low score to its trace. From there it goes to the retrieved and reranked documents and to the judge's own reasoning. The last step is the job and prompt version that produced the score.
 
 ## Running the review
 
 Once the pipeline can be found, the meeting is short. Keep it to the same steps each week.
 
 1. **Pull the lowest scoring queries.** Use the last seven days, ranked by relevance and correctness together, plus anything flagged with a thumbs-down.
-2. **Sort each one by where it failed.** Use the same buckets as the [retrieval versus generation split](#/writing/retrieval-vs-generation-failures): right chunk never retrieved, right chunk retrieved but ranked low, right chunk present but the answer ignored it, or no document exists.
+2. **Sort each one by where it failed.** Use the same buckets as the [retrieval versus generation split](#/writing/retrieval-vs-generation-failures). The buckets are: right chunk never retrieved, right chunk retrieved but ranked low, right chunk present but the answer ignored it, or no document exists.
 3. **Spot-check the judge.** Read five or ten rows by hand and note any where you disagree with the score. A rising disagreement rate means the judge needs work, not the assistant.
 4. **Assign one owner per bucket.** Content gaps go to the content owner. Ranking issues go to whoever owns retrieval. Judge problems go to whoever owns the eval job, which is why the job needs a named owner.
 5. **Write down what changed.** Next week, check whether those queries moved. If they did not, the fix did not work.
 
 ## What it costs
 
-A review takes people's time every week, and it only pays off if the buckets lead to action. The metadata and tracing work is a one-off cost that pays back when someone new asks "where do these numbers come from?" and the answer takes one click.
+A review takes people's time every week, and it only pays off if the buckets lead to action. The metadata and tracing work is a one-off cost. It pays back when someone new asks "where do these numbers come from?" and the answer takes one click.
 
 There is also a privacy cost, the same one as with traces. Reviewers read real user questions, so decide who sees them and for how long before the meeting starts.
 

@@ -28,7 +28,7 @@ Now each page starts with a short **current understanding** block, and it gets r
 
 | Relationship | What happens |
 |---|---|
-| Extends | Adds detail; understanding stays the same |
+| Extends | Adds detail, and understanding stays the same |
 | Refines | Sharpens the current understanding |
 | Supersedes | Replaces it with something more accurate |
 | Contradicts | Both views are kept and flagged for me to resolve |

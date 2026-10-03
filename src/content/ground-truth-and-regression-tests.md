@@ -2,7 +2,7 @@ A prompt tweak makes one answer better. A week later, someone notices another an
 
 That is the problem a ground-truth set and regression tests solve. The set is a fixed collection of questions with known good outcomes. The regression test runs your system against it on every change and tells you what moved. Without them, quality is a feeling. With them, it is a number you can compare across weeks.
 
-This note covers how to build the set, what goes in each item, how to run it as a gate, and how to stop it going stale. It builds on the [failure split](#/writing/retrieval-vs-generation-failures) and on [calibrating the judge](#/writing/calibrate-your-llm-judge). I use regression tests on a ground-truth benchmark for the production assistant described in the [case study](#/work/enterprise-ai-quality). The sources below are the published evidence I found on how to do this well.
+This note covers how to build the set and what goes in each item. It also covers how to run the set as a gate and how to stop it going stale. It builds on the [failure split](#/writing/retrieval-vs-generation-failures) and on [calibrating the judge](#/writing/calibrate-your-llm-judge). I use regression tests on a ground-truth benchmark for the production assistant described in the [case study](#/work/enterprise-ai-quality). The sources below are the published evidence I found on how to do this well.
 
 ## Two kinds of eval, one pipeline
 
@@ -18,7 +18,7 @@ One side effect is worth knowing. An eval at 100% still catches regressions, but
 
 Start from real failures, not from invented questions.
 
-Anthropic's advice is that 20 to 50 simple tasks drawn from real failures is a good start, because early changes have large effects and small samples are enough. Draw them from the manual checks you already run, and from your bug tracker and support queue. Langfuse's guide on [golden datasets](https://langfuse.com/resources/engineering/golden-dataset-evaluation) says the same: use production traces as the primary source, and add a flagged trace while the failure is still fresh. For this system, a thumbs-down with its trace ID is the natural feed. It connects to the [trace plumbing](#/writing/traces-people-can-reach).
+Anthropic's advice is that 20 to 50 simple tasks drawn from real failures is a good start. The reason is that early changes have large effects and small samples are enough. Draw them from the manual checks you already run, and from your bug tracker and support queue. Langfuse's guide on [golden datasets](https://langfuse.com/resources/engineering/golden-dataset-evaluation) says the same. Use production traces as the primary source. Add a flagged trace while the failure is still fresh. For this system, a thumbs-down with its trace ID is the natural feed. It connects to the [trace plumbing](#/writing/traces-people-can-reach).
 
 Hamel Husain's [evals FAQ](https://hamel.dev/blog/posts/evals-faq/) adds the step before that. Read about 100 real traces, write notes on what went wrong, group them into failure modes, and count them. That tells you what to test. He recommends real traces over synthetic data, and notes that synthetic data cannot tell you how common a problem is in real use.
 
@@ -39,7 +39,7 @@ A bare question and answer is not enough. For a RAG system, each item should car
 | Expected source document(s) | The document that should be retrieved |
 | Failure-mode tag | Retrieval, ranking, generation, knowledge gap |
 | Source and date added | Where it came from, and how old it is |
-| Reviewer | Who confirmed it |
+| Reviewer | Who approved it |
 
 The expected source document is my addition to what the sources say, and it matters for this kind of system. It lets you check retrieval without a judge. Did the right document appear in the top k? That check is plain code. It gives the same answer every time, and it is the first thing to put in a gate. It is also what lets you [score retrieval separately from generation](#/writing/retrieval-vs-generation-failures), and later measure whether [reranking](#/writing/rerank-before-you-generate) moved the right chunk up.
 
@@ -60,7 +60,7 @@ So you can use two tiers: a small, fast set on every change, and a larger one on
 
 ## Running it as a regression test
 
-Langfuse describes three parts: the dataset, an experiment that runs your application on every item and scores it, and a threshold check that fails the run if the score drops below it.
+Langfuse describes three parts. The first is the dataset. The second is an experiment that runs your application on every item and scores it. The third is a threshold check that fails the run if the score drops below it.
 
 Four design choices matter.
 
@@ -83,7 +83,7 @@ Four habits slow the decay.
 - **Keep feeding it.** Route new production failures into the set while they are fresh.
 - **Remove near-duplicates.** Several phrasings of one question overweight it.
 - **Date every item.** You can then see staleness at a glance.
-- **Retire, don't delete.** Archive items for removed features or wrong references. Review anything older than about six months on a regular schedule.
+- **Retire, don't delete.** Archive items for dropped features or wrong references. Review anything older than about six months on a regular schedule.
 
 Anthropic says to treat eval maintenance as routine, like maintaining unit tests, with a clear owner. Husain suggests re-running error analysis after major changes and checking 10 to 20 traces each week. This pairs with the [weekly review](#/writing/retrieval-quality-review): the review finds the new failures, and the set is where they go to stay fixed.
 
@@ -93,7 +93,7 @@ A passing score proves little if the grader is wrong. Anthropic says they don't 
 
 ## One trap: overfitting
 
-If you tune your prompt against the same items every time, the score rises without the system getting better. It has learned your test. Keep part of the set out of the tuning loop and look at it only for the final check, the same way as in judge calibration. Add fresh real failures regularly, so the set keeps changing.
+If you tune your prompt against the same items every time, the score rises without the system getting better. It learns your test. Keep part of the set out of the tuning loop. Look at it only for the final check, as in judge calibration. Add fresh real failures regularly, so the set keeps changing.
 
 ## What it costs
 
@@ -105,4 +105,4 @@ If you tune your prompt against the same items every time, the score rises witho
 
 ## The test
 
-Pick the last change you shipped. Ask whether you can show which questions got better and which got worse, on a fixed set, against a recorded baseline, in under a few minutes. If you can, you have regression testing. If you can only say it felt better, start with 20 real failures and a single threshold.
+Pick the last change you shipped. Ask whether you can show which questions got better and which got worse. The check must use a fixed set and a recorded baseline, and take under a few minutes. If you can, you have regression testing. If you can only say it felt better, start with 20 real failures and a single threshold.

@@ -8,7 +8,7 @@ The first was a note-taking course I was studying. It made one point clear: note
 
 The second was Andrej Karpathy's [LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), dated April 4, 2026. His argument is about how most RAG works. A RAG system retrieves raw document chunks at question time, so it rebuilds the same understanding every time. His alternative is a wiki the model maintains, "a persistent, compounding artifact". Three layers: raw sources that never change, wiki pages the model writes, and a schema that says how to behave. Three jobs: ingest new sources, answer questions, and lint the wiki for contradictions, stale claims, and orphan pages.
 
-I liked the argument and wanted to run it for real. SakethWiki is my version. The part I added on my own is the review gate. In my version the model proposes and I decide, because a wiki that quietly absorbs a wrong summary is worse than one that missed an article.
+I liked the argument and wanted to run it for real. SakethWiki is my version. The part I added on my own is the review gate. In my version the model proposes and I decide. I chose this because a wiki that quietly absorbs a wrong summary is worse than one that missed an article.
 
 ## What it has to do
 
@@ -33,7 +33,7 @@ This tier is right because there is one user and the data fits on a laptop. I me
 | 1,000 | 19 s | 11 ms | about 297,000 tokens |
 | 2,000 | 80 s | 23 ms | about 592,000 tokens |
 
-Search and indexing are not the limit. The health check is. It sends the start of every page (up to 1,200 characters each) to one model call, so its prompt grows in a straight line with page count. At about 300 tokens per page it would pass a 200,000-token context window at roughly 650 pages. My real vault already needs about 66,000 tokens for it. The first full index build also grows faster than the page count, but that is a one-time cost, because later writes update one page at a time. If it outgrows the tier, the health check is what breaks first, and the fix is to scan in batches. The index does not need replacing.
+Search and indexing are not the limit. The health check is. It sends the start of every page (up to 1,200 characters each) to one model call. So its prompt grows in a straight line with page count. At about 300 tokens per page it would pass a 200,000-token context window at roughly 650 pages. My real vault already needs about 66,000 tokens for it. The first full index build also grows faster than the page count. That is a one-time cost, because later writes update one page at a time. If it outgrows the tier, the health check is what breaks first, and the fix is to scan in batches. The index does not need replacing.
 
 ## The parts
 

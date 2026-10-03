@@ -8,7 +8,7 @@ Coding agents are the clearest example. They don't embed a repository and fetch 
 
 **Exact identifiers.** Embeddings are good at meaning and bad at exact strings. An error code, a product SKU, a policy number, or a function name often retrieves poorly by similarity. A keyword search finds it on the first try.
 
-**Questions that need more than one hop.** "Which team owns the service that failed last Tuesday?" needs two lookups, and the second depends on the first. One-shot retrieval can only guess both at once.
+**Questions that need more than one hop.** "Which team owns the service that failed last Tuesday?" needs two lookups. The second depends on the first. One-shot retrieval can only guess both at once.
 
 **Knowing when to stop.** Top-k always returns k chunks, whether the question needs one or twenty. An agent can read one document and stop, or keep going until it finds what it needs.
 
@@ -28,7 +28,7 @@ I ran into a version of this in [SakethWiki](#/writing/review-gated-knowledge-sy
 
 ## It's not either-or
 
-The useful framing isn't "agents replace vector search." It's "vector search becomes one tool among several." An agent with semantic search, keyword search, and a document reader can pick whichever fits the question. It can use embeddings for fuzzy questions and grep for exact ones.
+The useful framing is this: vector search becomes one tool among several. It does not mean that agents replace vector search. An agent with semantic search, keyword search, and a document reader can pick whichever fits the question. It can use embeddings for fuzzy questions and grep for exact ones.
 
 There's also a third option that skips retrieval entirely. If the corpus is small enough to fit in the context window, you can load all of it. That removes retrieval failures completely, at the cost of tokens on every call and weaker attention on very long inputs. For a few hundred pages of stable reference material, it's worth testing before building any retrieval at all.
 
@@ -56,4 +56,4 @@ None of these are visible in the final answer. They're only visible in the seque
 
 ## Where I'd start
 
-Don't rip out the vector index. Wrap it as a tool, add keyword search and a document reader next to it, and give an agent a step budget. Run both setups on the same ground-truth set and compare them by failure type, not just overall score. If the agent wins on multi-hop and exact-match questions and loses on fuzzy ones, that tells you when to route to each, which is more useful than picking a winner.
+Don't rip out the vector index. Wrap it as a tool, add keyword search and a document reader next to it, and give an agent a step budget. Run both setups on the same ground-truth set and compare them by failure type, not just overall score. Suppose the agent wins on multi-hop and exact-match questions and loses on fuzzy ones. That tells you when to route to each. This is more useful than picking a winner.
