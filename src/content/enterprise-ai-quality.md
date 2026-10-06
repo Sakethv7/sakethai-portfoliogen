@@ -2,6 +2,8 @@
 
 > Internal system names, team names, metric definitions, and data are left out on purpose. Everything here is described in general terms.
 
+> **In one paragraph.** An AI assistant answers questions for about 140,000 employees. When an answer is bad, a single satisfaction score cannot say why. I built the checks that sort failures by cause, so each fix goes to the right team. Fixes based on those checks raised response and containment rates by 10%. A separate fix to how the backend sorted questions by topic raised three resolution measures by 3 to 5% each.
+
 ## The setting
 
 A production RAG assistant answers questions for roughly 140,000 internal users. It handles knowledge lookups, feeds case management, and supports content governance. When it can't help, people fall back to other channels: filing a ServiceNow case, filling out a form, or asking a live agent.
@@ -49,6 +51,16 @@ That made it possible to separate AI failures from routing, knowledge, and intak
 - A Power BI semantic model with containment, query resolution, repeat users, and satisfaction
 - KPI definitions and lineage notes, so each number has one meaning and a traceable source
 - Weekly leadership reporting built on top of it
+
+## Results
+
+These are results I can share. Each came from work I did with other teams, and I describe each in general terms.
+
+**Missing content.** I scored a sample of one day's answers for relevance, correctness, and hallucination, using the judge pipeline and Arize Phoenix. Splitting the scores by question topic showed gaps in the FAQ coverage for a few HR, payroll, and expense topics. We added content for those topics. The assistant found better material, and response and containment rates rose by 10%.
+
+**Wrong topic labels.** The backend filed some questions under the wrong topic. That skewed the reports the team used to judge the assistant. I fixed the classification. Containment, query resolution, and deflection rates each rose by 3 to 5%.
+
+**Production support.** I triaged, reproduced, and debugged live problems using reporting data, backend data, and session traces. I worked with the development and testing teams to fix them. This included the support period right after an all-employee launch, which is often called hypercare. Over my time on the project I triaged, built, or managed 15 production bug fixes, 7 new features, and 12 reporting and cross-team tasks. I also built role-specific chatbots for a business unit that was separating from the parent company.
 
 ## What I learned
 
