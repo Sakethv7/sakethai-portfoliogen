@@ -29,7 +29,7 @@ export function ContactSection() {
 
   return <section className="editorial-section contact-section" id="contact">
     <div className="section-heading compact"><div><p className="eyebrow">Contact</p><h2>Get in touch</h2></div></div>
-    <p className="section-intro">Open to conversations about applied AI systems, evaluation, and edge compute.</p>
+    <p className="section-intro">Open to conversations about building and testing AI assistants.</p>
     <ul className="contact-channels">
       <li>
         <span className="contact-channel-label">Email</span>

@@ -11,7 +11,7 @@ const Index = () => {
     <section className="hero editorial-section">
       <p className="eyebrow">Applied AI Systems Engineer</p>
       <h1>Saketh Velidimalla</h1>
-      <p className="hero-thesis">I build observable and reliable AI systems—from retrieval, evaluation, and agent workflows toward intelligent industrial machines and edge compute.</p>
+      <p className="hero-thesis">AI assistants sometimes give wrong answers, and nobody notices. I build the checks that catch them. Today I test one that about 140,000 employees use.</p>
       <div className="hero-links">
         <Link className="primary-link" to="/work">Explore the work <ArrowRight /></Link>
         <Link to="/resume">View résumé</Link>
@@ -19,13 +19,12 @@ const Index = () => {
         {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
         <a href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Contact</a>
       </div>
-      <p className="current-line"><span>Where I'm heading</span> Stack to silicon: connecting production AI reliability with industrial systems, edge inference, and compute.</p>
     </section>
 
     <section className="editorial-section experience-preview">
       <div className="section-heading">
-        <div><p className="eyebrow">Experience</p><h2>Production systems, end to end</h2></div>
-        <Link to="/experience">View the chronology <ArrowRight /></Link>
+        <div><p className="eyebrow">Experience</p><h2>Where I have worked</h2></div>
+        <Link to="/experience">See my job history <ArrowRight /></Link>
       </div>
       <div className="experience-preview-list">
         {resumeExperiences.slice(0, 3).map((item) => <article key={item.id}>
@@ -36,12 +35,12 @@ const Index = () => {
 
     <section className="editorial-section">
       <div className="section-heading">
-        <div><p className="eyebrow">Selected work</p><h2>Systems with depth</h2></div>
+        <div><p className="eyebrow">Selected work</p><h2>Three projects worth opening</h2></div>
         <Link to="/work">View the full archive <ArrowRight /></Link>
       </div>
       <div className="featured-grid">
         {featured.map((item, index) => <article className="featured-card" key={item.slug}>
-          <p className="item-index">0{index + 1}</p><h3>{item.title}</h3><p>{item.summary}</p>
+          <p className="item-index">0{index + 1}</p><h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>For engineers</span>{item.summary}</p>
           <div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
           <div className="card-links">
             {item.demo && <a href={item.demo} target="_blank" rel="noreferrer"><ExternalLink /> Live demo</a>}
@@ -55,8 +54,8 @@ const Index = () => {
 
     {/* Writing & research block hidden until the first post ships; publications data and routes remain. */}
     <section className="editorial-section">
-      <div className="section-heading"><div><p className="eyebrow">Recent activity</p><h2>Meaningful momentum</h2></div></div>
-      <p className="section-intro">Releases and artifacts—not commit streaks.</p>
+      <div className="section-heading"><div><p className="eyebrow">Recent activity</p><h2>Recent releases</h2></div></div>
+      <p className="section-intro">Things I shipped, not commit counts.</p>
       <ol className="activity-list">{activity.map((item) => <li key={`${item.date}-${item.title}`}>
         <time>{item.date}</time><div><h3>{item.title}</h3><p>{item.summary}</p>
         {item.href && <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Evidence for ${item.title}`}><ExternalLink /></a>}</div>

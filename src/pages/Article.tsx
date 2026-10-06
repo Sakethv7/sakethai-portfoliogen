@@ -17,11 +17,11 @@ async function loadBody(slug: string): Promise<string | null> {
 function findRecord(collection: 'work' | 'writing', slug: string) {
   if (collection === 'work') {
     const item = work.find((entry) => entry.slug === slug && entry.caseStudy);
-    return item && { title: item.title, eyebrow: 'Case study', summary: item.summary, body: item.caseStudy!, github: item.github, back: ['/work', 'Work archive'] as const };
+    return item && { title: item.title, eyebrow: 'Case study', plain: item.plain, summary: item.summary, body: item.caseStudy!, github: item.github, back: ['/work', 'Work archive'] as const };
   }
   // Planned posts are previewable in `vite dev` only (logic_flow.md, detail-page flow).
   const item = publications.find((entry) => entry.slug === slug && (entry.status === 'Published' || import.meta.env.DEV));
-  return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), summary: item.summary, body: item.slug, github: undefined, back: ['/writing', 'Writing'] as const };
+  return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), plain: item.plain, summary: item.summary, body: item.slug, github: undefined, back: ['/writing', 'Writing'] as const };
 }
 
 export default function Article({ collection }: { collection: 'work' | 'writing' }) {
@@ -57,7 +57,8 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         <Link className="article-back" to={record.back[0]}><ArrowLeft /> {record.back[1]}</Link>
         <p className="eyebrow">{record.eyebrow}</p>
         <h1>{record.title}</h1>
-        <p>{record.summary}</p>
+        <p className="plain-line">{record.plain}</p>
+        <p className="for-engineers"><span>For engineers</span>{record.summary}</p>
         {record.github && <div className="hero-links"><a href={record.github} target="_blank" rel="noreferrer"><Github /> Repository</a></div>}
       </header>
       <div className="editorial-section article-body" dangerouslySetInnerHTML={{ __html: html ?? '' }} />
