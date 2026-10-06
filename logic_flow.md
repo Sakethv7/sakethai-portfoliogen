@@ -272,3 +272,63 @@ Phase 3  motion       stagger, reveal, spotlight, focus, fixes     → verify: r
 ```
 
 Each phase is one commit, reviewable and revertible on its own.
+
+## Plain-language layer flows (proposed 2026-10-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Add plain sentence to the item record] --> B{Does the type check pass?}
+    B -- no --> A
+    B -- yes --> C[Page reads the record]
+    C --> D[Render plain sentence in large type]
+    D --> E[Render For engineers block: summary and tags]
+    E --> F[Run STE lint on new copy]
+    F --> G{Pass the 10-second test with 3 readers?}
+    G -- no --> A
+    G -- yes --> H[Ship]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    class A,B,F,G new
+    class D,E changed
+```
+
+*Caption: green is new (the required field, the lint, the human test). Amber is changed (rendering order). Both failure paths loop back to the copy, because every failure here is a wording problem.*
+
+### Render flow for one card, row, or header
+
+1. The page selects its records (featured items, all work items, published notes, or one article).
+2. For each record, render the `plain` field as the main paragraph.
+3. Render a small "For engineers" label.
+4. Under it, render the existing `summary`. Cards and rows also render `tags` here.
+5. Render the existing links (repository, demo, case study) unchanged.
+
+An article header follows the same order, then the Markdown body loads as before (see Detail-page flow).
+
+### Failure behavior
+
+| Failure | What happens | Who notices |
+|---|---|---|
+| Item has no `plain` | The type check fails. The build fails. Nothing ships. | The author, at build time |
+| `plain` is empty string | Type check passes. The card shows an empty paragraph. | The author, in review. The validation rule in `api.md` lists it. |
+| `plain` is over 25 words | Nothing automatic. `ste-lint` and review flag it. | Reviewer |
+| `plain` and `summary` disagree | Nothing automatic. | Reviewer, in the same edit, since both live in one record |
+| Hero test fails | Rewrite the hero and featured sentences. Test again with 3 new people. | The tester |
+
+There are no retries and no runtime states. The site is static. Every failure is caught at build time or in review.
+
+### State transitions
+
+None at runtime. The change adds no client state. The only sequence is the authoring loop in the chart above.
+
+### Delivery order
+
+```text
+1  api.md types + data      add plain to both types; write 37 sentences   → verify: tsc passes
+2  UI                       cards, rows, article header, hero, meta tags   → verify: all 6 routes render, no overflow at 375/768/1280
+3  case study intro         "In one paragraph" quote                       → verify: no internal names, no unconfirmed numbers
+4  acceptance               ste-lint, then the 10-second test              → verify: 2 of 3 pass
+```
+
+Each step is one commit.

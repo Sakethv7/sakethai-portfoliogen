@@ -369,3 +369,92 @@ A change that breaks the budget either updates this table with its reasoning in 
 - Embeds the résumé URL (composed from `BASE_URL`) via `<object data type="application/pdf">`. The fallback children are an "Open PDF" and a "Download" link, so a blocked embed never renders blank.
 - Below 768px it does not render the `<object>`; it renders the fallback card only.
 - The header's `Download résumé` link stays a direct download. "Résumé" is not added to the primary nav (ADR-012's slot argument applies). The route is reached from the hero, the Experience CTA, and the contact section via a "View résumé" link.
+
+## Plain-language contracts (proposed 2026-10-05, ADR-025 to ADR-028)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[portfolio.ts record] --> B{plain present?}
+    B -- no --> C[Build fails]
+    B -- yes --> D[Pass record to page]
+    D --> E[Render plain]
+    D --> F[Render summary and tags under For engineers]
+    E --> G[Reader sees both]
+    F --> G
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,E new
+    class C fail
+```
+
+*Caption: green is new. The record must hold a `plain` string or the build fails (red). Both texts then render, in order.*
+
+Contracts below are written against the **shipped** types in `src/data/portfolio.ts`, not the intended model in "Core types" above. See the drift warning there.
+
+### Type change
+
+```ts
+interface WorkItem {
+  // ...existing fields
+  plain: string;   // required. One sentence for a non-technical reader.
+}
+
+interface PublicationItem {
+  // ...existing fields
+  plain: string;   // required. Same rule.
+}
+```
+
+`summary` and `tags` keep their meaning. `summary` is now the technical description, for engineers.
+
+### Content rules for `plain`
+
+| Rule | Check |
+|---|---|
+| One sentence, 25 words or fewer | Review, `ste-lint` |
+| No technology list, no acronym a layperson would not know | Review |
+| No semicolons, no em-dash chains | `ste-lint` |
+| No internal system, team, or metric name | Review (confidentiality boundary in `architecture.md`) |
+| A number or outcome only if on the résumé or confirmed by Saketh | Review |
+| Not an empty string | Review. Not enforced by the type. |
+
+### Rendering contract
+
+Every surface that shows an item renders in this order: `plain`, then a label with the exact text `For engineers`, then `summary`, then (for cards and rows) `tags`, then links.
+
+| Surface | Reads | Class names |
+|---|---|---|
+| Home featured card | `WorkItem.plain`, `.summary`, `.tags` | `.plain-line`, `.for-engineers` |
+| Work archive row | same | same |
+| Writing list row | `PublicationItem.plain`, `.summary` | same |
+| Article header | record `plain` and `summary` | `.plain-line` (lead), `.for-engineers` |
+
+`findRecord` in `Article.tsx` returns `plain` alongside `title`, `eyebrow`, and `summary`. It returns the same field for both collections.
+
+Both texts are always in the DOM and always visible. Nothing is collapsed, so screen readers and print see both. The label is a visible text element, not a tooltip.
+
+### Meta tags
+
+`index.html` `description` and `og:description` use plain words and no mention of industrial machines or edge compute (ADR-027). Both are 160 characters or fewer. Per-article previews remain impossible under HashRouter (see architecture open questions), so the home page's tags carry every shared link.
+
+### Invariants
+
+- Every `WorkItem` and every `PublicationItem` has a non-empty `plain`. The type enforces presence only.
+- `plain` and `summary` describe the same thing at two levels. If one changes meaning, the other changes in the same edit.
+- No new route, dependency, or fetch. The bundle budget in the performance contract is unchanged. The added cost is about 37 short strings and a few CSS rules.
+- Article Markdown bodies are not modified, except one "In one paragraph" quote at the top of `enterprise-ai-quality.md`.
+- `plain` follows the confidentiality boundary in `architecture.md`. It adds no numbers beyond the published résumé.
+
+### Error shape
+
+A missing `plain` is a TypeScript compile error, for example `Property 'plain' is missing in type`. There is no runtime error and no error UI.
+
+### Validation additions
+
+Append to "Content validation rules":
+
+- Every work item and publication has a `plain` sentence of 25 words or fewer.
+- `og:description` and `description` match the hero's plain claim.
+- The hero, `description`, `og:description`, and contact intro do not mention industrial machines or edge compute. The agentic-maintenance Work row and build log may.

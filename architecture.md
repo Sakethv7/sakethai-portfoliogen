@@ -410,3 +410,108 @@ These are recorded rather than resolved, because resolving them is a larger task
 **Back doesn't restore scroll position (new, 2026-09-23).** Since every route change resets to the top, Back lands at the top of the previous page. Restoring it would mean saving the position per history entry and reapplying it after lazy pages finish rendering. That's worth doing only if readers start moving back and forth between long pages.
 
 **Case study outcomes are unconfirmed (new, 2026-09-22).** The résumé states scope (~140,000 users, thousands of queries evaluated daily) but no before/after results. The draft marks every place an outcome would go with `[CONFIRM]`. A case study without outcomes is still worth publishing, but it is weaker. Saketh decides what is shareable.
+
+## Plain-language layer (proposed 2026-10-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Recruiter opens a page] --> B[Read the plain sentence]
+    B --> C{Does it make sense without tech background?}
+    C -- no --> D[Reader leaves]
+    C -- yes --> E[Read the outcome or story]
+    E --> F{Want more detail?}
+    F -- no --> G[Click resume or contact]
+    F -- yes --> H[Read the For engineers part]
+    H --> I[Open the full note or case study]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    class B,C,E new
+    class H changed
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class D fail
+```
+
+*Caption: the reader's path through one card or page. Green steps are new: a plain sentence now comes first and decides whether the reader continues. Amber is changed: the technical summary still exists but moves lower. Red is the failure path we are fixing, a reader who leaves at the first sentence.*
+
+### Why this exists
+
+The site's strongest material is its articles. They open with a problem or a story. But a reader reaches an article only through a card or a list row, and those hold keyword lists. A recruiter who is not an engineer reads "retrieval memory, trace-driven evaluation, review-gated knowledge evolution", cannot tell what it means, and leaves. The articles never get read.
+
+The fix is about order, not depth. Each item gets one new plain sentence. It leads. The existing technical summary and tags stay, one step lower, labelled "For engineers". A technical reader loses nothing. A non-technical reader gets a way in.
+
+### Complexity tier
+
+**Single-process static tool, unchanged.** The site stays a client-rendered Vite SPA on GitHub Pages. This change adds one string field to two types, a few CSS rules, and rewritten copy. It adds no route, dependency, build step, or runtime logic. A higher tier would buy nothing, because the problem is wording and order.
+
+### What changes
+
+| Surface | File | Change |
+|---|---|---|
+| Home hero line | `src/pages/Index.tsx` | Replace the keyword thesis with a plain statement of the problem and what I do. |
+| "Where I'm heading" line | `src/pages/Index.tsx` | Remove. Industrial and edge claims leave the hero (ADR-027). |
+| Section headings on home | `src/pages/Index.tsx` | Replace vague headings ("Systems with depth", "Meaningful momentum") with headings that say what the section holds. |
+| Featured cards | `src/pages/Index.tsx` | Show `plain`, then a "For engineers" block with the existing summary and tags. |
+| Work archive rows | `src/pages/Work.tsx` | Same pattern. |
+| Writing list rows | `src/pages/Collection.tsx` | Same pattern. |
+| Article header | `src/pages/Article.tsx` | Show `plain` as the lead. The existing summary moves under the "For engineers" label. |
+| Data | `src/data/portfolio.ts` | Add required `plain` to `WorkItem` and `PublicationItem`. Write it for all 22 work items and 15 notes. |
+| Link preview and meta tags | `index.html` | Rewrite `og:description` and `description` in plain words. Remove "industrial machines and edge compute". |
+| Contact intro | `src/components/ContactSection.tsx` | Remove "edge compute" from the intro line. |
+| Case study intro | `src/content/enterprise-ai-quality.md` | Add a short "In one paragraph" quote at the top. No other body changes. |
+| Copy rules | `CLAUDE.md` (new) | Five rules for every future sentence. Written 2026-10-05. |
+
+Article bodies are not rewritten. They are already story-led.
+
+### Data flow
+
+```text
+portfolio.ts  ──► item.plain + item.summary + item.tags
+                       │
+     ┌─────────────────┼──────────────────┐
+     ▼                 ▼                  ▼
+ Index card        Work/Writing row   Article header
+ plain (large) ─►  plain (large) ─►   plain (lead)
+ For engineers:    For engineers:     For engineers:
+ summary + tags    summary + tags     summary
+```
+
+*Caption: one field feeds three surfaces. There is no second source of copy, so the plain sentence and the technical summary cannot drift into two different descriptions of one project without someone editing the same record.*
+
+### Acceptance test
+
+The change is done when the copy passes a human test, not when the code compiles. Show the home page to three people with no engineering background for 10 seconds each. Ask: "What does this person do?" If at least two can answer in their own words, the copy works. If fewer than two can, rewrite the hero and the three featured sentences and test again with new people. Reusing the same people measures memory, not clarity.
+
+### Open questions
+
+**Outcomes were supplied on 2026-10-05, with open wording questions.** Saketh gave the results below. They satisfy copy rule 3 (confirmed by Saketh). The exact wording waits on the questions after the table.
+
+| # | Result as stated by Saketh | Plain form (draft) | Open question |
+|---|---|---|---|
+| 1 | An LLM-judge pipeline scored relevance, answer correctness, and hallucination on a subset of one day's data. Splitting scores by query category showed missing FAQ content on a few HR, payroll, and expense topics. Added content improved retrieval and raised response and containment rates by 10%. | "I built a grader for an enterprise assistant. It showed which topics had no good article. We added content, and answers and self-service resolution rose 10%." | Is 10% a relative gain or percentage points? Same for "response rate". |
+| 2 | Fixed bad topic classification in the backend that was distorting KPIs. Containment, query resolution rate, and deflection rate each improved 3 to 5%. | "Questions were filed under the wrong topic, which skewed every report. I fixed it, and three resolution measures each rose 3 to 5%." | Relative or points? Are the three measures to be named plainly as "resolved without a human"? |
+| 3 | Production support and business operations lead on the project: triaged and debugged issues from reporting data and session traces. Built role-based chatbots for a business unit separating from the parent company. | "I also fixed live problems in the assistant and built role-specific chatbots for a business unit that was splitting off." | Say "separating business unit", or leave out? |
+
+Additional true, generalized results found in the project repos (no new numbers):
+
+- **A helpful answer is not the same as an answer with a link.** I rebuilt the check that labels each reply, so it judges whether the reply fulfilled the request. Article presence became supporting evidence only.
+- **A complaint can only be blamed on an answer that came before it.** I added a time-order rule to the matching of failed answers to later support cases, and tested the same-day, one-week, and missing-date edges.
+- **A learning app that refuses to mark a topic complete on its own.** From the learning roadmap: ingesting a note never marks a layer complete. A human decides.
+
+Kept off the site by default:
+
+- **Immigration and work-authorization wording.** It does not belong on a public page.
+- **The counts "15 production bug fixes, 7 features, 12 reporting tasks".** Saketh wrote them. They are not on the published résumé. Publish only with confirmation.
+- **The named vendors in the content gaps.** Plain form says "HR, payroll, and expense topics".
+- **Row counts from the internal procurement review.** Not confirmed public.
+
+**Résumé sync.** Rule 3 allows the numbers on the site, but a recruiter who opens the résumé PDF should see the same claims. Add results 1 and 2 to the base résumé, or the site and résumé will disagree (see ADR-022 on keeping them in sync by hand).
+
+**Writing is hidden from the home page (ADR-022).** The best plain-language material on the site is the 15 notes, and the home page shows none of them. Surfacing three on the home page would give a non-technical reader a story to read. That is a layout change outside this plan. It needs its own decision.
+
+**Unreachable components still hold the old copy.** The unused `Hero`, `About`, `CurrentFocus`, and `ProductionWork` components contain phrases such as "ServiceNow-based" and "25K+ monthly queries". They do not render. They remain until the separate deletion pass named above. This change does not touch them.
+
+**Docs location.** These docs live at the repo root, not `docs/`. They are updated in place, as before.
+
+**Contradiction found.** The "Information architecture" section earlier in this file still lists "Recent publications (3 items)" on Home, and FactoryMind as a Work case study. The shipped site does neither (ADR-022). Not fixed here.

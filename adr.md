@@ -298,3 +298,141 @@ The not-found page is also restyled into `PortfolioShell`. It currently ships Ta
 **Why:** A recruiter who finishes the post on the portfolio is one click from the case study, projects, and résumé. On LinkedIn or Medium they are one click from someone else's content. The portfolio also can't be deprecated or paywalled out from under the post.
 
 **Given up:** Reach. LinkedIn's feed favors posts that keep readers on LinkedIn, so a post with an outbound link travels less far than a native article. The link preview will show the homepage card, not the article (HashRouter, see architecture open questions). The portfolio has no comments, subscriptions, or analytics.
+
+## ADR-025: Lead with a plain sentence; keep the technical summary one step lower
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Item has a technical summary] --> B[Add a plain sentence]
+    B --> C[Show plain sentence first]
+    C --> D[Show technical summary and tags below]
+    D --> E{Does a non-technical reader get the point?}
+    E -- yes --> F[Reader continues to the article]
+    E -- no --> G[Rewrite the plain sentence]
+    G --> C
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    class B,C new
+    class D changed
+```
+
+*Caption: green is new (the plain sentence and its position). Amber is changed (the technical summary moves down but stays). The loop at the bottom is the failure path: if the sentence does not land, rewrite it.*
+
+**Context:** On 2026-10-05 Saketh reported that the portfolio is "too much keywords and literal" and gives a non-technical reader no reason to continue. The review confirmed it. Card summaries, the hero, and the link preview are keyword lists. The articles behind them open with stories and are good. Recruiters, the first readers, often are not engineers.
+
+**Options:**
+
+| Option | What the reader sees | Risk |
+|---|---|---|
+| A. Plain sentence first, technical summary below | Both, in order | Cards get taller |
+| B. Replace the technical summary with plain text | Plain only | Engineers lose the signal that the work is real |
+| C. A "simple / technical" toggle | One of two views | Needs state and a toggle that most visitors never use. Doubles the copy to maintain |
+| D. Separate pages per audience | Two sites | Doubles everything. Splits traffic |
+
+**Decision:** Option A. Each card, list row, and article header shows `plain` first. The existing summary and tags follow under a small "For engineers" label. Both stay visible. Nothing is collapsed.
+
+**Why:** Both audiences read the same page, in an order that fits each. The non-technical reader stops after the first sentence and has the point. The technical reader reads on and finds specifics. A toggle hides content behind a click that few visitors make. Collapsing the technical part would hide it from the skimming engineer who has 10 seconds.
+
+**Given up:** Card height. Each card grows by about two lines, so the Work archive scrolls longer. Also, one more field per item to keep honest. Two descriptions of one item can disagree, which is a risk the single-field flow in `architecture.md` limits but does not remove.
+
+**Explainer ladder:** Levels 3 (HTML explainer) and 4 (video) are skipped. The change has no flow over time. It is a reordering of text on static pages. Level 1 (this text) and level 2 (the chart) are present.
+
+## ADR-026: `plain` is a required field on every work item and publication
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Author adds or edits an item] --> B{Is plain filled in?}
+    B -- no --> C[Type check fails the build]
+    C --> A
+    B -- yes --> D[Build passes]
+    D --> E[Card renders plain first]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,E new
+    class C fail
+```
+
+*Caption: green is the new check. Red is the failure path. A missing sentence stops the build, so a card cannot ship with no plain line.*
+
+**Context:** The approved plan on 2026-10-05 said `plain` would be required for featured and published items and optional elsewhere. Optional means a fallback branch in every component: show `plain` if present, else show the summary. The result is a half-converted site where some rows lead with plain text and others with keywords.
+
+**Options:** (1) Required on both types. (2) Optional, with a fallback to `summary`. (3) Required for featured and published only, as first planned.
+
+**Decision:** Option 1. This differs from the sentence in the approved plan. The reason is that all 22 work items and 15 notes get a sentence in this change anyway, so the fallback has no case to serve. The TypeScript compiler enforces the rule for free.
+
+**Why:** No fallback code means nothing to test and nothing to forget. A future item cannot ship with keywords only.
+
+**Given up:** Speed of adding a quick item. Every new project needs one sentence before it appears, even a minor one. That is the intended friction. Also a small departure from the plan Saketh approved. If that is not acceptable, option 3 is a one-line type change.
+
+**Explainer ladder:** Levels 3 and 4 skipped. This is a type rule with no flow over time.
+
+## ADR-027: Remove industrial-machine and edge-compute claims from the hero, meta tags, and contact line
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Find every place the claim appears] --> B[Hero thesis]
+    A --> C[Where I'm heading line]
+    A --> D[Link preview and meta description]
+    A --> E[Contact intro]
+    B --> F[Rewrite in plain words]
+    C --> G[Delete line]
+    D --> F
+    E --> F
+    F --> H{Any remaining mention outside the case study?}
+    G --> H
+    H -- yes --> A
+    H -- no --> I[Done]
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    class B,C,D,E,F,G changed
+```
+
+*Caption: amber marks every changed surface. The claim appears in four places, one of them the link preview, which is the first thing a recruiter sees when the URL is shared. The loop is the check that none remain.*
+
+**Context:** ADR-022 found that the thesis line claimed industrial and edge work the site did not evidence, and relabelled it "Where I'm heading" instead of removing it. Saketh's operating rule is to keep FactoryMind and industrial direction off application materials by default. On 2026-10-05 Saketh confirmed: drop it. A grep found four surfaces: `Index.tsx` lines 14 and 22, `index.html` `og:description`, and `ContactSection.tsx` line 32.
+
+**Options:** Keep it as a "future direction" line; remove it from the hero only; remove it everywhere except the case study.
+
+**Decision:** Remove it from the hero, the "Where I'm heading" line, the meta and link-preview text, and the contact line. It stays in the agentic-maintenance Work row and build log, where it is the subject and is labelled as unproven. (Wording corrected 2026-10-05: the first draft said "everywhere except the build log", which would have removed the project's own description.)
+
+**Why:** A claim a recruiter cannot verify costs more trust than it earns. The hero should carry only what the site proves. The link preview matters most, because it is read before the page loads.
+
+**Given up:** The signal of where Saketh wants to go next. Roles in industrial AI will not see that interest on the first screen. They can still find it in the Work archive. This amends ADR-022.
+
+**Explainer ladder:** Levels 3 and 4 skipped. A text removal has no flow over time.
+
+## ADR-028: Copy is accepted by a human 10-second test, not by a linter
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Rewrite hero and featured sentences] --> B[Run STE lint for hints]
+    B --> C[Show home page to 3 non-technical people for 10 seconds]
+    C --> D{Can at least 2 say what I do?}
+    D -- yes --> E[Ship the copy]
+    D -- no --> F[Rewrite]
+    F --> G[Test with 3 new people]
+    G --> D
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class B,C,D,G new
+```
+
+*Caption: green is the new acceptance step. The failure path loops back to a rewrite and a new test group. A linter can pass bad copy. Only a reader can fail it.*
+
+**Context:** "Clear to non-technical readers" cannot be checked by a tool. `ste-lint.py` finds long sentences and banned words. It cannot tell whether a sentence means anything to someone outside the field.
+
+**Options:** (1) Lint only. (2) Self-review only. (3) Lint for hints, then a 3-person, 10-second test with a fixed pass mark.
+
+**Decision:** Option 3. The pass mark is that at least 2 of 3 people can say, in their own words, what Saketh does. A failed round needs three new people. This is the falsifier: if copy that passes the lint fails with people, the people win.
+
+**Why:** The goal is reader understanding. Only readers measure it. Naming the pass mark in advance stops the test from bending to fit the copy. The same people cannot be reused, because they would remember the earlier version.
+
+**Given up:** Time and some social effort, about 30 minutes plus finding the readers. Also statistical strength. Three people is a smoke test, not evidence. It catches gross failure, not subtle differences. That is the right size for a personal site.
+
+**Explainer ladder:** Levels 3 and 4 skipped. A test procedure has no flow over time that a viewer needs to see.
