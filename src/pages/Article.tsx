@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { publications, work } from '@/data/portfolio';
+import { experiences } from '@/data/experience';
 import NotFound from './NotFound';
 
 // Each Markdown file becomes its own chunk, fetched only when its article opens.
@@ -14,7 +15,11 @@ async function loadBody(slug: string): Promise<string | null> {
   return load ? load() : null;
 }
 
-function findRecord(collection: 'work' | 'writing', slug: string) {
+function findRecord(collection: 'work' | 'writing' | 'experience', slug: string) {
+  if (collection === 'experience') {
+    const study = experiences.find((entry) => entry.caseStudy?.slug === slug)?.caseStudy;
+    return study && { title: study.title, eyebrow: 'Case study · Experience', plain: study.plain, summary: study.summary, body: study.slug, github: undefined, back: ['/experience', 'Experience'] as const };
+  }
   if (collection === 'work') {
     const item = work.find((entry) => entry.slug === slug && entry.caseStudy);
     return item && { title: item.title, eyebrow: 'Case study', plain: item.plain, summary: item.summary, body: item.caseStudy!, github: item.github, back: ['/work', 'Work archive'] as const };
@@ -24,7 +29,7 @@ function findRecord(collection: 'work' | 'writing', slug: string) {
   return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), plain: item.plain, summary: item.summary, body: item.slug, github: undefined, back: ['/writing', 'Writing'] as const };
 }
 
-export default function Article({ collection }: { collection: 'work' | 'writing' }) {
+export default function Article({ collection }: { collection: 'work' | 'writing' | 'experience' }) {
   const { slug = '' } = useParams();
   const record = findRecord(collection, slug);
   const [html, setHtml] = useState<string | null>(null);

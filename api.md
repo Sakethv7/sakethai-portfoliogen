@@ -109,6 +109,7 @@ Registered (ADR-023, shipped 2026-09-23):
 
 ```text
 /#/work/:slug               Case study. Resolves only when the WorkItem has `caseStudy`.
+/#/experience/:slug         Case study for an employer role. Resolves only when an ExperienceItem has `caseStudy`.
 /#/writing/:slug            Post. Resolves only when status is Published (any status in `vite dev`).
 ```
 

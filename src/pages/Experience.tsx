@@ -29,6 +29,7 @@ export default function Experience() {
           <p className="experience-location"><MapPin /> {item.location} · {item.workMode}</p>
           <p className="experience-summary">{item.summary}</p>
           <ul>{item.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul>
+          {item.caseStudy && <p className="experience-case-study"><Link className="primary-link" to={`/experience/${item.caseStudy.slug}`}>Read the case study <ArrowUpRight /></Link></p>}
         </div>
         {index < resumeExperiences.length - 1 && <ArrowDown className="timeline-arrow" aria-hidden="true" />}
       </article>)}

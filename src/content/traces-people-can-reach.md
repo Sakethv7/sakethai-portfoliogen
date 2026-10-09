@@ -36,7 +36,7 @@ Those people won't read a JSON span tree. Give them a plain view: the question, 
 
 A trace tells you what the model did. It doesn't tell you what happened next. Did the user rephrase and ask again? Open a case? Give up?
 
-On a production assistant I evaluate, the most useful work was joining traces with interaction records and ticketing data at the row level. This let me read one session from question to answer to outcome. That's what separated AI failures from routing and intake failures. The traces were necessary, but the join is what made them explain anything. The [case study](#/work/enterprise-ai-quality) covers how that was built.
+On a production assistant I evaluate, the most useful work was joining traces with interaction records and ticketing data at the row level. This let me read one session from question to answer to outcome. That's what separated AI failures from routing and intake failures. The traces were necessary, but the join is what made them explain anything. The [case study](#/experience/enterprise-ai-quality) covers how that was built.
 
 ## Don't build the viewer yourself
 

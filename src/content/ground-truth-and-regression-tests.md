@@ -2,7 +2,7 @@ A prompt tweak makes one answer better. A week later, someone notices another an
 
 That is the problem a ground-truth set and regression tests solve. The set is a fixed collection of questions with known good outcomes. The regression test runs your system against it on every change and tells you what moved. Without them, quality is a feeling. With them, it is a number you can compare across weeks.
 
-This note covers how to build the set and what goes in each item. It also covers how to run the set as a gate and how to stop it going stale. It builds on the [failure split](#/writing/retrieval-vs-generation-failures) and on [calibrating the judge](#/writing/calibrate-your-llm-judge). I use regression tests on a ground-truth benchmark for the production assistant described in the [case study](#/work/enterprise-ai-quality). The sources below are the published evidence I found on how to do this well.
+This note covers how to build the set and what goes in each item. It also covers how to run the set as a gate and how to stop it going stale. It builds on the [failure split](#/writing/retrieval-vs-generation-failures) and on [calibrating the judge](#/writing/calibrate-your-llm-judge). I use regression tests on a ground-truth benchmark for the production assistant described in the [case study](#/experience/enterprise-ai-quality). The sources below are the published evidence I found on how to do this well.
 
 ## Two kinds of eval, one pipeline
 

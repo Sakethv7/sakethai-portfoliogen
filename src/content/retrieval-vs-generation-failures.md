@@ -44,5 +44,5 @@ These are **knowledge gaps**, and they belong to whoever owns the content, not t
 
 The payoff is that a bad number stops being a mystery. "Answer quality dropped 5%" leads to a meeting. "Retrieval failures doubled after Tuesday's re-index" leads to a fix.
 
-This note grew out of evaluating a production RAG assistant used by roughly 140,000 people. There, separating failure modes turned out to be the most useful part of the work. The case study covers how that breakdown was built: [Measuring an enterprise RAG assistant](#/work/enterprise-ai-quality).
+This note grew out of evaluating a production RAG assistant used by roughly 140,000 people. There, separating failure modes turned out to be the most useful part of the work. The case study covers how that breakdown was built: [Measuring an enterprise RAG assistant](#/experience/enterprise-ai-quality).
 

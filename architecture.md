@@ -338,7 +338,8 @@ A **detail route** is a URL pattern with a variable part, such as `/#/writing/:s
 
 | Piece | Where | What it does |
 |---|---|---|
-| `/#/work/:slug` | `App.tsx`, new `Article` page | Case study for a Work item that has one. Only `enterprise-ai-quality` does at first. |
+| `/#/work/:slug` | `App.tsx`, new `Article` page | Case study for a Work item that has one. |
+| `/#/experience/:slug` | `App.tsx`, `Article` page | Case study attached to a job in `experience.ts`. Only `enterprise-ai-quality` (Johnson & Johnson role) has one. It is deliberately not a Work item: employer work is shown under Experience, not as an own project. |
 | `/#/writing/:slug` | same `Article` page | One published post. |
 | Markdown bodies | `src/content/<slug>.md` | The prose itself, one file per page. |
 | Metadata | `portfolio.ts` | Title, date, summary, and which Markdown file to load. |

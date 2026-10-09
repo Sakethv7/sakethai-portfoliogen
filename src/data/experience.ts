@@ -13,12 +13,19 @@ export interface ExperienceItem {
   linkedinOnly?: boolean;
   summary: string;
   highlights: string[];
+  // Case study shown at /#/experience/:slug; body lives in src/content/<slug>.md
+  caseStudy?: { slug: string; title: string; plain: string; summary: string };
 }
 
 export const experiences: ExperienceItem[] = [
   {
     id: 'johnson-johnson', company: 'Johnson & Johnson', title: 'Data Scientist', employmentType: 'Contract',
     period: 'Feb 2025 – Present', location: 'New Brunswick, New Jersey', workMode: 'On-site', current: true,
+    caseStudy: {
+      slug: 'enterprise-ai-quality', title: 'Enterprise AI quality systems',
+      plain: 'I built failure triage and evaluation for a RAG system serving about 140,000 employees. The fixes it found raised response and containment by 10%.',
+      summary: 'Evaluation, observability, failure triage, and cross-system analytics for an enterprise RAG assistant serving approximately 140,000 internal users.',
+    },
     summary: 'AI quality, observability, and data systems for an enterprise RAG and support-automation platform serving approximately 140,000 internal users.',
     highlights: [
       'Owned evaluation, analytics, reporting, and observability for a production enterprise RAG system serving approximately 140,000 internal users across knowledge retrieval, case-management, and content-governance workflows.',
