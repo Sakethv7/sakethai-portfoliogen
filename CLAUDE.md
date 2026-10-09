@@ -14,6 +14,8 @@ The first reader of this site is a recruiter or hiring manager who skims. Many a
 
 The technical summary and the article bodies keep their depth. Do not shorten them to fit these rules.
 
+**Override (2026-10-09, Saketh):** do not flatten the work into "AI assistant" language. It undersells what he does: engineering the evaluation, tracing, failure triage, data pipelines and KPIs around production AI systems. Keep sentences short, but use the precise terms (RAG, retrieval, ranking, evaluation, observability, pipelines, KPIs). Where rule 1 and this conflict, this wins. Rule 5 still applies.
+
 Industrial machines and edge compute stay off the hero, the meta description, and the link preview (decided 2026-10-05). They can appear inside the agentic-maintenance case study.
 
 ## Design docs

@@ -11,7 +11,7 @@ const Index = () => {
     <section className="hero editorial-section">
       <p className="eyebrow">Applied AI Systems Engineer</p>
       <h1>Saketh Velidimalla</h1>
-      <p className="hero-thesis">AI assistants sometimes give wrong answers, and nobody notices. I build the checks that catch them. Today I test one that about 140,000 employees use.</p>
+      <p className="hero-thesis">I engineer the evaluation and observability layer for production RAG systems. I trace failures to retrieval, ranking, generation or handoff, build the data pipelines behind them, and agree the KPIs with the teams who act on them. Today that is a system used by about 140,000 employees.</p>
       <div className="hero-links">
         <Link className="primary-link" to="/work">Explore the work <ArrowRight /></Link>
         <Link to="/resume">View résumé</Link>
