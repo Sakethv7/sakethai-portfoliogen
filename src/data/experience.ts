@@ -13,8 +13,6 @@ export interface ExperienceItem {
   linkedinOnly?: boolean;
   summary: string;
   highlights: string[];
-  // Case study shown at /#/experience/:slug; body lives in src/content/<slug>.md
-  caseStudy?: { slug: string; title: string; plain: string; summary: string };
 }
 
 export const experiences: ExperienceItem[] = [
@@ -23,18 +21,19 @@ export const experiences: ExperienceItem[] = [
     period: 'Feb 2025 – Present', location: 'New Brunswick, New Jersey', workMode: 'On-site', current: true,
     caseStudy: {
       slug: 'enterprise-ai-quality', title: 'Enterprise AI quality systems',
-      plain: 'I built failure triage and evaluation for a RAG system serving about 140,000 employees. The fixes it found raised response and containment by 10%.',
-      summary: 'Evaluation, observability, failure triage, and cross-system analytics for an enterprise RAG assistant serving approximately 140,000 internal users.',
+      plain: 'Built the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees; analysis-guided fixes improved self-service resolution by 10%.',
+      summary: 'Schema-validated pipelines, LLM evaluation, trace-level observability, and lineage-aware failure triage across interaction and downstream support-intake outcomes.',
     },
-    summary: 'AI quality, observability, and data systems for an enterprise RAG and support-automation platform serving approximately 140,000 internal users.',
+    summary: 'Data scientist for enterprise AI quality and operational analytics: schema-governed pipelines, LLM evaluation, observability, and semantic reporting for a RAG and support-automation platform serving approximately 140,000 internal users.',
     highlights: [
       'Owned evaluation, analytics, reporting, and observability for a production enterprise RAG system serving approximately 140,000 internal users across knowledge retrieval, case-management, and content-governance workflows.',
       'Built a three-layer LLM-as-judge pipeline on AWS Bedrock / Llama 3.2 combining rule-based classifiers, batch LLM categorization, and keyword fallbacks to evaluate thousands of queries daily.',
       'Built LLM regression tests with ground-truth benchmarks, judge-based similarity scoring, and cross-run tracking to detect relevance, hallucination, latency, and retrieval-quality regressions before deployment.',
       'Designed containment, query-resolution, repeat-user, and satisfaction metrics from session and query evidence, then used cross-system analysis to separate immediate friction from delayed unresolved needs.',
-      'Connected enterprise RAG traces, DynamoDB records, API payloads, and ServiceNow workflow tables to separate AI, routing, knowledge, and downstream-intake failure modes with row-level evidence.',
-      'Built DynamoDB-to-Databricks data pipelines and Power BI semantic models with schema checks, Delta/Parquet validation, KPI definitions, lineage notes, and leadership reporting.',
+      'Built Python data jobs that normalized evolving interaction-event schemas, validated timestamps and identifiers, and moved DynamoDB and API data into Databricks Delta/Parquet tables and Power BI semantic models with KPI definitions, lineage notes, and leadership reporting.',
+      'Modeled lineage-aware joins across enterprise RAG traces, NoSQL interaction records, and ServiceNow intake events; preserved event grain, identifiers, timestamps, and match strength so analysis did not falsely attribute downstream outcomes.',
       'Integrated enterprise AI interaction evidence with unified ServiceNow intake-event data across case creation, external forms, and live-agent channels, preserving row-level Q&A, article, taxonomy, action, target, and case evidence for review.',
+      'Partnered with business operations, development, testing, and analytics stakeholders to define KPI semantics, triage data-quality gaps, and turn evaluation findings into reporting and release priorities.',
       'Conducted cross-system spike analysis linking RAG failures to downstream case patterns, including greeting-drop analysis, no-answer clusters, and same-day versus delayed escalation buckets.',
     ],
   },

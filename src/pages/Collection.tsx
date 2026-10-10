@@ -3,7 +3,7 @@ import { PortfolioShell } from '@/components/PortfolioShell';
 import { publications } from '@/data/portfolio';
 
 const descriptions = {
-  writing: ['Writing', 'Notes on how I build and test AI systems, written so a newcomer can follow.'],
+  writing: ['Writing', 'Engineering notes on evaluating, operating, and debugging AI systems.'],
   research: ['Research', 'Working questions, reproducible experiments, benchmarks, and papers—with explicit publication status.'],
   notes: ['Notes', 'Short technical observations, paper notes, and ideas that are useful before they become essays.'],
 } as const;
@@ -17,7 +17,7 @@ export default function Collection({ type }: { type: keyof typeof descriptions }
   return <PortfolioShell>
     <header className="page-header editorial-section"><p className="eyebrow">Public work</p><h1>{title}</h1><p>{description}</p></header>
     <section className="editorial-section collection-list">{items.length ? items.map((item) => <article key={item.title}>
-      <div className="meta-line"><span>{item.kind}</span><span>{item.status === 'Published' ? item.date : item.status}</span></div><h2>{item.status === 'Published' ? <Link to={`/writing/${item.slug}`}>{item.title}</Link> : item.title}</h2><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>For engineers</span>{item.summary}</p>
+      <div className="meta-line"><span>{item.kind}</span><span>{item.status === 'Published' ? item.date : item.status}</span></div><h2>{item.status === 'Published' ? <Link to={`/writing/${item.slug}`}>{item.title}</Link> : item.title}</h2><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>Technical focus</span>{item.summary}</p>
     </article>) : <div className="honest-empty"><p className="eyebrow">Nothing published yet</p><h2>This shelf starts empty on purpose.</h2><p>New notes will appear here only when there is a real, dated artifact to read.</p></div>}</section>
   </PortfolioShell>;
 }

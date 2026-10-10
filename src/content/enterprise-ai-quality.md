@@ -2,7 +2,7 @@
 
 > Internal system names, team names, metric definitions, and data are left out on purpose. Everything here is described in general terms.
 
-> **In one paragraph.** An AI assistant answers questions for about 140,000 employees. When an answer is bad, a single satisfaction score cannot say why. I built the checks that sort failures by cause, so each fix goes to the right team. Fixes based on those checks raised response and containment rates by 10%. A separate fix to how the backend sorted questions by topic raised three resolution measures by 3 to 5% each.
+> **In one paragraph.** I designed the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees. The work links interaction events, model traces, API payloads, and downstream support-intake outcomes at the correct event grain, so a low score can be traced to retrieval, taxonomy, knowledge, routing, or intake rather than treated as one undifferentiated AI failure. Analysis-guided fixes raised response and containment rates by 10%; correcting topic classification raised three resolution measures by 3 to 5% each.
 
 ## The setting
 
@@ -39,18 +39,38 @@ Prompt changes, model changes, and index changes can all quietly make answers wo
 
 For investigating individual failures, I deployed Arize Phoenix to trace hallucinations, latency spikes, and retrieval degradation.
 
-### 3. Separating failure modes with row-level evidence
+### 3. Lineage-aware joins, not assumed joins
 
-This is the part that answered "why". I joined the assistant's traces, DynamoDB interaction records, API payloads, and ServiceNow workflow tables at the row level. With that, a single user session can be followed from question, to answer, to what happened next.
+This is the part that answered "why". I joined traces, DynamoDB interaction records, API payloads, and ServiceNow workflow tables at the row level. A DynamoDB identifier is not automatically a relational foreign key, so the pipeline preserved source grain, identifiers, timestamps, and match strength rather than silently treating a shared field as proof of causality.
 
-That made it possible to separate AI failures from routing, knowledge, and intake failures. It also enabled spike analysis. When case volume jumped, I could check whether assistant failures came first. I could also split escalations into same-day friction versus needs that stayed unresolved and came back later.
+For an attributable escalation, the Q&A event had to precede the downstream event. Where exact lineage was absent, the output retained a weaker match path instead of claiming a confirmed join. That made it possible to separate AI failures from routing, knowledge, and intake failures, and to distinguish same-day friction from needs that returned later.
 
-### 4. A measurement layer people actually used
+### 4. Schema-aware operational analytics pipeline
 
-- DynamoDB-to-Databricks pipelines with schema checks and Delta/Parquet validation
-- A Power BI semantic model with containment, query resolution, repeat users, and satisfaction
-- KPI definitions and lineage notes, so each number has one meaning and a traceable source
-- Weekly leadership reporting built on top of it
+The analytical path was designed as a data product, not a dashboard extract:
+
+```text
+DynamoDB interaction events + API payloads + support-intake events
+  -> validate expected fields and timestamp semantics
+  -> retain raw identifiers and event grain
+  -> Databricks Delta/Parquet validation and transformations
+  -> Power BI semantic model, KPI definitions, and lineage notes
+  -> business-operations and leadership review
+```
+
+This matters for both correctness and cost. In DynamoDB, a Scan consumes read capacity for items read before downstream filters remove rows. I treated scan concurrency, page size, backoff, throttling, and refresh freshness as explicit operational constraints; a reporting copy or incremental watermark is safer than simply increasing parallel scans. At the metric layer, each number carried a defined grain and source path so that operational stakeholders could challenge a KPI without losing the evidence behind it.
+
+### 5. Storage follows the access pattern
+
+The operational records were event-shaped: query, response, retrieval, routing, and later support-intake details can arrive at different times and carry different fields. DynamoDB was the operational source for that variable interaction data; it was not the analytical join engine. The pipeline moved normalized records into an analytical layer where cross-source questions, semantic measures, and reporting joins could be made explicit and reviewed.
+
+This distinction matters in system design. A relational store is the default when entities need frequent joins and multi-record transactions. A non-relational store is appropriate when the access pattern is key-oriented and the operational records evolve independently. Choosing NoSQL does not remove relational work; it moves it into data modeling and application or analytical code. For this system, that meant preserving identifiers and event time, validating the source schema, and making joins conditional on evidence rather than assuming they were valid.
+
+### 6. Write path, extraction path, and monitoring are different concerns
+
+For the DynamoDB write audit, I distinguished the application timestamps from the underlying API operations: `PutItem` for the initial record and `UpdateItem` for a later save or lifecycle update. That distinction prevented a request timestamp from being presented as proof of persistence timing. A defensible audit needs the corresponding API event time, retries, failures, and throttling evidence.
+
+For reporting extraction, I treated the full Scan as a bounded batch job rather than a free query. A full Scan can read a large table before local filters reduce it. The safer design is an incremental watermark: read the last successful timestamp, pull newer rows, validate and append them, then advance the watermark only after a successful run. Work segmentation, controlled concurrency, retry/backoff, and read-throttle monitoring can reduce pressure, but they do not make an unbounded Scan cheap. The goal is predictable refresh cost and dashboard freshness, not maximum parallelism.
 
 ## Results
 

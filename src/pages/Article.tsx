@@ -63,7 +63,7 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         <p className="eyebrow">{record.eyebrow}</p>
         <h1>{record.title}</h1>
         <p className="plain-line">{record.plain}</p>
-        <p className="for-engineers"><span>For engineers</span>{record.summary}</p>
+        <p className="for-engineers"><span>Technical focus</span>{record.summary}</p>
         {record.github && <div className="hero-links"><a href={record.github} target="_blank" rel="noreferrer"><Github /> Repository</a></div>}
       </header>
       <div className="editorial-section article-body" dangerouslySetInnerHTML={{ __html: html ?? '' }} />

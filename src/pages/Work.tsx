@@ -5,11 +5,11 @@ import { work, workCategories } from '@/data/portfolio';
 
 export default function Work() {
   return <PortfolioShell>
-    <header className="page-header editorial-section"><p className="eyebrow">Work archive</p><h1>Systems, tools, and experiments</h1><p>Flagship systems come first. The broader archive preserves the learning trail without pretending every repository carries the same weight.</p></header>
+    <header className="page-header editorial-section"><p className="eyebrow">Work archive</p><h1>Systems, tools, and experiments</h1><p>Selected production-facing systems, developer tools, and technical experiments. Each entry distinguishes deployed impact from prototype and learning work.</p></header>
     {workCategories.map((category) => <section className="editorial-section archive-section" key={category}>
       <div className="archive-heading"><h2>{category}</h2><span>{work.filter((item) => item.category === category).length}</span></div>
       <div className="archive-list">{work.filter((item) => item.category === category).map((item) => <article key={item.slug}>
-        <div className="archive-copy"><h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>For engineers</span>{item.summary}</p><div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></div>
+        <div className="archive-copy"><h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>Technical scope</span>{item.summary}</p><div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></div>
         <div className="archive-links">
           {item.updated && <time>Updated {item.updated}</time>}
           {item.github && <a href={item.github} target="_blank" rel="noreferrer"><Github /> Code</a>}
