@@ -4,6 +4,18 @@
 
 > **In one paragraph.** I designed the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees. The work links interaction events, model traces, API payloads, and downstream support-intake outcomes at the correct event grain, so a low score can be traced to retrieval, taxonomy, knowledge, routing, or intake rather than treated as one undifferentiated AI failure. Analysis-guided fixes raised response and containment rates by 10%; correcting topic classification raised three resolution measures by 3 to 5% each.
 
+## System flow
+
+```text
+interaction event + model trace + API payload
+  -> schema and event-time validation
+  -> lineage-aware analytical join to support-intake outcomes
+  -> evaluation, observability, and KPI review
+  -> evidence-backed product or content change
+```
+
+This is a public systems view, not a diagram of private infrastructure or internal code.
+
 ## The setting
 
 A production RAG assistant answers questions for roughly 140,000 internal users. It handles knowledge lookups, feeds case management, and supports content governance. When it can't help, people fall back to other channels: filing a ServiceNow case, filling out a form, or asking a live agent.

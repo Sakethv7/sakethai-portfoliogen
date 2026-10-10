@@ -436,3 +436,21 @@ flowchart TD
 **Given up:** Time and some social effort, about 30 minutes plus finding the readers. Also statistical strength. Three people is a smoke test, not evidence. It catches gross failure, not subtle differences. That is the right size for a personal site.
 
 **Explainer ladder:** Levels 3 and 4 skipped. A test procedure has no flow over time that a viewer needs to see.
+
+## ADR-029: Curate the homepage around distinct systems capabilities
+
+**Status:** Proposed
+
+**Decision:** Feature SakethWiki, Lekhni, and the SDLC Intelligence Agent. Keep RoastRank in the Work archive.
+
+**Why:** The cards then demonstrate knowledge systems, local-first ingestion, and event-driven developer workflow. RoastRank remains useful evaluation evidence, but overlaps more with the enterprise evaluation story.
+
+**Trade-off:** The homepage loses a public demo link and gains a clearer systems narrative.
+
+## ADR-030: Mark evidence status explicitly
+
+**Status:** Proposed
+
+**Decision:** Add `Production / enterprise`, `Public prototype`, `Private prototype`, or `Experimental / public-data validation` to homepage selections and Experience case-study previews.
+
+**Invariant:** A status must not imply a deployment, customer, metric, or platform implementation that the linked artifact cannot support.

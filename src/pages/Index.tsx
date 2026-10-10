@@ -40,7 +40,7 @@ const Index = () => {
       </div>
       <div className="featured-grid">
         {featured.map((item, index) => <article className="featured-card" key={item.slug}>
-          <p className="item-index">0{index + 1}</p><h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>For engineers</span>{item.summary}</p>
+          <p className="item-index">0{index + 1}</p>{item.evidenceStatus && <p className="evidence-status">{item.evidenceStatus}</p>}<h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>Technical scope</span>{item.summary}</p>
           <div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
           <div className="card-links">
             {item.demo && <a href={item.demo} target="_blank" rel="noreferrer"><ExternalLink /> Live demo</a>}

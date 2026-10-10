@@ -42,6 +42,8 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .featured-card + .featured-card { border-left: 1px solid hsl(var(--border)); }
 .item-index { color: hsl(var(--muted-foreground)); font-size: .75rem; font-family: ui-monospace, monospace; }
 .featured-card h3 { font-size: 1.45rem; margin-top: 38px; }
+.evidence-status { display: inline-flex; width: fit-content; margin: 14px 0 0; border: 1px solid hsl(var(--primary) / .5); border-radius: 999px; padding: 3px 9px; color: hsl(var(--primary)); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; }
+.featured-card .evidence-status + h3 { margin-top: 22px; }
 .featured-card > p:not(.item-index):not(.plain-line) { color: hsl(var(--muted-foreground)); }
 .plain-line { color: hsl(var(--foreground)); font-size: 1.12rem; line-height: 1.5; margin: 0 0 12px; }
 .featured-card .plain-line { margin-top: 14px; }

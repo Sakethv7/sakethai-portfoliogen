@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Github } from 'lucide-react';
+import { ArrowLeft, Download, Github } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { PortfolioShell } from '@/components/PortfolioShell';
@@ -18,7 +18,7 @@ async function loadBody(slug: string): Promise<string | null> {
 function findRecord(collection: 'work' | 'writing' | 'experience', slug: string) {
   if (collection === 'experience') {
     const study = experiences.find((entry) => entry.caseStudy?.slug === slug)?.caseStudy;
-    return study && { title: study.title, eyebrow: 'Case study · Experience', plain: study.plain, summary: study.summary, body: study.slug, github: undefined, back: ['/experience', 'Experience'] as const };
+    return study && { title: study.title, eyebrow: 'Case study · Experience', plain: study.plain, summary: study.summary, evidenceStatus: study.evidenceStatus, body: study.slug, github: undefined, back: ['/experience', 'Experience'] as const };
   }
   if (collection === 'work') {
     const item = work.find((entry) => entry.slug === slug && entry.caseStudy);
@@ -63,10 +63,12 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         <p className="eyebrow">{record.eyebrow}</p>
         <h1>{record.title}</h1>
         <p className="plain-line">{record.plain}</p>
+        {record.evidenceStatus && <p className="evidence-status">{record.evidenceStatus}</p>}
         <p className="for-engineers"><span>Technical focus</span>{record.summary}</p>
         {record.github && <div className="hero-links"><a href={record.github} target="_blank" rel="noreferrer"><Github /> Repository</a></div>}
       </header>
       <div className="editorial-section article-body" dangerouslySetInnerHTML={{ __html: html ?? '' }} />
+      {collection === 'experience' && <section className="editorial-section experience-cta"><div><p className="eyebrow">Next step</p><h2>Interested in the systems work?</h2><p>Use the résumé for the concise role history, or contact me to discuss the work that can be shared publicly.</p></div><div className="hero-links"><a className="primary-link" href={`${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`} download="Saketh_Velidimalla_Resume.pdf"><Download /> Download résumé</a><a href="mailto:sakethv7@gmail.com">Email</a></div></section>}
     </article>
   </PortfolioShell>;
 }

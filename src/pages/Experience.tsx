@@ -27,6 +27,7 @@ export default function Experience() {
             <span className="employment-type">{item.employmentType}{item.current ? ' · Current' : ''}</span>
           </div>
           <p className="experience-location"><MapPin /> {item.location} · {item.workMode}</p>
+          {item.caseStudy && <p className="evidence-status">{item.caseStudy.evidenceStatus}</p>}
           <p className="experience-summary">{item.summary}</p>
           <ul>{item.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul>
           {item.caseStudy && <p className="experience-case-study"><Link className="primary-link" to={`/experience/${item.caseStudy.slug}`}>Read the case study <ArrowUpRight /></Link></p>}

@@ -459,3 +459,14 @@ Append to "Content validation rules":
 - Every work item and publication has a `plain` sentence of 25 words or fewer.
 - `og:description` and `description` match the hero's plain claim.
 - The hero, `description`, `og:description`, and contact intro do not mention industrial machines or edge compute. The agentic-maintenance Work row and build log may.
+
+## Proposed evidence-status extension
+
+```ts
+type EvidenceStatus =
+  | 'Production / enterprise'
+  | 'Public prototype'
+  | 'Experimental / public-data validation';
+```
+
+`evidenceStatus` is display metadata, populated from verified project evidence. It is never inferred from repository visibility, tags, or marketing copy.

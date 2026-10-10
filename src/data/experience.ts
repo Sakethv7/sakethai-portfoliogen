@@ -1,4 +1,5 @@
 export type EmploymentType = 'Full-time' | 'Contract' | 'Part-time';
+export type ExperienceEvidenceStatus = 'Production / enterprise';
 
 export interface ExperienceItem {
   id: string;
@@ -13,6 +14,7 @@ export interface ExperienceItem {
   linkedinOnly?: boolean;
   summary: string;
   highlights: string[];
+  caseStudy?: { slug: string; title: string; plain: string; summary: string; evidenceStatus: ExperienceEvidenceStatus };
 }
 
 export const experiences: ExperienceItem[] = [
@@ -23,6 +25,7 @@ export const experiences: ExperienceItem[] = [
       slug: 'enterprise-ai-quality', title: 'Enterprise AI quality systems',
       plain: 'Built the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees; analysis-guided fixes improved self-service resolution by 10%.',
       summary: 'Schema-validated pipelines, LLM evaluation, trace-level observability, and lineage-aware failure triage across interaction and downstream support-intake outcomes.',
+      evidenceStatus: 'Production / enterprise',
     },
     summary: 'Data scientist for enterprise AI quality and operational analytics: schema-governed pipelines, LLM evaluation, observability, and semantic reporting for a RAG and support-automation platform serving approximately 140,000 internal users.',
     highlights: [

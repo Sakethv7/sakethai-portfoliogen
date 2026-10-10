@@ -332,3 +332,17 @@ None at runtime. The change adds no client state. The only sequence is the autho
 ```
 
 Each step is one commit.
+
+## Proposed evidence and conversion flow
+
+```text
+Homepage visitor
+  -> reads systems thesis
+  -> opens one of three distinct public systems
+       -> sees scope, technical focus, and evidence status
+  -> opens Experience for enterprise work
+       -> reads a bounded system diagram and role evidence
+  -> chooses résumé, GitHub, LinkedIn, or email
+```
+
+Rules: cards lead with a real system constraint and user outcome; diagrams explain actual data or control flow; enterprise content distinguishes confirmed work from generalized explanation; and the next visitor action is visible without inference.

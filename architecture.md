@@ -516,3 +516,9 @@ Kept off the site by default:
 **Docs location.** These docs live at the repo root, not `docs/`. They are updated in place, as before.
 
 **Contradiction found.** The "Information architecture" section earlier in this file still lists "Recent publications (3 items)" on Home, and FactoryMind as a Work case study. The shipped site does neither (ADR-022). Not fixed here.
+
+## Proposed evidence-first homepage upgrade (2026-10-10)
+
+Keep three homepage cards, each proving a different systems capability: SakethWiki for review-gated knowledge, Lekhni for local-first ingestion, and the SDLC Intelligence Agent for event-driven engineering workflow. Keep RoastRank in the archive.
+
+Enterprise RAG work belongs under Experience because it is employment evidence, not a public repository. Its detail route should add a compact system diagram, a role-and-evidence boundary, and a visible résumé/contact CTA. Homepage selections and Experience case-study previews should disclose one evidence status: `Production / enterprise`, `Public prototype`, `Private prototype`, or `Experimental / public-data validation`.
