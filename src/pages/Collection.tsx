@@ -13,7 +13,8 @@ export default function Collection({ type }: { type: keyof typeof descriptions }
   // Only published work is public; planned items show in `vite dev` so drafts can be previewed.
   const items = publications
     .filter((item) => item.status === 'Published' || import.meta.env.DEV)
-    .filter((item) => type === 'writing' ? item.kind !== 'Research note' : type === 'research' ? item.kind === 'Research note' : false);
+    .filter((item) => type === 'writing' ? item.kind !== 'Research note' : type === 'research' ? item.kind === 'Research note' : false)
+    .toSorted((a, b) => b.date.localeCompare(a.date));
   return <PortfolioShell>
     <header className="page-header editorial-section"><p className="eyebrow">Public work</p><h1>{title}</h1><p>{description}</p></header>
     <section className="editorial-section collection-list">{items.length ? items.map((item) => <article key={item.title}>
