@@ -454,3 +454,161 @@ flowchart TD
 **Decision:** Add `Production / enterprise`, `Public prototype`, `Private prototype`, or `Experimental / public-data validation` to homepage selections and Experience case-study previews.
 
 **Invariant:** A status must not imply a deployment, customer, metric, or platform implementation that the linked artifact cannot support.
+
+## ADR-031: Put three proof cards beside the hero claim
+
+**Status:** Proposed (2026-10-27)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Recruiter opens the home page] --> B[Read name and thesis]
+    B --> C[See three proof cards beside the thesis]
+    C --> D{Does a card back the claim?}
+    D -- yes --> E[Open the evidence behind the card]
+    D -- no --> F[Leave with a claim and no proof]
+    E --> G[Reach the contact action]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class C,D,E new
+    class F fail
+```
+
+*Caption: green is new. Today the first screen holds a claim only, so every reader takes the red path. The cards give the claim proof that a reader can open.*
+
+**Context:** On 2026-10-27 Saketh compared the site with kavitaayein.com. That site puts each claim next to its proof in the first viewport. For example, "2.4M impressions" sits beside a screenshot and links to the full story. Our hero says "a system used by about 140,000 employees" in plain text. The proof for that claim is one or two clicks away. The architecture diagnosis from 2026-09-22 found the same gap: "The first viewport shows no evidence."
+
+**Options:**
+
+| Option | What the reader sees | Cost | Risk |
+|---|---|---|---|
+| A. Three text proof cards beside the thesis | Claim, one evidence line, one link per card | One small data module, CSS | Less visual punch than a screenshot |
+| B. Screenshot proof cards, as on the reference site | Real dashboards or charts | Image assets to keep current | Internal screenshots break the confidentiality rule. Public screenshots are weak. |
+| C. The full bento fold from ADR-017 | Nine tiles in one grid | Large layout rewrite plus tokens | Large change. ADR-017 has stayed Proposed since 2026-09-22. |
+| D. No change | Claim only | None | The gap stays |
+
+**Choice:** Option A.
+
+**Why:** The goal is "proof next to the claim." Text cards do that at the smallest cost. Option B fails on the employer work, because screenshots of the production system cannot go on a public page. Option C solves the same problem but also changes the whole fold, the type scale, and the motion. That is more change than this problem needs. Option A is a subset of C, so C stays possible later.
+
+**Given up:**
+
+1. The visual weight of real images on the employer work. Cards 1 and 2 stay text only, and a text card is easier to skip than a chart. Card 3 can show a screenshot, because SakethWiki is Saketh's own app (ADR-032).
+2. Hero simplicity. The first viewport gets denser, and the thesis loses half its width on desktop.
+3. A cleaner decision record. If Saketh approves this ADR, ADR-017's hero part is partly superseded. See the open questions in `architecture.md`.
+
+**Explainer ladder:** Levels 3 (HTML explainer) and 4 (video) are skipped. The change is a static layout. It has no flow over time. Levels 1 and 2 are present.
+
+## ADR-032: Proof cards come from data records, and the cards show only confirmed numbers
+
+**Status:** Proposed (2026-10-27)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build the proof cards] --> B{Does the source record exist?}
+    B -- no --> C[Drop the card and warn in dev]
+    B -- yes --> D{Is the number on the résumé or confirmed by Saketh?}
+    D -- no --> E[Remove the number from the claim]
+    D -- yes --> F[Render the card]
+    E --> F
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,D,F new
+    class C,E fail
+```
+
+*Caption: green is the new build path. Red marks the two failure paths. A missing record drops the card. An unconfirmed number leaves the claim but loses the number. Neither path shows a placeholder.*
+
+**Context:** A proof card makes a strong claim in a small space. Two things can make it false. A typed count can go stale when a note is added. A card can point at a record that was renamed or removed. Copy rule 3 in `CLAUDE.md` also limits numbers to the résumé or to results that Saketh confirmed.
+
+**Options:**
+
+1. Hand-written cards in `Index.tsx`.
+2. Cards built in a small data module from existing records (`experiences`, `publications`, `work`). The module derives counts and links.
+3. A new `proof` field on each record, with a query that picks the top three.
+
+**Choice:** Option 2. The proposed cards:
+
+| # | Claim | Evidence line | Link | Source |
+|---|---|---|---|---|
+| 1 | Built evals, guardrails, and KPI pipelines for a production RAG chat system | Used by about 140,000 employees | Read the case study → `/experience/enterprise-ai-quality` | `experiences` record with `caseStudy`. The number is on the résumé. |
+| 2 | {N} engineering notes on evaluation, retrieval, and tracing | Newest: {title of the latest Published note} | Read the notes → `/writing` | `publications` with status `Published`. N is counted, not typed. |
+| 3 | A knowledge app I use daily: capture, chat, review, browse | SakethWiki, public prototype | See the code ↗ (GitHub) | `work` record `sakethwiki`, field `github`. The card shows one screenshot of the app. |
+
+**Why:** Option 1 lets a count drift from the data. Option 3 adds a field to every record for three cards, which is more structure than the need. Option 2 keeps one source of truth and stays small. Card 2 counts the notes, so it updates when a note ships.
+
+Card 3 changed from RoastRank to SakethWiki on 2026-10-27, at Saketh's call. SakethWiki is a full application with five surfaces: Capture, Chat, Revise, Browse, and Dashboard. RoastRank is one evaluation service. A screenshot of SakethWiki shows a working product in one glance, which is the reference site's strongest move. It is Saketh's own app, so the confidentiality rule does not block the image. This makes card 3 the only card with an image (see ADR-031, given up item 1).
+
+Card 1's claim covers the build scope Saketh listed on 2026-10-27. The full list goes in the case study, not on the card. See the open questions in `architecture.md`.
+
+**Given up:**
+
+1. The 10% self-service result on card 1. It is the strongest outcome, but its unit (relative gain or percentage points) is still unresolved. Card 1 shows scale only until Saketh resolves it.
+2. A new data file to maintain (`src/data/proof.ts`), and one image asset that goes stale when the SakethWiki interface changes.
+3. A live demo on the home page. SakethWiki runs locally and has no public demo, so card 3 links to code. RoastRank's demo stays in the Work archive.
+4. Some freedom of wording. Card 1's claim stays hand-written, and its number has to match the résumé by hand.
+
+**Explainer ladder:** Levels 3 and 4 skipped. This is a data rule with no flow over time.
+
+## ADR-033: The hero has two distinct actions: "Get in touch" and "View résumé"
+
+**Status:** Proposed (2026-10-27). Revised the same day after Saketh's review.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader finishes the hero] --> B{What does the reader want?}
+    B -- to email --> C[Click the filled button: Get in touch]
+    B -- to read the résumé --> D[Click the outlined button: View résumé]
+    D --> L[Open the résumé page]
+    C --> E{Is reduced motion set?}
+    E -- yes --> F[Jump to contact with no animation]
+    E -- no --> G[Scroll smoothly to contact]
+    F --> H[Email shows as text with a copy button]
+    G --> H
+    H --> I{Does mailto open a mail app?}
+    I -- no --> J[Reader copies or reads the address]
+    I -- yes --> K[Compose window opens]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class C,D,L new
+    class E,F changed
+    class J fail
+```
+
+*Caption: green is new: two named actions, one per reader goal. Amber is changed: the scroll obeys reduced motion. Red is the mailto failure path. ADR-013 already covers it, because the address stays visible.*
+
+**Context:** The hero shows four links of near-equal weight: "Explore the work" (styled as primary), "View résumé", "GitHub", and "Contact". A skimming reader cannot tell which action matters. The current "Contact" link also hardcodes `behavior: 'smooth'`, which ignores `prefers-reduced-motion`. The 2026-09-22 findings table records that bug.
+
+The first draft of this ADR kept one button and made "View résumé" a plain link. On 2026-10-27 Saketh rejected that: the two actions serve different goals. "Get in touch" means email. "View résumé" means read the résumé. Neither one replaces the other.
+
+**Options:**
+
+| Option | Hero actions | Strength | Weakness |
+|---|---|---|---|
+| A. One button: Get in touch | Filled contact button, plain links for the rest | Clearest single next step | Hides the résumé goal behind a plain link |
+| B. Two buttons with a visual order | Filled "Get in touch", outlined "View résumé", plain "GitHub" | Each goal has its own named button. The fill still shows which one comes first. | Two buttons compete more than one |
+| C. Two equal buttons | Both filled | Neither goal ranks above the other | The reader gets no cue at all, which is today's problem |
+
+**Choice:** Option B.
+
+- "Get in touch" is a filled button. It scrolls to the contact section, where the email shows as text with a copy button. It does not open `mailto:` directly, because a direct `mailto:` fails with no message on machines with no mail app (ADR-013).
+- "View résumé" is an outlined button. It opens `/resume`.
+- "GitHub" stays a plain text link.
+- "Explore the work" leaves the hero.
+- The scroll uses `behavior: 'auto'` when the reader set reduced motion.
+
+**Why:** A recruiter arrives with one of two goals: contact Saketh, or read the résumé first. Each goal gets a button that names it. The filled style still gives one visual first choice, so the hero does not go back to four equal links. The proof cards and the nav already lead into the work, so "Explore the work" is not needed in the hero.
+
+**Given up:**
+
+1. The single-button clarity of the reference site. Two buttons compete for the first click.
+2. "Explore the work" leaves the hero. A reader who skips the proof cards has only the nav to reach the archive.
+3. One extra step for email. "Get in touch" shows the address. It does not open a compose window. That step is the cost of a contact path that always works.
+
+**Explainer ladder:** Levels 3 and 4 skipped. A button change and one scroll have no flow that a viewer needs to watch.

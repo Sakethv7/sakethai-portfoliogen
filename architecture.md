@@ -522,3 +522,176 @@ Kept off the site by default:
 Keep three homepage cards, each proving a different systems capability: SakethWiki for review-gated knowledge, Lekhni for local-first ingestion, and the SDLC Intelligence Agent for event-driven engineering workflow. Keep RoastRank in the archive.
 
 Enterprise RAG work belongs under Experience because it is employment evidence, not a public repository. Its detail route should add a compact system diagram, a role-and-evidence boundary, and a visible résumé/contact CTA. Homepage selections and Experience case-study previews should disclose one evidence status: `Production / enterprise`, `Public prototype`, `Private prototype`, or `Experimental / public-data validation`.
+
+## Hero proof cards and one primary action (proposed 2026-10-27)
+
+**Status:** Proposed, awaiting review. Nothing in this section is implemented. See ADR-031 to ADR-033.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[portfolio.ts and experience.ts records] --> B[Build three proof cards]
+    B --> C{Is each source record present?}
+    C -- no --> D[Drop that card]
+    C -- yes --> E[Render cards beside the thesis]
+    D --> E
+    E --> F[Reader opens one card's evidence]
+    E --> G[Reader clicks Get in touch]
+    G --> H[Contact section shows the email as text]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F new
+    class G changed
+    class D fail
+```
+
+*Caption: green is new (the cards and their build step). Amber is changed (the hero now has two named actions). Red is the failure path: a missing record drops its card and never shows a placeholder.*
+
+### Why this exists
+
+A **proof card** is a small block with three parts: a claim, one line of evidence, and one link to the full evidence. The idea comes from kavitaayein.com, which Saketh reviewed on 2026-10-27. That site puts each claim next to its proof in the first viewport.
+
+Our hero has the opposite shape. It makes three strong claims in one paragraph: RAG evaluation, failure tracing, and about 140,000 employees. The proof for each claim sits lower on the page or on another route. The 2026-09-22 diagnosis in this file already said it: "A recruiter's first impression is a claim, not proof."
+
+The hero also has four links with near-equal weight. A **primary action** is the one control that a page styles as the main next step. Today "Explore the work" has that style, but the reader cannot tell why. This change keeps two named actions, one per reader goal. "Get in touch" is filled and leads to the email. "View résumé" is outlined and opens the résumé. GitHub stays a plain link.
+
+### Complexity tier
+
+**Single-process static tool, unchanged.** The site stays a client-rendered Vite SPA on GitHub Pages. The change adds one small data module, some markup in `Index.tsx`, and CSS. It adds no route, no dependency, no fetch, and no client state. A higher tier would buy nothing, because the cards read records that are already in the bundle.
+
+### Hero layout after the change
+
+```text
+Desktop ≥ 1024px — two columns inside the hero
+
+┌──────────────────────────────────┬───────────────────────────┐
+│ eyebrow: Applied AI Systems Eng. │ ┌───────────────────────┐ │
+│ h1: Saketh Velidimalla           │ │ Built evals, guard-   │ │
+│                                  │ │ rails, and KPI pipe-  │ │
+│ thesis (unchanged text)          │ │ lines for a production│ │
+│                                  │ │ RAG chat system       │ │
+│ [ Get in touch ]  ← filled       │ │ ~140,000 employees  → │ │
+│ [ View résumé ]   ← outlined     │ ├───────────────────────┤ │
+│ GitHub            ← plain link   │ │ 16 engineering notes  │ │
+│                                  │ │ Newest: …           → │ │
+│                                  │ ├───────────────────────┤ │
+│                                  │ │ ┌───────────────────┐ │ │
+│                                  │ │ │ SakethWiki screen │ │ │
+│                                  │ │ └───────────────────┘ │ │
+│                                  │ │ A knowledge app I use │ │
+│                                  │ │ daily               ↗ │ │
+│                                  │ └───────────────────────┘ │
+└──────────────────────────────────┴───────────────────────────┘
+
+Below 1024px — one column: eyebrow, h1, thesis, actions, then the three cards.
+```
+
+*Caption: the claim is on the left and its proof is on the right, in the same first viewport. On a phone the cards follow the actions, so the DOM order stays the reading order.*
+
+The DOM order is eyebrow, `h1`, thesis, "Get in touch", "View résumé", GitHub, card 1, card 2, card 3. CSS Grid places the cards in the right column on desktop. It does not reorder them. Keyboard and screen-reader users meet the same order on every screen width.
+
+### What changes
+
+| Surface | File | Change |
+|---|---|---|
+| Proof card data | `src/data/proof.ts` (new) | Builds the three cards from `experiences`, `publications`, and `work`. Counts notes. Drops a card if its record is missing. |
+| SakethWiki screenshot | `public/proof/sakethwiki.png` (new) | One screenshot for card 3. Width 800 px or less, about 100 kB or less. Loaded with `loading="lazy"` and a fixed aspect ratio. |
+| Hero markup | `src/pages/Index.tsx` | Wraps the hero in a two-column grid. Adds the card list. Keeps the thesis text as it is. |
+| Hero actions | `src/pages/Index.tsx` | Filled "Get in touch" button (scrolls to the email). Outlined "View résumé" button (opens `/resume`). "GitHub" stays a plain link. "Explore the work" leaves the hero. |
+| Scroll to contact | `src/pages/Index.tsx` | Uses `behavior: 'auto'` when `prefers-reduced-motion: reduce` matches. Fixes the bug in the 2026-09-22 findings table. |
+| Styles | `src/index.css` | `.hero-grid`, `.proof-list`, `.proof-card`, an outlined-button style, and a card image style. Uses existing colors. |
+
+Nothing else on the home page changes. The experience preview, the featured cards, the activity list, and the contact section stay as they are.
+
+### Data flow
+
+```text
+experiences (J&J caseStudy) ──► card 1: claim (hand-written), scale (résumé), link to /experience/:slug
+publications (Published)    ──► card 2: count N, newest title, link to /writing
+work (sakethwiki.github)    ──► card 3: claim (hand-written), screenshot, link to repository
+                                     │
+                                     ▼
+                         heroProof: ProofCard[] (0 to 3)
+                                     │
+                                     ▼
+                         Index.tsx hero renders the list
+```
+
+*Caption: three existing records feed three cards. The module computes counts and links. It writes only the claim text and the 140,000 figure by hand, and that figure must match the résumé.*
+
+### Homepage content budget (amended)
+
+This change amends the hero line in *Homepage content budget* above.
+
+- Old: "name, role, one-sentence thesis, four primary links."
+- New: "name, role, one-sentence thesis, two named action buttons, one plain link, and at most three proof cards."
+
+The other budget lines stay.
+
+### Acceptance test
+
+ADR-028's 10-second test gets one more question. After 10 seconds, ask: "What is one thing this person has proven?" The change passes if at least 2 of 3 people name a fact from a card. A failed round needs three new people, as before.
+
+### Open questions
+
+**Resolved on 2026-10-27.** Saketh answered three questions from the first draft.
+
+- Card 3 is SakethWiki, not RoastRank. SakethWiki is a full application (Capture, Chat, Revise, Browse, Dashboard), and a screenshot shows that at a glance.
+- The hero keeps both actions. "Get in touch" leads to email. "View résumé" opens the résumé. They serve different goals (ADR-033).
+- Card 1 names the wider build scope. See the scope list below.
+
+**What is the 10% a share of?** The case study says: "response and containment rates rose by 10%." Two terms need a definition.
+
+- **Response rate** is the share of user questions that got an answer, not a fallback such as "I could not find that."
+- **Containment rate** is the share of conversations that ended without a hand-off to a person: no live chat and no support case. The site calls this "self-service resolution."
+
+The open part is the unit. Example: containment was 40% before the content fix.
+
+- If it rose by 10 **percentage points**, it is now 50%. That is a 25% relative gain.
+- If it rose by 10% **relative**, it is now 44%. That is 4 percentage points.
+
+Only Saketh's dashboard can say which one is true. The same question applies to the "3 to 5%" result from the topic-label fix. Until it is answered, card 1 shows scale only.
+
+**Which SakethWiki screenshot? (decided 2026-10-27, pending approval)** Saketh supplied four screens: Capture, Chat, Revise, and Browse. The card uses the **Chat** screen. It shows a question, an answer with cited `[[note]]` links, and the Nuance / Correction / Contradiction / Example feedback row. That is the RAG-with-citations pattern the rest of the site writes about, so the image backs the claim.
+
+Crop rules for `public/proof/sakethwiki.png`:
+
+1. Crop to the app window. Remove the strip of other windows on the left edge and the macOS menu bar.
+2. Keep the tab bar, the question, the first answer paragraph, and the citation chips.
+3. Export at 800 px wide or less, 100 kB or less.
+
+The alternatives, and why they lost:
+
+- **Browse** shows breadth (211 pages, tags, a maturity filter). Its list includes a "Factorymind Decision Layer" page, and FactoryMind stays off application materials. A crop above that row would work as a fallback.
+- **Revise** shows spaced recall, but its question is about carbon neutrality, which does not match the card's claim.
+- **Capture** shows an empty queue, which proves little.
+
+One risk with Chat: the answer cites `[[phase-2-text-to-vector-embeddings]]` for a claim about pricing, which looks like a weak citation. At card size nobody can read it. If a reader zooms in, it is visible. Retaking the screenshot with a cleaner answer removes the risk.
+
+**Card 1 scope list (supplied 2026-10-27).** Saketh listed the full build scope for the production RAG chat system:
+
+1. LLM-as-judge evaluation pipeline.
+2. Observability and dashboards.
+3. Role-based filtering on reports.
+4. KPI definitions.
+5. ETL pipelines, including AWS Glue jobs.
+6. Guardrails.
+7. Red-team testing of the application.
+8. Table access through IAM roles and OAuth.
+9. An organization flag built from a ServiceNow access rule. Reports and KPIs filter on it. The development team also used it to switch the prompt library per organization.
+10. Case-creation and live-chat functions.
+
+The card can hold only one line of this. The full list belongs in the case study and the Experience highlights. Items 5 to 10 are not on the published résumé, and the case study names neither guardrails nor red-team testing. Two follow-ups come from this, both outside this change:
+
+- Add the scope to `enterprise-ai-quality.md` and `experience.ts`, in generic terms. Name no internal system, team, or organization (copy rule 5).
+- Add the same items to the base résumé, so the site and the PDF agree (ADR-022).
+
+**Does this supersede ADR-017?** ADR-017 (the bento fold) is still Proposed and was never built. These cards solve the same "no evidence in the first viewport" problem at a smaller size. The recommendation is to mark ADR-017's hero part as superseded by ADR-031, and keep its token and motion ideas (ADR-018, ADR-019) open. Saketh decides.
+
+**Out of scope here.** The earlier review listed three more items. None of them is in this change. Each needs its own decision.
+
+1. Lead the featured cards with the enterprise case study.
+2. Shorten the featured cards.
+3. Add one personal line to the hero.

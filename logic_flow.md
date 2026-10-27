@@ -346,3 +346,89 @@ Homepage visitor
 ```
 
 Rules: cards lead with a real system constraint and user outcome; diagrams explain actual data or control flow; enterprise content distinguishes confirmed work from generalized explanation; and the next visitor action is visible without inference.
+
+## Hero proof cards and primary action flows (proposed 2026-10-27)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Module load: build proof cards] --> B{Source record found?}
+    B -- no --> C[Drop card. Warn in dev only]
+    B -- yes --> D[Add card to the list]
+    C --> E[Hero renders 0 to 3 cards]
+    D --> E
+    E --> F{Reader clicks what?}
+    F -- a card --> G[Open the evidence route or demo]
+    F -- View résumé --> K[Open the résumé page]
+    F -- Get in touch --> H{Reduced motion set?}
+    H -- yes --> I[Jump to contact]
+    H -- no --> J[Scroll smoothly to contact]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,D,E,G new
+    class H,I,J,K changed
+    class C fail
+```
+
+*Caption: green is new (card build and render). Amber is changed (the contact scroll now checks reduced motion). Red is the only failure path: a missing record drops its card.*
+
+### Card build flow
+
+The build runs once, when the `proof.ts` module loads. All input is static data in the bundle, so there is nothing to wait for.
+
+1. Find the experience record whose `caseStudy.slug` is `enterprise-ai-quality`. If it exists, make card 1 with a link to `/experience/enterprise-ai-quality`.
+2. Filter `publications` to status `Published`. If the count is 1 or more, make card 2. Its claim uses the count. Its evidence line uses the title of the newest note by `date`.
+3. Find the work record with slug `sakethwiki`. If it has a `github` URL, make card 3 with that URL as an external link and the screenshot path as its image.
+4. Export the cards in that order. The list holds 0 to 3 cards.
+
+A step that finds no record makes no card. In development, it calls `console.warn` with the missing slug. In production, it stays silent, because the page is still correct without the card.
+
+### Render flow
+
+1. The hero renders the eyebrow, `h1`, and thesis as today.
+2. It renders the filled "Get in touch" button, the outlined "View résumé" button, and the plain GitHub link.
+3. If the card list is empty, it renders nothing more. The hero falls back to one column.
+4. Otherwise it renders a `ul` with one `li` per card. Each card is one link. Card 3 also renders its screenshot above the claim.
+
+### Hero action flows
+
+"View résumé" is a router `Link` to `/resume`. It needs no handler. "Get in touch" works as follows.
+
+
+1. The reader clicks "Get in touch".
+2. The handler stops the default hash navigation. Under `HashRouter` a bare `#contact` would be read as a route.
+3. The handler reads `matchMedia('(prefers-reduced-motion: reduce)')`.
+4. It calls `scrollIntoView` on `#contact` with `behavior: 'auto'` if that matches, else `'smooth'`.
+5. The contact section takes over. Its own flow (see *Contact flow* above) keeps the email visible if `mailto:` or the clipboard fails.
+
+### Failure behavior
+
+| Failure | What happens | Who notices |
+|---|---|---|
+| Source record renamed or removed | That card is dropped. The other cards render. | The author, through the dev console warning |
+| No Published notes | Card 2 is dropped | Nobody needs to. This is correct behavior. |
+| SakethWiki screenshot fails to load | The card still renders. The image box keeps its size and shows the `alt` text. | The author, in the network panel at review |
+| SakethWiki repository URL changes | The card links to a GitHub 404 | The link checker in *Verification* |
+| The 140,000 figure changes on the résumé | Nothing automatic. Card 1 keeps the old figure. | The author, when the résumé changes (same manual sync as ADR-022) |
+| `#contact` is missing from the page | `scrollIntoView` is not called. The click does nothing. | Review. The contact section is part of the home page by design (ADR-012). |
+| A reader fails the 10-second proof question | Rewrite the card claims. Test with 3 new people. | The tester |
+
+There are no retries and no loading states. Every failure is caught at build time, in review, or in the human test.
+
+### State transitions
+
+None. The cards are computed once from static data. The primary action keeps no state. It only scrolls.
+
+### Delivery order
+
+```text
+1  data        src/data/proof.ts, types, screenshot    → verify: tsc passes; 3 cards with current data; image ≤ 100 kB
+2  hero        Index.tsx markup, two named actions     → verify: one filled + one outlined button; DOM order = reading order
+3  styles      index.css grid and card styles          → verify: no overflow at 375 / 768 / 1280; first viewport at 1280×800 shows all 3 cards
+4  motion fix  reduced-motion check on the scroll      → verify: emulate reduce; scroll jumps
+5  acceptance  STE lint, then the 10-second test       → verify: 2 of 3 name a proven fact
+```
+
+Each step is one commit.

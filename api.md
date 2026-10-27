@@ -470,3 +470,112 @@ type EvidenceStatus =
 ```
 
 `evidenceStatus` is display metadata, populated from verified project evidence. It is never inferred from repository visibility, tags, or marketing copy.
+
+## Hero proof card and primary action contracts (proposed 2026-10-27, ADR-031 to ADR-033)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[experiences, publications, work] --> B[heroProof builder]
+    B --> C{Record found for each card?}
+    C -- no --> D[Omit card]
+    C -- yes --> E[ProofCard object]
+    D --> F[heroProof array of 0 to 3]
+    E --> F
+    F --> G[Index hero renders one link per card]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F,G new
+    class D fail
+```
+
+*Caption: green is new. Three existing data sources go in, and an array of up to three cards comes out. Red is the omit path. The array never holds a placeholder.*
+
+Contracts are written against the shipped types in `src/data/portfolio.ts` and `src/data/experience.ts`.
+
+### Type
+
+```ts
+// src/data/proof.ts
+export interface ProofCard {
+  id: 'production' | 'writing' | 'app';
+  claim: string;        // plain, 12 words or fewer, may hold a derived count
+  evidence: string;     // one short line: scale, newest title, or evidence status
+  linkLabel: string;    // visible action text, e.g. 'Read the case study'
+  to?: string;          // internal route, for react-router Link
+  href?: string;        // external https URL
+  image?: { src: string; alt: string; width: number; height: number };  // card 3 only; src composed from BASE_URL
+}
+
+export const heroProof: ProofCard[];   // 0 to 3 cards, in the order production, writing, app
+```
+
+Exactly one of `to` and `href` is set. `to` renders as a router `Link`, so it resolves under the deployed base path (ADR-014). `href` renders as an anchor with `target="_blank"` and `rel="noreferrer"`.
+
+### Card sources
+
+| `id` | Source | Required field | `claim` | `evidence` |
+|---|---|---|---|---|
+| `production` | `experiences.find(e => e.caseStudy?.slug === 'enterprise-ai-quality')` | `caseStudy.slug` | `Built evals, guardrails, and KPI pipelines for a production RAG chat system` | `Used by about 140,000 employees` (résumé figure) |
+| `writing` | `publications.filter(p => p.status === 'Published')` | length ≥ 1 | `` `${n} engineering notes on evaluation, retrieval, and tracing` `` | `Newest: ${title}`, newest by `date` |
+| `app` | `work.find(w => w.slug === 'sakethwiki')` | `github` | `A knowledge app I use daily: capture, chat, review, browse` | `SakethWiki, ${evidenceStatus}`. Image: `public/proof/sakethwiki.png` |
+
+### Rendering contract
+
+```html
+<section class="hero editorial-section hero-grid">
+  <div class="hero-copy">eyebrow · h1 · thesis · actions</div>
+  <ul class="proof-list" aria-label="Evidence">
+    <li><a class="proof-card" …>
+      <span class="proof-claim">…</span>
+      <span class="proof-evidence">…</span>
+      <span class="proof-link">linkLabel →</span>
+    </a></li>
+  </ul>
+</section>
+```
+
+- Each card is one link. A card has one destination, so the whole card can be the link. This differs from the BentoTile rule in this file, which applies to tiles with two links.
+- The link's accessible name is its visible text: claim, evidence, then link label.
+- When `heroProof` is empty, the `ul` is not rendered and `.hero-grid` falls back to one column.
+- Card text has no heading element. The page keeps one `h1`, and the next heading stays the first section `h2`.
+
+### Primary action contract
+
+```ts
+// src/pages/Index.tsx
+type HeroAction =
+  | { style: 'filled'; label: 'Get in touch'; scrollTo: 'contact' }
+  | { style: 'outlined'; label: 'View résumé'; to: '/resume' }
+  | { style: 'link'; label: 'GitHub'; href: 'https://github.com/Sakethv7' };
+```
+
+This type documents the contract. The code does not need to declare it.
+
+- The hero holds exactly one filled button (`primary-link`) and one outlined button (`secondary-button`).
+- "Get in touch" scrolls to `#contact`, where the email shows as text. It never opens `mailto:` directly (ADR-013). It prevents the default hash navigation, as the current Contact link does.
+- "View résumé" is a router `Link` to `/resume`.
+- Scroll behavior is `'auto'` when `matchMedia('(prefers-reduced-motion: reduce)').matches`, else `'smooth'`.
+- GitHub uses a plain text link style.
+
+### Invariants
+
+- `heroProof` has 3 cards or fewer. It never holds a card whose source record is missing.
+- The `writing` count is derived from `publications`. It is never typed by hand.
+- The 140,000 figure equals the figure on the published résumé. No other number appears on a card unless Saketh confirms it (copy rule 3).
+- No card names the internal assistant, a team, or an internal metric (copy rule 5).
+- No new route, dependency, fetch, or client state. `proof.ts` adds a few hundred bytes to the entry bundle.
+- The card 3 image has fixed `width` and `height`, `loading="lazy"`, and a non-empty `alt`. It is 100 kB or less and shows no private notes.
+
+### Error shape
+
+There is no runtime error UI. A missing source record omits its card. In development it also logs `console.warn('heroProof: missing <id> source')`. A wrong field type is a TypeScript compile error.
+
+### Validation additions
+
+Append to "Content validation rules":
+
+- Every proof card claim is 12 words or fewer. Every evidence line is 8 words or fewer, except the `writing` card, which shows the newest note title in full.
+- Every number on a proof card is on the résumé or confirmed by Saketh.
+- Every proof card link resolves: internal routes match a registered route, and external URLs answer over HTTPS.
