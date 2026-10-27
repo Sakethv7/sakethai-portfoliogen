@@ -597,7 +597,7 @@ The DOM order is eyebrow, `h1`, thesis, "Get in touch", "View résumé", GitHub,
 | Surface | File | Change |
 |---|---|---|
 | Proof card data | `src/data/proof.ts` (new) | Builds the three cards from `experiences`, `publications`, and `work`. Counts notes. Drops a card if its record is missing. |
-| SakethWiki screenshot | `public/proof/sakethwiki.png` (new) | One screenshot for card 3. Width 800 px or less, about 100 kB or less. Loaded with `loading="lazy"` and a fixed aspect ratio. |
+| SakethWiki screenshot | `public/proof/sakethwiki.webp` (new) | One screenshot for card 3. Width 800 px or less, about 100 kB or less. Loaded with `loading="lazy"` and a fixed aspect ratio. |
 | Hero markup | `src/pages/Index.tsx` | Wraps the hero in a two-column grid. Adds the card list. Keeps the thesis text as it is. |
 | Hero actions | `src/pages/Index.tsx` | Filled "Get in touch" button (scrolls to the email). Outlined "View résumé" button (opens `/resume`). "GitHub" stays a plain link. "Explore the work" leaves the hero. |
 | Scroll to contact | `src/pages/Index.tsx` | Uses `behavior: 'auto'` when `prefers-reduced-motion: reduce` matches. Fixes the bug in the 2026-09-22 findings table. |
@@ -656,7 +656,7 @@ Only Saketh's dashboard can say which one is true. The same question applies to 
 
 **Which SakethWiki screenshot? (decided 2026-10-27, pending approval)** Saketh supplied four screens: Capture, Chat, Revise, and Browse. The card uses the **Chat** screen. It shows a question, an answer with cited `[[note]]` links, and the Nuance / Correction / Contradiction / Example feedback row. That is the RAG-with-citations pattern the rest of the site writes about, so the image backs the claim.
 
-Crop rules for `public/proof/sakethwiki.png`:
+Crop rules for `public/proof/sakethwiki.webp`:
 
 1. Crop to the app window. Remove the strip of other windows on the left edge and the macOS menu bar.
 2. Keep the tab bar, the question, the first answer paragraph, and the citation chips.
