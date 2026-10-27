@@ -16,7 +16,7 @@ const Index = () => {
         <p className="hero-thesis">I engineer the evaluation and observability layer for production RAG systems. I trace failures to retrieval, ranking, generation or handoff, build the data pipelines behind them, and agree the KPIs with the teams who act on them. Today that is a system used by about 140,000 employees.</p>
         <div className="hero-links">
           {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
-          <a className="primary-link" href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Get in touch <ArrowRight /></a>
+          <a className="primary-link" href="#contact" onClick={(event) => { event.preventDefault(); const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; document.getElementById('contact')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); }}>Get in touch <ArrowRight /></a>
           <Link className="secondary-button" to="/resume">View résumé</Link>
           <a href="https://github.com/Sakethv7" target="_blank" rel="noreferrer">GitHub</a>
         </div>
