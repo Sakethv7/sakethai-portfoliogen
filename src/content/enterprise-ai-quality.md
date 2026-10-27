@@ -84,6 +84,19 @@ For the DynamoDB write audit, I distinguished the application timestamps from th
 
 For reporting extraction, I treated the full Scan as a bounded batch job rather than a free query. A full Scan can read a large table before local filters reduce it. The safer design is an incremental watermark: read the last successful timestamp, pull newer rows, validate and append them, then advance the watermark only after a successful run. Work segmentation, controlled concurrency, retry/backoff, and read-throttle monitoring can reduce pressure, but they do not make an unbounded Scan cheap. The goal is predictable refresh cost and dashboard freshness, not maximum parallelism.
 
+### 7. Access, safety, and per-organization views
+
+The evaluation layer also had to control who could see what, and how the assistant behaved for different groups.
+
+- **Table access.** I set up access to the analytical tables through IAM roles and OAuth.
+- **ETL jobs.** I built ETL pipelines, including AWS Glue jobs.
+- **Guardrails and red-teaming.** I wrote guardrails for the assistant and red-teamed the application.
+- **An organization flag.** I used a ServiceNow access rule to derive a flag for each user's organization. Reports, KPIs, and dashboards filter on that flag, so each organization sees its own numbers. The development team also used the same flag to switch the prompt library per organization.
+- **Role-based reporting.** Dashboards filter by role, so each reader sees the slice they act on.
+- **Handoff functions.** I worked on the case-creation and live-chat functions, the paths a user takes when the assistant cannot help.
+
+One flag drove both the reporting view and the assistant's behavior. So a KPI for an organization measured the same prompt configuration that organization actually used.
+
 ## Results
 
 These are results I can share. Each came from work I did with other teams, and I describe each in general terms.

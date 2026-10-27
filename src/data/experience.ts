@@ -38,6 +38,8 @@ export const experiences: ExperienceItem[] = [
       'Integrated enterprise AI interaction evidence with unified ServiceNow intake-event data across case creation, external forms, and live-agent channels, preserving row-level Q&A, article, taxonomy, action, target, and case evidence for review.',
       'Partnered with business operations, development, testing, and analytics stakeholders to define KPI semantics, triage data-quality gaps, and turn evaluation findings into reporting and release priorities.',
       'Conducted cross-system spike analysis linking RAG failures to downstream case patterns, including greeting-drop analysis, no-answer clusters, and same-day versus delayed escalation buckets.',
+      'Wrote guardrails for the assistant, red-teamed the application, and set up analytical table access through IAM roles and OAuth; built ETL pipelines including AWS Glue jobs.',
+      'Derived an organization flag from a ServiceNow access rule that filters KPIs and dashboards per organization and that the development team used to switch the prompt library per organization; added role-based report filtering and worked on case-creation and live-chat functions.',
     ],
   },
   {
