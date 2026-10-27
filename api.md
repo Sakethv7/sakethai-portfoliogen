@@ -206,7 +206,7 @@ Invariants:
 
 - Every `caseStudy` and every publication `slug` has a matching `src/content/<slug>.md`. A missing file renders NotFound and logs `console.error` in development.
 - `marked` output is inserted with `dangerouslySetInnerHTML`. This is allowed only because every Markdown file is committed to this repo. Any external content source requires a sanitizer first (ADR-023).
-- The nav includes Writing if and only if `publications.some((p) => p.status === 'Published')`.
+- The nav includes Writing if and only if a Published publication exists whose kind is not `'Research note'`. It includes Research if and only if a Published `'Research note'` exists (changed 2026-10-27). The Writing list and hero proof card 2 exclude research notes. Research notes still open at `/#/writing/:slug`.
 - The `Article` chunk, including `marked`, is lazy, and each Markdown body is its own chunk. Neither `marked` nor article text may land in the entry bundle. Measured at ship: entry +0.3 kB gz (route definitions and card links), `Article` chunk 14.9 kB gz, each body ~2 kB gz. (Note: the entry bundle already exceeds its 65 kB budget at ~107.7 kB gz, because the cleanup in ADR-020 has not shipped. This change neither fixes nor worsens that.)
 - Case-study text follows the confidentiality boundary in `architecture.md`. No internal system, team, or metric names. No numbers beyond the published résumé without Saketh's confirmation.
 

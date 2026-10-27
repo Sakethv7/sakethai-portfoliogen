@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Github, Linkedin, Mail } from 'lucide-react';
-import { hasPublishedWriting } from '@/data/portfolio';
+import { hasPublishedResearch, hasPublishedWriting } from '@/data/portfolio';
 
-// Writing appears once a post is Published (ADR-022). Research and Notes stay hidden until they have content.
-const links = [['/', 'Home'], ['/work', 'Work'], ['/experience', 'Experience'], ...(hasPublishedWriting ? [['/writing', 'Writing']] : [])];
+// Writing and Research each appear once they hold a Published item (ADR-022). Notes stays hidden until it has content.
+const links = [['/', 'Home'], ['/work', 'Work'], ['/experience', 'Experience'], ...(hasPublishedWriting ? [['/writing', 'Writing']] : []), ...(hasPublishedResearch ? [['/research', 'Research']] : [])];
 
 export function PortfolioShell({ children }: { children: ReactNode }) {
   const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;

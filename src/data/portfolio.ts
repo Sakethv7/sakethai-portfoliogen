@@ -57,6 +57,8 @@ export const publications: PublicationItem[] = [
   { slug: 'agentic-maintenance-build-log', plain: 'Build log for a prototype machine-health workflow that couples vibration analysis, bounded investigation, and operator approval.', title: 'Agents for machine maintenance: what I built and what I have not proven', kind: 'Build log', status: 'Published', date: '2026-10-02', summary: 'Vibration features, two-layer detection, four bounded agents, edge placement, current implementation, and explicit validation gaps.' },
   { slug: 'content-quality-index-boost', plain: 'Design for improving retrieval quality through content transformation and a bounded precomputed ranking signal.', title: 'Rewrite the content, then nudge the ranking', kind: 'Engineering note', status: 'Published', date: '2026-10-02', summary: 'Content transformation before indexing, content-quality-index blending, comparison with Contextual Retrieval, bounded boost rules, and operational cost.' },
   { slug: 'nosql-does-not-remove-data-modeling', plain: 'A practical guide to choosing operational storage, preserving event lineage, and building efficient batch pipelines around NoSQL data.', title: 'NoSQL does not remove data modeling', kind: 'Engineering note', status: 'Published', date: '2026-10-09', summary: 'How access patterns determine SQL versus NoSQL; why event grain, write evidence, incremental watermarks, bounded scans, DAG stages, and cache/TTL policy still need explicit design.' },
+  { slug: 'seo-aeo-geo', plain: 'How buyers now find a business through AI answers and agents, what the evidence says, and what a business can actually do about it.', title: 'SEO, AEO, GEO: how buyers find a business now', kind: 'Research note', status: 'Published', date: '2026-10-27', summary: 'SEO, AEO, and GEO compared by goal, metric, and work. The 2023 GEO paper, Similarweb visibility data, Google AI-features guidance, crawlability checks, and Sabre MCP as a structured door for agents.' },
+  { slug: 'geo-interceptor', plain: 'How a website can tell which AI agents are visiting, what each one wants, and which to serve, charge, or block.', title: 'Who is reading your website? Interceptors and security in the age of GEO', kind: 'Research note', status: 'Published', date: '2026-10-27', summary: 'HUMAN AI traffic classes, NEC cotomi Agent, user-agent spoofing, robots.txt limits, IP ranges, reverse DNS, Web Bot Auth, edge vendors, a four-step interceptor, the cloaking line, and limits of version checks.' },
 ];
 
 export const activity: ActivityItem[] = [
@@ -67,4 +69,5 @@ export const activity: ActivityItem[] = [
 
 export const workCategories: WorkCategory[] = ['Flagship systems', 'Developer tools', 'Experiments & learning', 'Creative builds'];
 
-export const hasPublishedWriting = publications.some((item) => item.status === 'Published');
+export const hasPublishedWriting = publications.some((item) => item.status === 'Published' && item.kind !== 'Research note');
+export const hasPublishedResearch = publications.some((item) => item.status === 'Published' && item.kind === 'Research note');

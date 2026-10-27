@@ -4,7 +4,7 @@ import { publications } from '@/data/portfolio';
 
 const descriptions = {
   writing: ['Writing', 'Engineering notes on evaluating, operating, and debugging AI systems.'],
-  research: ['Research', 'Working questions, reproducible experiments, benchmarks, and papers—with explicit publication status.'],
+  research: ['Research', 'Sourced notes on what I am reading and testing. Other people\'s claims are cited, and my own reading is labelled.'],
   notes: ['Notes', 'Short technical observations, paper notes, and ideas that are useful before they become essays.'],
 } as const;
 

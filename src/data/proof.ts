@@ -25,7 +25,7 @@ function productionCard(): ProofCard | null {
 }
 
 function writingCard(): ProofCard | null {
-  const published = publications.filter((item) => item.status === 'Published');
+  const published = publications.filter((item) => item.status === 'Published' && item.kind !== 'Research note');
   if (published.length === 0) return missing('writing');
   const newest = [...published].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))[0];
   return { id: 'writing', claim: `${published.length} engineering notes on evaluation, retrieval, and tracing`, evidence: `Newest: ${newest.title}`, linkLabel: 'Read the notes', to: '/writing' };

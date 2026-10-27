@@ -368,6 +368,7 @@ import.meta.glob('src/content/*.md', ?raw)  ──►  marked(markdown)  ──�
 
 - The Enterprise AI card swaps "Private / case study forthcoming" for a "Read the case study" link.
 - **Writing returns to the nav only when at least one post has status Published.** The nav reads this from the data, so it can't show an empty tab again (ADR-022 stays true automatically).
+- **Research follows the same rule (2026-10-27).** The two GEO pieces summarize other people's work, so they are `Research note` items, not engineering notes. Research appears in the nav once a Published research note exists. The Writing list and the hero's note count leave research notes out.
 - The home "Writing & research" block stays hidden. One post doesn't fill it. Revisit at three.
 - Every route change resets scroll to the top (`ScrollToTop` in `App.tsx`, 2026-09-23). HashRouter keeps the previous page's scroll position, so without this a link from the bottom of one page opens the next one mid-page. The reset also runs on back/forward: plain `<a href="#/...">` links inside article Markdown arrive as back/forward-style (`POP`) navigations, and the browser doesn't restore scroll for hash routes anyway. The cost is that Back returns to the top of the previous page, not to where the reader was. The reset is instant because the site sets `scroll-behavior: smooth`. In-page scrolls such as the homepage Contact link don't change the route, so they're unaffected.
 - The case study shipped without an outcomes section (Saketh's call, 2026-09-23). Add one when shareable results are confirmed.
