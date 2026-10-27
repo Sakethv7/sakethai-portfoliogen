@@ -3,22 +3,37 @@ import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { ContactSection } from '@/components/ContactSection';
 import { activity, work } from '@/data/portfolio';
+import { heroProof } from '@/data/proof';
 import { resumeExperiences } from '@/data/experience';
 
 const Index = () => {
   const featured = work.filter((item) => item.featured).slice(0, 3);
   return <PortfolioShell>
-    <section className="hero editorial-section">
-      <p className="eyebrow">Applied AI Systems Engineer</p>
-      <h1>Saketh Velidimalla</h1>
-      <p className="hero-thesis">I engineer the evaluation and observability layer for production RAG systems. I trace failures to retrieval, ranking, generation or handoff, build the data pipelines behind them, and agree the KPIs with the teams who act on them. Today that is a system used by about 140,000 employees.</p>
-      <div className="hero-links">
-        <Link className="primary-link" to="/work">Explore the work <ArrowRight /></Link>
-        <Link to="/resume">View résumé</Link>
-        <a href="https://github.com/Sakethv7" target="_blank" rel="noreferrer">GitHub</a>
-        {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
-        <a href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Contact</a>
+    <section className={`hero editorial-section${heroProof.length > 0 ? ' hero-grid' : ''}`}>
+      <div className="hero-copy">
+        <p className="eyebrow">Applied AI Systems Engineer</p>
+        <h1>Saketh Velidimalla</h1>
+        <p className="hero-thesis">I engineer the evaluation and observability layer for production RAG systems. I trace failures to retrieval, ranking, generation or handoff, build the data pipelines behind them, and agree the KPIs with the teams who act on them. Today that is a system used by about 140,000 employees.</p>
+        <div className="hero-links">
+          {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
+          <a className="primary-link" href="#contact" onClick={(event) => { event.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Get in touch <ArrowRight /></a>
+          <Link className="secondary-button" to="/resume">View résumé</Link>
+          <a href="https://github.com/Sakethv7" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
       </div>
+      {heroProof.length > 0 && <ul className="proof-list" aria-label="Evidence">
+        {heroProof.map((card) => {
+          const body = <>
+            {card.image && <img className="proof-image" src={card.image.src} alt={card.image.alt} width={card.image.width} height={card.image.height} loading="lazy" />}
+            <span className="proof-claim">{card.claim}</span>
+            <span className="proof-evidence">{card.evidence}</span>
+            <span className="proof-link">{card.linkLabel} {card.href ? <ExternalLink /> : <ArrowRight />}</span>
+          </>;
+          return <li key={card.id}>
+            {card.to ? <Link className="proof-card" to={card.to}>{body}</Link> : <a className="proof-card" href={card.href} target="_blank" rel="noreferrer">{body}</a>}
+          </li>;
+        })}
+      </ul>}
     </section>
 
     <section className="editorial-section experience-preview">
