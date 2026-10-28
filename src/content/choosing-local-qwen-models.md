@@ -83,13 +83,13 @@ The cause is arithmetic. A chunk call reads about 3,200 prompt tokens and may wr
 
 The deeper problem is the shape of the limit. Lekhni asks Ollama for the whole answer at once, so Ollama sends nothing until it finishes. The HTTP client's timeout then measures total time. But generation time depends on how much the model writes and how busy the Mac is, so any fixed total is wrong for some calls.
 
-My proposed fix, written up as design records but not built yet:
+The fix, now built and tested in Lekhni:
 
 1. **Stream the answer** and stop a call only when nothing arrives for a while. A working model sends a token every fraction of a second, so silence means a stuck model.
 2. **Size each limit from the work.** Prompt tokens divided by a slow reading speed, plus the output cap divided by a slow writing speed, times 1.5. A chunk call gets 91 seconds of allowed silence and a 270-second ceiling, instead of a flat 120.
 3. **Retry a failed chunk once, then skip it** and say so in the note, instead of losing the whole note.
 
-I will write the full design up as its own note after it is built and measured.
+The full design, with three real replays, is in [Stop a model call on silence, not on total time](#/writing/model-call-timeouts).
 
 ## Memory is weights plus the KV cache
 
