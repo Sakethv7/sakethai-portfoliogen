@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-10-28 · measured on my own Mac, single runs*
 
-> **In one paragraph.** Lekhni, my local notes app, runs a Qwen3-8B model through Ollama. MLX, Apple's machine-learning framework, is often called faster on Apple Silicon. I tested both with the same model on the same Mac. MLX was 10 to 18% faster end to end and used about 2 GB less memory. It also failed one of my five eval fixtures, and the server I used could not constrain its output to a JSON schema. I stayed on Ollama. A month later I re-ran the test through LM Studio, which can constrain MLX output to a schema. MLX then halved the time on a 58-minute recording, but it wrote shorter notes and dropped the same deadline again. This note explains both tests, what each number means, and where the decision stands.
+> **In one paragraph.** Lekhni, my local notes app, runs a Qwen3-8B model through Ollama. MLX, Apple's machine-learning framework, is often called faster on Apple Silicon. I tested both with the same model on the same Mac. MLX was 10 to 18% faster end to end and used about 2 GB less memory. It also failed one of my five eval fixtures, and the server I used could not constrain its output to a JSON schema. I stayed on Ollama. A month later I re-ran the test through LM Studio, which can constrain MLX output to a schema, and then measured tokens per second call by call. MLX writes 10 to 20% faster per token. But under a schema some of its answers ran to the output cap and were cut off, and its note lost evidence. Lekhni stays on Ollama. This note explains all three tests and what each number means.
 
 ## The question
 
@@ -59,7 +59,7 @@ Layer 1 is what most benchmark posts report. Layers 3 and 4 decide whether a use
 
 **How to read the JSON row.** Both runtimes produced valid JSON every time. The difference is why. Ollama takes a JSON schema in its [`format` field](https://docs.ollama.com/capabilities/structured-outputs) and constrains generation to it. The [`mlx_lm.server` docs](https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md) list no schema or `response_format` field. So on MLX the JSON was valid by luck, not by construction. The same page also says the server "is not recommended for production".
 
-## The decision
+## The decision in September
 
 I stayed on Ollama. My reasons, in order:
 
@@ -101,17 +101,51 @@ How to read it:
 - **Chunk times stayed far from the timeout.** On MLX no chunk call came near 120 seconds. On Ollama two calls went over it.
 - **I did not get a fair memory number.** LM Studio's model memory sits in the GPU and does not show in the process memory I sampled. So this table has no memory row.
 
-## Where this leaves the decision
+## Where this left the decision
 
-Reason 2 for staying on Ollama no longer holds. LM Studio gives MLX schema-constrained JSON. Reason 3 still holds: switching means a second model server and a new backend in Lekhni. Reason 1 got stronger: the dropped deadline came back.
+After the re-test, reason 2 for staying on Ollama no longer held: LM Studio gives MLX schema-constrained JSON. Reason 3 still held: switching means a second model server and a new backend in Lekhni. Reason 1 got stronger: the dropped deadline came back.
 
-So the choice is now a real trade-off. MLX through LM Studio halves the time for a long recording and avoids the chunk timeouts. It also writes shorter notes and has twice dropped a deadline that Ollama keeps. I have not switched. The next test is the one that decides it: tokens per second per call on both runtimes, and the same fixture checks on more long recordings, so I know whether shorter means worse.
+That left one open question. Was MLX truly faster, or did it only write less? Total time cannot tell the two apart. So I ran one more test.
+
+## Tokens per second, call by call (2026-10-28)
+
+Both runtimes streamed every call, and the harness timed each one. For every call it recorded the time to the first token (how fast the prompt was read), the writing speed in tokens per second, and how many tokens the model wrote. Same model, same 16,384-token window, same 58-minute recording, run one after the other on the same afternoon.
+
+| Measure | Ollama, `qwen3:8b` | LM Studio, MLX Qwen3-8B |
+|---|---|---|
+| Writing speed, 9 chunk calls | 18.6 falling to 11.8 tok/s | 16.0 to 16.6 tok/s, steady |
+| Writing speed, merge call | 11.2 tok/s | 13.4 tok/s |
+| Time to first token, chunk calls | 12 to 19 s | 15 to 22 s |
+| Chunk answers cut off at the 1,400-token cap | 0 of 9 | 2 of 9, and both repairs were cut off too |
+| 58-minute recording, total | 15.7 min | 16.4 min |
+| Evidence items kept | 356 | 233 |
+| Late topics reached (of 4) | 4 | 2 (no waiting queue, no WebSockets) |
+| Final note | 18,413 chars | 10,279 chars |
+
+How to read it:
+
+- **MLX writes faster per token, by about 10 to 20%.** It also holds its speed. Ollama's writing speed fell by more than a third over the run. MLX barely moved.
+- **Ollama reads prompts a little faster.** Its first token came 2 to 4 seconds sooner on chunk calls.
+- **Under a JSON schema, MLX sometimes ran to the output cap.** Two chunk answers stopped at exactly 1,399 tokens, which cut the JSON off. The repair calls hit the same cap. Those chunks lost their evidence, and the note lost two of the four late topics. I did not record the cut-off text, so I cannot say yet why the answers ran long. In the earlier LM Studio run this did not happen, so it is not every run.
+- **The earlier speed-up was mostly shorter answers.** With real per-token numbers, MLX is 10 to 20% faster at writing. In this run the cut-off chunks and their repairs ate that gain, and MLX finished 40 seconds slower.
+
+## The decision
+
+Lekhni stays on Ollama with `qwen3:8b`. In order:
+
+1. **Complete notes.** Ollama kept every chunk's evidence and reached every late topic, in both long runs. MLX lost evidence in one of its two runs.
+2. **The deadline.** MLX dropped the same "Thursday" deadline in September and again in October. Ollama never did.
+3. **One server.** Switching still means a second model server and a new backend.
+
+What I give up: about 10 to 20% of writing speed, and a steadier speed on long runs. The timeout fix I am designing for Lekhni covers the slow late chunks. It sizes each call's limit from its token budget instead of a fixed number.
+
+**What would make me test MLX again:** finding out why some schema-constrained answers run to the cap. If that is a setting in the schema engine, or an extra stop condition, and the cut-offs stop, MLX's per-token lead becomes worth another full test.
 
 ## What I would do differently
 
-- **Measure tokens per second per call.** Total time mixes runtime speed with answer length.
+- **Save the text of every cut-off answer.** I measured that two answers hit the cap, but not what they contained. That is the first thing to look at next time.
 - **Fix the memory comparison.** Read GPU memory from the runtime itself, not process memory.
-- **Add more long-recording fixtures.** One long recording shows a direction. Three or more would show whether MLX's shorter notes miss things a reader needs.
+- **Run each long recording more than once per runtime.** Ollama's total time moved from 22.1 to 15.7 minutes between two runs of the same recording. One run per runtime is a direction, not a result.
 
 ## Sources
 
