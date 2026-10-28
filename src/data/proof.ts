@@ -21,7 +21,7 @@ function productionCard(): ProofCard | null {
   const role = experiences.find((item) => item.caseStudy?.slug === 'enterprise-ai-quality');
   if (!role?.caseStudy) return missing('production');
   // The 140,000 figure must match the published résumé.
-  return { id: 'production', claim: 'Built evals, guardrails, and KPI pipelines for a production RAG chat system', evidence: 'Used by about 140,000 employees', linkLabel: 'Read the case study', to: `/experience/${role.caseStudy.slug}` };
+  return { id: 'production', claim: 'I work on evals, observability, red-teaming, guardrails, and data and vector schemas for a production RAG platform', evidence: 'The platform serves about 140,000 employees', linkLabel: 'Read the case study', to: `/experience/${role.caseStudy.slug}` };
 }
 
 function writingCard(): ProofCard | null {

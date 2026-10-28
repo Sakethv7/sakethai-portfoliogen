@@ -517,7 +517,7 @@ Exactly one of `to` and `href` is set. `to` renders as a router `Link`, so it re
 
 | `id` | Source | Required field | `claim` | `evidence` |
 |---|---|---|---|---|
-| `production` | `experiences.find(e => e.caseStudy?.slug === 'enterprise-ai-quality')` | `caseStudy.slug` | `Built evals, guardrails, and KPI pipelines for a production RAG chat system` | `Used by about 140,000 employees` (résumé figure) |
+| `production` | `experiences.find(e => e.caseStudy?.slug === 'enterprise-ai-quality')` | `caseStudy.slug` | `I work on evals, observability, red-teaming, guardrails, and data and vector schemas for a production RAG platform` | `The platform serves about 140,000 employees` (résumé figure) |
 | `writing` | `publications.filter(p => p.status === 'Published')` | length ≥ 1 | `` `${n} engineering notes on evaluation, retrieval, and tracing` `` | `Newest: ${title}`, newest by `date` |
 | `app` | `work.find(w => w.slug === 'sakethwiki')` | `github` | `A knowledge app I use daily: capture, chat, review, browse` | `SakethWiki, ${evidenceStatus}`. Image: `public/proof/sakethwiki.webp` |
 

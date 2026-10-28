@@ -13,7 +13,7 @@ const Index = () => {
       <div className="hero-copy">
         <p className="eyebrow">Applied AI Systems Engineer</p>
         <h1>Saketh Velidimalla</h1>
-        <p className="hero-thesis">I engineer the evaluation and observability layer for production RAG systems. I trace failures to retrieval, ranking, generation or handoff, build the data pipelines behind them, and agree the KPIs with the teams who act on them. Today that is a system used by about 140,000 employees.</p>
+        <p className="hero-thesis">I engineer evaluation, observability, guardrails and red-teaming for production RAG systems. I trace failures to retrieval, ranking, generation or handoff. I design the database and vector schemas and the data pipelines behind them, and agree the KPIs with the teams who act on them. Today that is a RAG platform used by about 140,000 employees.</p>
         <div className="hero-links">
           {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
           <a className="primary-link" href="#contact" onClick={(event) => { event.preventDefault(); const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; document.getElementById('contact')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); }}>Get in touch <ArrowRight /></a>

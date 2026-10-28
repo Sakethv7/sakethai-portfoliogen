@@ -534,7 +534,7 @@ flowchart TD
 
 | # | Claim | Evidence line | Link | Source |
 |---|---|---|---|---|
-| 1 | Built evals, guardrails, and KPI pipelines for a production RAG chat system | Used by about 140,000 employees | Read the case study → `/experience/enterprise-ai-quality` | `experiences` record with `caseStudy`. The number is on the résumé. |
+| 1 | I work on evals, observability, red-teaming, guardrails, and data and vector schemas for a production RAG platform | The platform serves about 140,000 employees | Read the case study → `/experience/enterprise-ai-quality` | `experiences` record with `caseStudy`. The number is on the résumé. |
 | 2 | {N} engineering notes on evaluation, retrieval, and tracing | Newest: {title of the latest Published note} | Read the notes → `/writing` | `publications` with status `Published`. N is counted, not typed. |
 | 3 | A knowledge app I use daily: capture, chat, review, browse | SakethWiki, public prototype | See the code ↗ (GitHub) | `work` record `sakethwiki`, field `github`. The card shows one screenshot of the app. |
 
