@@ -62,9 +62,11 @@ export const publications: PublicationItem[] = [
 ];
 
 export const activity: ActivityItem[] = [
+  { date: '2026-10-08', title: 'Lekhni: live transcription and call notes', summary: 'Live transcription while recording, call detection for FaceTime, iPhone and Remote Desktop calls, and notes from calls. Audio and text stay on the Mac. Private repository.' },
+  { date: '2026-10-08', title: 'SakethWiki: conflict review at capture', summary: 'A new clip is compared with the closest existing page and shown side by side, and I pick the action. The local app now refuses callers from other machines.', href: 'https://github.com/Sakethv7/SakethWiki' },
+  { date: '2026-10-07', title: 'Job Tracker: a local-first application pipeline', summary: 'A macOS app that turns job-application emails into a tracked pipeline. Each status links to its evidence, and records the parser could not read go to a review queue. Private repository.' },
+  { date: '2026-09-22', title: 'Lekhni public release', summary: 'A public version of the notes layer: recordings and transcripts to typed, traced notes, with session health checks and evals. Runs on Ollama or OpenAI.', href: 'https://github.com/Sakethv7/lekhni-app' },
   { date: '2026-09-22', title: 'Built a systems-to-inference learning roadmap', summary: 'A local app that maps SakethWiki notes onto a nine-layer backend, inference, and agent-harness curriculum, including Backend from First Principles.', href: 'https://github.com/Sakethv7/systems-to-inference-roadmap' },
-  { date: '2026-08-11', title: 'Advanced SakethWiki', summary: 'Continued work on the evolving, review-gated personal knowledge system.', href: 'https://github.com/Sakethv7/SakethWiki' },
-  { date: '2026-05-22', title: 'Published reusable agent tooling', summary: 'Maintained public Agent Skills and MCP server collections for document and development workflows.', href: 'https://github.com/Sakethv7/agent-skills' },
 ];
 
 export const workCategories: WorkCategory[] = ['Flagship systems', 'Developer tools', 'Experiments & learning', 'Creative builds'];
