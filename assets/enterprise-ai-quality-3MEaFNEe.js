@@ -2,7 +2,7 @@ const e=`*Johnson & Johnson (contract) · Feb 2025 to present*
 
 > Internal system names, team names, metric definitions, and data are left out on purpose. Everything here is described in general terms.
 
-> **In one paragraph.** I designed the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees. The work links interaction events, model traces, API payloads, and downstream support-intake outcomes at the correct event grain, so a low score can be traced to retrieval, taxonomy, knowledge, routing, or intake rather than treated as one undifferentiated AI failure. Analysis-guided fixes raised response and containment rates by 10%; correcting topic classification raised three resolution measures by 3 to 5% each.
+> **In one paragraph.** I designed the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees. The work links interaction events, model traces, API payloads, and downstream support-intake outcomes at the correct event grain, so a low score can be traced to retrieval, taxonomy, knowledge, routing, or intake rather than treated as one undifferentiated AI failure. Analysis-guided fixes raised response and containment rates by 10 percentage points; correcting topic classification raised three resolution measures by 3 to 5% each.
 
 ## System flow
 
@@ -88,11 +88,10 @@ For reporting extraction, I treated the full Scan as a bounded batch job rather 
 
 The evaluation layer also had to control who could see what, and how the assistant behaved for different groups.
 
-- **Table access.** I set up access to the analytical tables through IAM roles and OAuth.
-- **ETL jobs.** I built ETL pipelines, including AWS Glue jobs.
+- **Access to data and reports.** I set up read-only access to production tables through IAM roles and OAuth. Report access and role-based filtering run through Power BI service roles, so each reader sees the slice they act on.
+- **ETL jobs.** I built ETL pipelines, including AWS Glue jobs that generate Parquet files for automatic ingestion of full and delta data.
 - **Guardrails and red-teaming.** I wrote guardrails for the assistant and red-teamed the application.
-- **An organization flag.** I used a ServiceNow access rule to derive a flag for each user's organization. Reports, KPIs, and dashboards filter on that flag, so each organization sees its own numbers. The development team also used the same flag to switch the prompt library per organization.
-- **Role-based reporting.** Dashboards filter by role, so each reader sees the slice they act on.
+- **An organization flag.** I used a ServiceNow access rule to derive a flag for each user's organization. Reports, KPIs, and dashboards filter on that flag, so each organization sees its own numbers. The development team also used the same flag to switch the prompt library per organization, and to set organization rules for raising cases on a user's behalf.
 - **Handoff functions.** I worked on the case-creation and live-chat functions, the paths a user takes when the assistant cannot help.
 
 One flag drove both the reporting view and the assistant's behavior. So a KPI for an organization measured the same prompt configuration that organization actually used.
@@ -101,7 +100,7 @@ One flag drove both the reporting view and the assistant's behavior. So a KPI fo
 
 These are results I can share. Each came from work I did with other teams, and I describe each in general terms.
 
-**Missing content.** I scored a sample of one day's answers for relevance, correctness, and hallucination, using the judge pipeline and Arize Phoenix. Splitting the scores by question topic showed gaps in the FAQ coverage for a few HR, payroll, and expense topics. We added content for those topics. The assistant found better material, and response and containment rates rose by 10%.
+**Missing content.** I scored a sample of one day's answers for relevance, correctness, and hallucination, using the judge pipeline and Arize Phoenix. Splitting the scores by question topic showed gaps in the FAQ coverage for a few HR, payroll, and expense topics. We added content for those topics. We also improved response formatting, article relevance, retrieval quality, and the ground-truth articles. Response and containment rates rose by 10 percentage points.
 
 **Wrong topic labels.** The backend filed some questions under the wrong topic. That skewed the reports the team used to judge the assistant. I fixed the classification. Containment, query resolution, and deflection rates each rose by 3 to 5%.
 
