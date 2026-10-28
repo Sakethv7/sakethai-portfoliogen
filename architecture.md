@@ -311,7 +311,7 @@ All motion is progressive enhancement, per ADR-010. Under `prefers-reduced-motio
 | No `:focus-visible` style | none in `index.css` | Token-colored outline | Keyboard polish |
 | Conflicting `.site-nav` gap/overflow overrides | 3 rules across 2 media queries | Consolidate | Clarity |
 | Dead Tailwind theme tokens | `cyber`, `neon`, `gradient-*` reference vars that don't exist; 9 unused keyframes | Remove | Clarity |
-| `lovable-tagger` dev plugin | `vite.config.ts` | Remove if Lovable is no longer used | One fewer dev dependency |
+| `lovable-tagger` dev plugin and Lovable favicon | `vite.config.ts`, `public/favicon.ico` | Done 2026-10-28: plugin removed, favicon replaced with an SV monogram (`favicon.svg` plus a 16/32/48 ICO) | One fewer dev dependency, no template branding |
 
 ### Performance budget (new invariant)
 
