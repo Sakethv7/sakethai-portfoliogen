@@ -643,7 +643,9 @@ ADR-028's 10-second test gets one more question. After 10 seconds, ask: "What is
 - The hero keeps both actions. "Get in touch" leads to email. "View résumé" opens the résumé. They serve different goals (ADR-033).
 - Card 1 names the wider build scope. See the scope list below.
 
-**What is the 10% a share of?** The case study says: "response and containment rates rose by 10%." Two terms need a definition.
+**What is the 10% a share of? (resolved 2026-10-27)** Saketh confirmed it is **percentage points**: response and containment rates rose by 10 points. The case study and the Experience entry now say so. Card 1 can now carry this outcome. That is a separate copy decision. The unit of the "3 to 5%" result is still open.
+
+*Original question:* The case study says: "response and containment rates rose by 10%." Two terms need a definition.
 
 - **Response rate** is the share of user questions that got an answer, not a fallback such as "I could not find that."
 - **Containment rate** is the share of conversations that ended without a hand-off to a person: no live chat and no support case. The site calls this "self-service resolution."
