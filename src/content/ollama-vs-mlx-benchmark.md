@@ -126,7 +126,7 @@ How to read it:
 
 - **MLX writes faster per token, by about 10 to 20%.** It also holds its speed. Ollama's writing speed fell by more than a third over the run. MLX barely moved.
 - **Ollama reads prompts a little faster.** Its first token came 2 to 4 seconds sooner on chunk calls.
-- **Under a JSON schema, MLX sometimes ran to the output cap.** Two chunk answers stopped at exactly 1,399 tokens, which cut the JSON off. The repair calls hit the same cap. Those chunks lost their evidence, and the note lost two of the four late topics. I did not record the cut-off text, so I cannot say yet why the answers ran long. In the earlier LM Studio run this did not happen, so it is not every run.
+- **Under a JSON schema, MLX sometimes ran to the output cap.** Two chunk answers stopped at exactly 1,399 tokens, which cut the JSON off. The repair calls hit the same cap. Those chunks lost their evidence, and the note lost two of the four late topics. I did not record the cut-off text on this run, so I could not say why the answers ran long. I found the cause the next day. See the follow-up section below.
 - **The earlier speed-up was mostly shorter answers.** With real per-token numbers, MLX is 10 to 20% faster at writing. In this run the cut-off chunks and their repairs ate that gain, and MLX finished 40 seconds slower.
 
 ## The decision
@@ -139,7 +139,77 @@ Lekhni stays on Ollama with `qwen3:8b`. In order:
 
 What I give up: about 10 to 20% of writing speed, and a steadier speed on long runs. The timeout fix I am designing for Lekhni covers the slow late chunks. It sizes each call's limit from its token budget instead of a fixed number.
 
-**What would make me test MLX again:** finding out why some schema-constrained answers run to the cap. If that is a setting in the schema engine, or an extra stop condition, and the cut-offs stop, MLX's per-token lead becomes worth another full test.
+**Why the cut-off answers outweigh the speed.** The two sides of this trade are not equal.
+
+- **The gain is small and bounded.** MLX writes 10 to 20% faster per token. In the same run it finished 40 seconds slower (16.4 minutes against 15.7), because the cut-off chunks and their repairs used the time it saved. This is a background job, so a minute or two does not change what the user gets.
+- **The loss is large and may go unseen.** Two chunk answers stopped at the cap, and both repairs did too. Those chunks lost all their evidence. The note lost two of four late topics. I found the loss by comparing evidence counts (233 against 356), not because anything raised an error. I checked the next day: the Lekhni version I tested did not flag a cut-off chunk, so a user would read a normal-looking note with parts missing.
+
+A small time saving does not pay for a possible silent loss of content. That is why the truncation, not the speed, decides this.
+
+**What would make me test MLX again:** finding out why some schema-constrained answers run to the cap. I did that the next day. The follow-up section below has the result.
+
+## Follow-up (2026-10-29): I found the causes and tested again
+
+I ran the open questions as separate tests the next day. LM Studio can run the same Qwen3-8B file with either engine, so every test below used LM Studio. That removed the server as a variable. Ollama itself was not part of these runs.
+
+**Same engine, same answers.** Ollama and LM Studio's llama.cpp engine gave byte-identical output on 75 of 75 calls. So LM Studio's llama.cpp engine is a fair stand-in for Ollama.
+
+**Why the deadline dropped.** I ran the `scratch_guided` fixture 20 times per setup. MLX 4-bit dropped "Thursday" in 20 of 20 runs. MLX 6-bit and llama.cpp dropped it in 0 of 20. The model is the same, so the 4-bit rounding in MLX is the likely cause. I have not shown which part of the model matters.
+
+**Why answers hit the cap.** The model fell into a repetition loop in the list of key terms. After 23 distinct terms, one answer cycled through the same 10 terms until it reached the cap. The repair call copied the loop. This happened only on LM Studio's chat route with MLX: 15 cut-offs in 18 calls. The same prompt sent the way Lekhni sends it to Ollama gave 0 cut-offs in 135 calls. Capping the term list at 15 items gave 0 in 18. A second cap on the length of each item stalled MLX for about 30 minutes, so I do not use it.
+
+**Does Lekhni notice a cut-off?** The version I tested did not. It dropped that chunk's evidence without a flag. Lekhni's new timeout work (Part 15) marks the gap.
+
+**Heat and energy.** I measured chip power and thermal pressure with macOS `powermetrics`: 3 runs per engine, 12 minutes each, on a 16 GB M4 Mac on the charger.
+
+| Measure | llama.cpp 4-bit | MLX 4-bit |
+|---|---|---|
+| Energy per output token | about 0.44 J | about 0.36 J |
+| Writing speed | 14.4 tok/s | 19.6 tok/s |
+| Time at Heavy thermal pressure | 76 to 82% | 61 to 74% |
+| Memory pressure | warn in 2 of 3 runs | normal in 3 of 3 |
+
+Both engines reached Heavy thermal pressure within 2 to 4 minutes. Under heat, llama.cpp lost 16% of its writing speed and MLX lost 4%. I did not measure Ollama. It runs the same engine on the same file, so I expect the same heat effect. That is an inference. It also fits the slowdown I saw in Ollama's long run.
+
+**The full pipeline, MLX 6-bit against llama.cpp 4-bit.** I ran all 9 chunks and the merge on the 58-minute recording, with the term cap in place. One run per setup.
+
+| Measure | llama.cpp 4-bit | MLX 6-bit |
+|---|---|---|
+| Evidence items kept | 353 | 295 (16% fewer) |
+| Chunks cut off, repaired or failed | 0 | 0 |
+| Pipeline time | 14.6 min | 11.9 min |
+| Writing speed, median per call | 14.7 tok/s | 12.2 tok/s |
+| Memory taken by the model | 5.1 GB | 8.4 GB |
+
+6-bit MLX finished sooner because it wrote shorter answers (6,346 tokens against 9,188), not because it wrote faster. It passed the Thursday check. The llama.cpp count of 353 is close to the 356 I measured on 2026-10-28.
+
+**What this means.** No MLX setup beat Ollama on everything.
+- MLX 4-bit is faster and uses less energy, but it drops the deadline.
+- MLX 6-bit keeps the deadline and does not cut off with the term cap. It writes more slowly per token than llama.cpp, finds 16% fewer evidence items, and takes about 3 GB more memory.
+- Switching still needs a new backend in Lekhni. Lekhni talks to Ollama's own streaming API and sends the schema in Ollama's format. LM Studio uses a different API. Its context size is fixed when the model loads.
+
+So Lekhni stays on Ollama. The cut-off cause is no longer a reason. The deadline and the evidence count still are.
+
+**A short meeting, scored against Granola.** The recording I used for everything above is long. Most of my meetings are not, so I ran a 14-minute meeting through both engines, 2 runs each. This input is under Lekhni's 18,000-character limit, so Lekhni made one call per run and did not chunk it. I took Granola's own note for the same meeting as the reference. It has 28 points. I scored each Lekhni note against them, blind: I shuffled the outputs, hid the engine name, then scored.
+
+| Measure | llama.cpp 4-bit | MLX 6-bit |
+|---|---|---|
+| Points of 28 covered, per run | 11.5 and 10.0 | 7.5 and 11.0 |
+| Speed | 16.1 to 16.8 tok/s | 13.6 to 14.4 tok/s |
+| Energy per note | about 570 J | about 635 J |
+| Time per note | 38 to 39 s | 42 s |
+| Thermal state | Nominal | Nominal |
+| Cut-offs | 0 | 0 |
+
+- **The engines tie on quality.** MLX's two runs differ from each other by more than the two engines differ.
+- **llama.cpp is a little faster and uses less energy here.** About 60% of each call is reading the 3,578-token prompt. The Mac stayed at Nominal thermal state, so the slowdown from heat that I saw on the long recording did not appear.
+- **Both miss most of what Granola caught.** Each run covered about a third of the points. All 4 runs missed 9 of them, including 3 of the 5 next steps. All 4 also failed my planted date check, where the speakers corrected a start date. The notes were flat (summary, key points, action items) with owners given only as "me" or "them". Granola groups by topic and names the owner of each action.
+
+So on a short meeting the runtime does not decide quality. The prompt and the note structure do. That is a larger gap than anything between llama.cpp and MLX, and it is the next thing to work on. I did not run MLX 4-bit on this meeting, because it already fails the deadline check.
+
+**Limits.** The power test has 3 runs per engine and measures chip power only. The full-pipeline test has 1 run per setup, and the short-meeting test has one meeting and 2 runs per engine. Granola's note is a reference, not the truth. I did not check whether the 58 extra items from llama.cpp are real content or repeats. More items is not the same as better notes. The 2026-10-28 count of 356 came from an earlier harness, and I did not verify how it counted.
+
+**What would make me test MLX again:** a check that the 16% evidence gap is repeats and not content, or an MLX build that keeps the deadline at 4-bit.
 
 ## What I would do differently
 
