@@ -40,11 +40,7 @@ Use the method each operator documents. A valid signature or IP match proves who
 
 ## What vendors sell at the edge
 
-Several companies now work at the **edge**, the network layer in front of a website.
-
-**Verify identity and charge for access.** Cloudflare calls a bot verified when it "is transparent about who it is and what it does." The bot proves this with a cryptographic signature, a published IP list with a stable user agent, or reverse DNS. It must also follow robots.txt and keep reasonable request rates ([Cloudflare docs](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/)). Some sites charge for crawling. There, Cloudflare answers an unpaid AI crawler with HTTP status 402 and puts the price in a response header ([Cloudflare docs](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/)).
-
-**Serve agents a readable version.** Scrunch's Agent Experience Platform detects AI visitors such as ChatGPT-User and PerplexityBot at the CDN. It returns server-rendered HTML with "structured summaries and context blocks." Human visitors get the normal site. Googlebot and Bingbot are not routed ([Scrunch FAQ](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work)). Adobe's Optimize at Edge works the same way. It serves optimized HTML "only to AI agents," and says it "does not impact either human users or SEO bots" ([Adobe docs](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview)).
+Several companies work at the **edge**, the network layer in front of a website. Cloudflare calls a bot verified when it "is transparent about who it is and what it does," proven by a signature, a published IP list or reverse DNS. For sites that charge for crawling, it answers an unpaid AI crawler with HTTP status 402 and the price in a header ([verified bots](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/), [pay per crawl](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/)). Scrunch and Adobe detect AI visitors at the CDN and serve them server-rendered HTML with "structured summaries," while human visitors get the normal site and Googlebot and Bingbot are not routed ([Scrunch FAQ](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work), [Adobe docs](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview)).
 
 ## What a GEO interceptor does
 
@@ -74,23 +70,17 @@ Serving a different version to bots has a known risk. Google's spam policies def
 
 Both vendors above stay clear of that line in the same way. Scrunch does not route Googlebot or Bingbot. Adobe says its service does not affect SEO bots. *My reading:* the safe rule is to change the format, not the meaning. The agent view can drop scripts, menus, and layout. It should not say anything the human page does not say.
 
-## Advice that does not hold up
+## Two pieces of advice that fail
 
-Some guides describe a stricter version of this pattern. The checks below compare that advice with the sources.
+**"Send AI crawlers an empty page with only JSON-LD."** Google says its AI features need no special markup, and that structured data should stay consistent with the visible text ([Google Search Central](https://developers.google.com/search/docs/appearance/ai-features)). A page of only structured data, while humans see a full page, moves toward the cloaking line.
 
-**"Send AI crawlers an empty page with only JSON-LD."** JSON-LD is a format for structured data inside a page. Google says its AI features need no special schema.org markup. It also says structured data should stay consistent with the visible page text ([Google Search Central](https://developers.google.com/search/docs/appearance/ai-features)). A page that holds only structured data, while humans see a full page, moves toward the cloaking line.
+**"Stripping the layout stops scrapers."** *My reading:* it does the opposite. The stripped version is the cleanest copy of the content. Protection comes from steps 1 to 3: identify, classify, decide.
 
-**"Stripping the layout stops scrapers."** *My reading:* it does the opposite for scrapers that want the text. The stripped version is the cleanest copy of the content. Stripping layout serves good agents better. It does not protect the content. Protection comes from steps 1 to 3: identify, classify, decide.
+## Where version and safety checks stop
 
-## Where version and safety checks fit, and where they stop
+A site can check what a client **declares**, such as a version number against a list of unsafe versions. It can check **behavior**: request rates, paths outside robots.txt, or form inputs shaped like prompt injection. It cannot see **inside** the client. It cannot know which local model runs on a laptop, or whether that model is patched. An agent in a browser extension, like the NEC example, may declare nothing. So an edge "vulnerability report" covers declared versions and observed behavior. It is not a security audit of the visitor.
 
-Discussions of this layer often include two more jobs: checking crawler and local-model versions for known vulnerabilities, and checking requests against safety rules. *My reading:* part of this is possible at the edge, and part is not.
-
-A site can check what a client **declares**. If an agent sends a version number, the interceptor can compare it with a list of versions known to be unsafe. It flags those requests in the report. A site can also check **behavior**: request rates, paths outside robots.txt, or form inputs shaped like prompt injection.
-
-A site cannot see **inside** the client. It cannot know which local model runs on someone's laptop, or whether that model is patched. An agent inside a browser extension, like the NEC example, may declare nothing at all. So a "vulnerability report" from the edge is a report about declared versions and observed behavior. It is not a security audit of the visitor.
-
-The same limit applies to regulations. The interceptor can enforce the business's own published terms and log evidence of what happened. Whether a given agent's use breaks a specific law is a legal question. The logs support that question. They do not answer it.
+The same limit applies to regulations. The interceptor can enforce the business's published terms and log evidence. Whether an agent's use breaks a specific law is a legal question. The logs support it and do not answer it.
 
 ## What this note does not claim
 

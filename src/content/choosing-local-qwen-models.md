@@ -1,8 +1,8 @@
 # Choosing local Qwen models: memory, context and JSON
 
-*Engineering note · 2026-10-28 · from Lekhni and SakethWiki, my two local apps*
+*Engineering note · 2026-10-28 · from Lekhni, my local meeting-notes app*
 
-> **In one paragraph.** I run Qwen models locally through Ollama on a 16 GB Mac. Picking "the best model" turned out to be the wrong question. Each step of a pipeline needs a model that fits in memory next to everything else, returns output the code can parse, and passes that step's checks. This note covers why I chose Qwen, a benchmark against Llama, Mistral, Gemma and newer Qwen models, the GPU memory limit on a 16 GB Mac, the context-window setting that cost me 3.3 GiB, schema-constrained JSON, and how a model becomes the default.
+> **In one paragraph.** I run Qwen models locally through Ollama on a 16 GB Mac. Picking "the best model" turned out to be the wrong question. Each step of a pipeline needs a model that fits in memory next to everything else, returns output the code can parse, and passes that step's checks. This note covers why I chose Qwen, a benchmark against Llama, Mistral and newer Qwen models, the GPU memory limit on a 16 GB Mac, the context-window setting that cost me 3.3 GiB, schema-constrained JSON, and how a model becomes the default.
 
 ## One app, several model jobs
 
@@ -19,71 +19,44 @@ Each step can have a different best model. So Lekhni has two settings: `OLLAMA_M
 
 ## Why Qwen, and why an 8B model
 
-The constraint came first. Lekhni had to be free to run and keep recordings on the Mac. The Mac has 16 GB of memory, and during a call it also runs the call app and two speech models. So the model's weights, its cache and everything else must fit at the same time.
+The constraint came first. Lekhni had to run free and keep recordings on the Mac. The Mac has 16 GB, and during a call it also runs the call app and two speech models. So the weights, the cache and everything else must fit at once.
 
-`qwen3:8b` fits that budget. Its 4-bit weights take about 5.2 GB. A 16K-token cache adds about 2.3 GiB (the arithmetic is below). That leaves room for the rest of the app. A 14B model at 4 bits would need roughly 9 GB for weights alone, before any cache. That is my estimate, not a measurement.
+`qwen3:8b` fits. Its 4-bit weights take about 5.2 GB, and a 16K-token cache adds about 2.3 GiB. A 14B model at 4 bits would need roughly 9 GB for weights alone. That is my estimate, not a measurement.
 
-Four properties of Qwen 3 made it a good fit. They come from the [Qwen 3 release post](https://qwenlm.github.io/blog/qwen3/) and the [Qwen3-8B card](https://huggingface.co/Qwen/Qwen3-8B):
+Four properties of Qwen 3 fit the job, from the [release post](https://qwenlm.github.io/blog/qwen3/) and the [Qwen3-8B card](https://huggingface.co/Qwen/Qwen3-8B). The weights are open under Apache 2.0, so there is no API cost. The family has six dense sizes (0.6B to 32B), so a step can move to a smaller model without changing the runtime. `enable_thinking=False` stops the reasoning block, which notes do not need. And the 8B model reads 32,768 tokens natively, against my routine window of 16,384.
 
-1. **Open weights under Apache 2.0.** No API cost and no usage fee.
-2. **One family, six dense sizes.** 0.6B, 1.7B, 4B, 8B, 14B and 32B. A step can move to a smaller model in the same family without changing the runtime.
-3. **A hard switch for thinking.** `enable_thinking=False` stops the reasoning block. Notes do not need it, and it costs tokens and time.
-4. **Enough context.** The 8B model reads 32,768 tokens natively. My routine window is 16,384.
-
-**What I measured.** On 2026-08-09 I ran Lekhni's eval fixtures on two local models with the same prompt version:
-
-| Model | Fixture runs | Passed | Typical failures |
-|---|---|---|---|
-| `qwen2.5:7b` | 48 | 39 (81%) | No title, an "Action items" section on a meeting that had none, a missing "Decisions" section |
-| `qwen3:8b` | 8 | 7 (88%) | One unexpected "Action items" section |
-
-Qwen 2.5 was about three times faster per fixture. It also failed in ways a user would see. I made Qwen 3 the only supported local line that day. On later prompt versions `qwen3:8b` passed 15 of 15 runs. The run counts differ, so treat this as a direction, not a precise ranking.
-
-**What I have not measured.** I have not run the same fixtures on a hosted model, so I cannot claim that the local model does the same job as a hosted one. Lekhni's eval harness has a hosted backend. That comparison is a later measurement. The next section compares other local model families.
+On 2026-08-09 I ran Lekhni's eval fixtures on two local models with the same prompt version. `qwen2.5:7b` passed 39 of 48 runs (81%). It failed with no title, an "Action items" section on a meeting that had none, or a missing "Decisions" section. `qwen3:8b` passed 7 of 8 (88%). Qwen 2.5 was about three times faster, but its failures were ones a user would see. I made Qwen 3 the only supported local line that day. On later prompt versions it passed 15 of 15. The run counts differ, so treat this as a direction. I have not run the same fixtures on a hosted model, so I cannot say the local model matches a hosted one.
 
 ## Benchmark: Qwen against other local models (2026-10-28)
 
-Two months after choosing Qwen 3, I tested it again against newer local models. The harness reused Lekhni's real prompts, JSON schemas and long-recording pipeline. It ran one setup at a time on the same M4 with 16 GB, and it deleted each candidate model after its run, because the disk had only about 13 GB free.
+Two months later I tested Qwen 3 against newer local models. The harness reused Lekhni's real prompts, schemas and long-recording pipeline. It ran one setup at a time on the same M4 and deleted each model afterwards, because the disk had about 13 GB free. Stage 1 screened every setup on the five fixtures (three runs each) and one 33,000-character talk. Stage 2 ran a 58-minute recording only on the best setups.
 
-I ran it in two stages. A full run on every model would take about 2.5 hours, because one hour of audio takes about 20 minutes to become a note. So stage 1 screened every setup quickly, and stage 2 ran the long recording only on the best ones.
+| Setup | Fixtures passed | Talk time | Talk note | Peak memory |
+|---|---|---|---|---|
+| `qwen3:8b` (default) | 15/15 | 106 s | 4,716 chars | 7.4 GB |
+| `llama3.1:8b` | 15/15 | 116 s | 3,781 chars | 6.9 GB |
+| `ministral-3:8b` | 15/15 | 339 s | 12,670 chars | 7.4 GB |
+| `qwen3.5:9b` | 12/15 | 179 s | 7,925 chars | 6.6 GB |
 
-**Stage 1: fixtures and one short talk.** Each setup ran the five fixtures three times (15 runs), plus one talk of about 33,000 characters that fits in a single model call.
+`qwen3.5:9b` failed three runs the same way: it added a "Decisions" section to a transcript with none. `ministral-3:8b` wrote the most but was three times slower and put bold markdown inside headings, which breaks the note format. `llama3.1:8b` passed everything and was fast, but its notes were shorter and more generic. I also ran `qwen3:8b` with a 4B chunk model. Those rows differed from the default by about ±15%, but the short inputs never reach the chunked path. That spread is run-to-run noise, so a gap smaller than it is not a real difference.
 
-| Setup | Fixtures passed | Fixture time | Talk time | Talk note | Peak memory |
-|---|---|---|---|---|---|
-| `qwen3:8b` (current default) | 15/15 | 329 s | 106 s | 4,716 chars | 7.4 GB |
-| `llama3.1:8b` | 15/15 | 211 s | 116 s | 3,781 chars | 6.9 GB |
-| `ministral-3:8b` | 15/15 | 448 s | 339 s | 12,670 chars | 7.4 GB |
-| `qwen3.5:9b` | 12/15 | 499 s | 179 s | 7,925 chars | 6.6 GB |
-| `qwen3:8b` + `qwen3.5:4b` for chunks | 15/15 | 298 s | 137 s | 5,120 chars | 7.8 GB |
-| `qwen3:8b` + `gemma3:4b` for chunks | 15/15 | 354 s | 145 s | 5,321 chars | 7.9 GB |
+Stage 2 used a 58-minute system-design mock interview. It takes the chunked path: 9 chunk calls and one merge call. I checked whether the note reaches four topics from the last third: the waiting queue, WebSockets, sharding and the search index.
 
-How to read it:
+| Setup | Total time | Note | Evidence kept | Late topics |
+|---|---|---|---|---|
+| `qwen3:8b` | 22.1 min | 18,665 chars | 357 of 357 | 4/4 |
+| `llama3.1:8b` | 13.5 min | 9,178 chars | 281 of 281 | 3/4 (no WebSockets) |
+| `qwen3:8b` + `qwen3.5:4b` for chunks | 23.1 min | 21,378 chars | 341 of 385 | 4/4 |
 
-- **`qwen3.5:9b` failed three runs** the same way. It added a "Decisions" section to a transcript that has none. It was also slower than the default.
-- **`ministral-3:8b` wrote the most,** but it was three times slower on the talk, and it put bold markdown inside headings, which breaks the note format.
-- **`llama3.1:8b` passed everything and was the fastest.** Its notes were shorter and more generic. For example, it gave two different patterns the same trade-offs, where `qwen3:8b` kept the speaker's numbers.
-- **The last two rows measure noise, not chunk models.** The fixtures and the short talk never reach the chunked path, so those setups ran as plain `qwen3:8b`. Their spread against the first row, about ±15%, is the run-to-run noise. A gap smaller than that is not a real difference.
+**`qwen3:8b` stays the default.** It was the only single-model setup that reached every late topic and kept all its evidence. Llama was 40% faster, but its note was half as long and lost a topic. For notes I read later, a complete note beats a fast one.
 
-**Stage 2: a 58-minute recording.** This is a system-design mock interview. It takes the chunked path: 9 chunk calls, then one merge call that writes the note. I checked whether the note reaches four topics from the last third of the recording: the waiting queue, WebSockets, sharding and the search index.
+**The smaller chunk model did not help.** It was not faster in total, and its note dropped 44 evidence items. Ollama logged "model predicted to exceed available memory, evicting" at each switch between the 4B and 8B model. The two do not fit in GPU memory together, so every switch reloads one. The GPU section below explains why.
 
-| Setup | Total time | Note | Evidence kept | Late topics | Slowest chunk | Merge call |
-|---|---|---|---|---|---|---|
-| `qwen3:8b` | 22.1 min | 18,665 chars, 285 bullets | 357 of 357 | 4/4 | 133 s | 446 s |
-| `llama3.1:8b` | 13.5 min | 9,178 chars, 194 bullets | 281 of 281 | 3/4 (no WebSockets) | 97 s | 235 s |
-| `qwen3:8b` + `qwen3.5:4b` for chunks | 23.1 min | 21,378 chars, 259 bullets | 341 of 385 | 4/4 | 111 s | 578 s |
-
-**The decision: `qwen3:8b` stays the default.** It was the only single-model setup that reached every late topic and kept all of its evidence. Llama was 40% faster, but its note was half as long and lost a topic. For notes I read later, a complete note beats a fast one.
-
-**The smaller chunk model did not help.** The 4B model was not faster in total, and its note dropped 44 evidence items. The reason is memory. During that run, Ollama logged "model predicted to exceed available memory, evicting" each time the pipeline switched between the 4B and the 8B model. The two models do not fit in GPU memory together, so every switch reloads a model. The section on the GPU memory limit below explains why.
-
-**The benchmark also found a bug in my app.** The first `qwen3:8b` run on the long recording failed. One chunk call took longer than Lekhni's fixed 120-second limit, and the whole 20-minute note was lost. The limit was below the worst case the app allowed itself. The fix is to stream the answer, stop a call only on silence, size each limit from the work, and skip a failed chunk with a note instead of losing everything. The full design is in [Stop a model call on silence, not on total time](#/writing/model-call-timeouts).
+**The benchmark also found a bug in my app.** The first `qwen3:8b` run on the long recording failed. One chunk call took longer than Lekhni's fixed 120-second limit, and the whole 20-minute note was lost. The fix is to stream the answer, stop a call only on silence, size each limit from the work, and skip a failed chunk with a note. The design is in [Stop a model call on silence, not on total time](#/writing/model-call-timeouts).
 
 ## Memory is weights plus the KV cache
 
-A model in memory has two large parts. The **weights** are the trained parameters. For `qwen3:8b` at 4 bits, that is about 5 GB. The **KV cache** stores the attention keys and values for every token in the context, so the model does not recompute them for each new token.
-
-The cache size follows from the model's shape. The [Qwen3-8B card](https://huggingface.co/Qwen/Qwen3-8B) lists 36 layers and 8 KV heads. With a head size of 128 and a 16-bit cache:
+A model in memory has two large parts. The **weights** are the trained parameters, about 5 GB for `qwen3:8b` at 4 bits. The **KV cache** stores the attention keys and values for every token in the context, so the model does not recompute them. The [Qwen3-8B card](https://huggingface.co/Qwen/Qwen3-8B) lists 36 layers and 8 KV heads. With a head size of 128 and a 16-bit cache:
 
 ```text
 KV cache per token = 2 (K and V) × 36 layers × 8 KV heads × 128 × 2 bytes
@@ -93,63 +66,41 @@ KV cache per token = 2 (K and V) × 36 layers × 8 KV heads × 128 × 2 bytes
 40,960-token window ≈ 5.6 GiB   (more than the weights)
 ```
 
-This is the arithmetic that matters on a 16 GB machine. The cache for a long window can cost more than the model itself.
+On a 16 GB machine, the cache for a long window can cost more than the model.
 
 ## The GPU does not get all 16 GB
 
-Apple Silicon has unified memory: the CPU and the GPU share one pool. But macOS does not let the GPU use all of it. It sets a default limit on the memory the GPU can wire for itself. On this Mac, `sysctl iogpu.wired_limit_mb` returns 0, which means "use the system default". Ollama's own log reports what that default is in practice: `free="11.8 GiB"` of Metal memory. So about 11.8 GiB of the 16 GB is the budget for every loaded model and its cache.
+Apple Silicon has unified memory, but macOS limits how much the GPU can wire. On this Mac `sysctl iogpu.wired_limit_mb` returns 0, which means the system default. Ollama's log shows what that is in practice: `free="11.8 GiB"` of Metal memory. That is the budget for every loaded model and its cache. You can raise it with `sudo sysctl iogpu.wired_limit_mb=<MB>` ([llmconfigurator](https://llmconfigurator.com/en/guides/troubleshooting/increase-metal-vram-limit-apple-silicon)), but every gigabyte comes from macOS and the other apps.
 
-You can raise the limit with `sudo sysctl iogpu.wired_limit_mb=<MB>`, and guides suggest about 11 GB as a safe target on a 16 GB Mac ([llmconfigurator](https://llmconfigurator.com/en/guides/troubleshooting/increase-metal-vram-limit-apple-silicon)). Every gigabyte you give the GPU is taken from macOS and the other apps. On a machine that also runs a call app and speech models, there is little to take.
-
-That budget explains the benchmark result above. `qwen3:8b` with a 16K window sits at about 7.4 GB. A second 4B model needs about 3.7 GiB more by Ollama's estimate. Together they pass the limit, so Ollama evicts one to load the other. A second local model gives no parallel work on this Mac. It only adds reloads. If I want a separate, faster model for one step, the realistic place for it is a hosted model, not this machine.
+That budget explains the chunk-model result. `qwen3:8b` with a 16K window sits at about 7.4 GB, and a 4B model needs about 3.7 GiB more. Together they pass the limit, so Ollama evicts one to load the other. A second local model gives no parallel work on this Mac. It only adds reloads.
 
 ## The setting that cost 3.3 GiB
 
-Ollama's context window is `num_ctx`. The [Ollama FAQ](https://docs.ollama.com/faq) gives a default of 4,096 tokens, which is too small for a transcript. So you set it.
+Ollama's context window is `num_ctx`, and the [FAQ](https://docs.ollama.com/faq) gives a default of 4,096 tokens, which is too small for a transcript. My first version used 40,960 tokens for the final note and 16,384 for chunks. Two things went wrong. Ollama reserved the cache for the full window, so the 40K window held about 3.3 GiB more than the 16K one and no routine call used it. And Ollama reloaded the model when a call asked for a different `num_ctx`, so every long note paid for a reload between the chunk step and the final step.
 
-My first version used two windows: 40,960 tokens for the final note and 16,384 for chunks. Two things went wrong, both of which I saw in Lekhni:
+The fix was one shared window, `OLLAMA_NUM_CTX=16384`, with a step-up only for a single call that would not fit. A quantized cache is another lever I have not adopted. The FAQ says a `q8_0` cache (`OLLAMA_KV_CACHE_TYPE`) uses about half the memory of `f16`, with a small loss of precision.
 
-1. Ollama reserved the cache for the full window when it loaded the model. The 40K window held about 3.3 GiB more than the 16K one, and no routine call used it.
-2. Ollama reloaded the model when a call asked for a different `num_ctx`. Every long note paid for a reload between the chunk step and the final step.
+## JSON and the default-model rule
 
-The fix was one shared window, `OLLAMA_NUM_CTX=16384`, sized for the largest routine prompt. A function steps the window up only for a single call that would not fit. That trades a rare reload for a smaller, steady footprint.
+Every JSON step (chunk extraction, pattern extraction, the privacy filter, repair) passes a schema in Ollama's [`format` field](https://docs.ollama.com/capabilities/structured-outputs). That removes malformed structure as a failure. It does not remove running out of tokens: if a chunk hits its output limit mid-object, the JSON is cut off. So each JSON call keeps one repair attempt on the same schema. This is also why the runtime mattered. My [Ollama versus MLX benchmark](#/writing/ollama-vs-mlx-benchmark) covers it.
 
-A quantized cache is another lever I have not adopted. The Ollama FAQ says a `q8_0` cache (`OLLAMA_KV_CACHE_TYPE`) uses about half the memory of `f16`, with a small loss of precision. It applies to every model on the server.
-
-## Make the JSON valid by construction
-
-Chunk extraction, pattern extraction, the privacy filter and JSON repair all return JSON. A model that is asked nicely for JSON returns it most of the time. "Most of the time" breaks a pipeline that runs nine chunk calls per recording.
-
-Ollama accepts a JSON schema in its [`format` field](https://docs.ollama.com/capabilities/structured-outputs) and constrains generation to it. Lekhni passes a schema on every JSON call. That removes malformed structure as a failure, but it does not remove one more case: running out of tokens. If a chunk hits its output limit (`num_predict`) mid-object, the JSON is cut off. On one 58-minute recording a chunk used 875 of its 900 allowed tokens. So each JSON call keeps one repair attempt, on the same schema, for truncation.
-
-This is also why the runtime choice mattered. My [Ollama versus MLX benchmark](#/writing/ollama-vs-mlx-benchmark) found that the plain `mlx-lm` server had no schema field. LM Studio's MLX engine does, and the re-test in that note uses it.
-
-## How a model becomes the default
-
-I use a rule: **a candidate becomes the default only after the evals show it holding up.** Two tools enforce it.
-
-1. **`eval.py`** re-runs five fixture transcripts and checks fixed expectations: sections that must appear and sections that must not. The checks are string matches, not an LLM judge. That catches "the model stopped following instructions". It does not catch "the summary got a bit worse". I chose that limit on purpose, because an uncalibrated judge gives confident labels I cannot trust.
-2. **`compare_models.py`** runs several setups side by side, for example `qwen3:8b` alone against a 9B final model with a 4B chunk model. It runs the fixtures and real long transcripts, prints pass counts and timings, and writes the notes out for me to read. The fixtures are all under 1,000 characters, so only the real transcripts test the chunk model. At the end it asks which setup to keep and offers to `ollama rm` the rest, so unused models do not fill the disk.
-
-The reading step is deliberate. Pass counts tell me a setup is safe. Reading the long notes tells me it is good.
+A candidate model becomes the default only after the evals show it holding up. `eval.py` re-runs five fixtures and checks fixed expectations by string match, not an LLM judge. It catches "the model stopped following instructions" and not "the summary got a bit worse". I chose that limit on purpose, because an uncalibrated judge gives confident labels I cannot trust. `compare_models.py` runs several setups side by side on the fixtures and on real long transcripts, writes the notes out for me to read, and offers to `ollama rm` the losers. Pass counts tell me a setup is safe. Reading the long notes tells me it is good.
 
 ## What I would tell someone starting
 
-1. Write down every step that calls a model, and what each step needs.
-2. Do the KV-cache arithmetic before you pick a context window.
-3. Use one window size for routine calls, so the model does not reload.
-4. Constrain JSON with a schema, and keep one repair call for truncation.
-5. Let evals and side-by-side reading pick the model for each step.
-6. Check how much memory the GPU really gets. On a 16 GB Mac it is about 11.8 GiB, and two models rarely fit together.
-7. Time every model call before you set its timeout.
+1. Write down every step that calls a model, and what each needs.
+2. Do the KV-cache arithmetic before you pick a context window, and use one window for routine calls.
+3. Constrain JSON with a schema, and keep one repair call for truncation.
+4. Let evals and side-by-side reading pick the model for each step.
+5. Check how much memory the GPU really gets. On a 16 GB Mac it is about 11.8 GiB, and two models rarely fit together.
+6. Time every model call before you set its timeout.
 
 ## Sources
 
 - Ollama, [FAQ: context window, KV cache quantization, keep-alive](https://docs.ollama.com/faq)
 - Ollama, [Structured outputs](https://docs.ollama.com/capabilities/structured-outputs)
 - Qwen, [Qwen 3 release post](https://qwenlm.github.io/blog/qwen3/)
-- Qwen, [Qwen3-8B model card](https://huggingface.co/Qwen/Qwen3-8B) and [Qwen3.5-9B model card](https://huggingface.co/Qwen/Qwen3.5-9B)
+- Qwen, [Qwen3-8B model card](https://huggingface.co/Qwen/Qwen3-8B)
 - llmconfigurator, [Increase the Metal VRAM limit on Apple Silicon](https://llmconfigurator.com/en/guides/troubleshooting/increase-metal-vram-limit-apple-silicon)
-- Sebastian Raschka, [Gated DeltaNet explainer](https://sebastianraschka.com/llms-from-scratch/ch04/08_deltanet/)
 
 *Related: [Ollama or MLX: how I benchmarked a local model runtime](#/writing/ollama-vs-mlx-benchmark) · [Lekhni: system design of a local-first meeting-notes app](#/writing/lekhni-system-design)*
