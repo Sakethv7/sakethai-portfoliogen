@@ -46,7 +46,7 @@ These four jobs come from the sources above. The grouping is my reading.
 
 **2. Be cited by other sites.** In Similarweb's travel-brand example, the brand appeared in 13 of 180 tracked prompts. The most-cited sources were third-party sites such as Cvent, Wikipedia, and TripAdvisor, not the brand's own homepage. AI answers lean on what other sites say about a business.
 
-**3. Give agents a structured door.** Some visitors want to act, not read. Sabre, which runs a large travel-booking platform, launched an MCP server in September 2025. MCP (Model Context Protocol) lets an AI agent call a company's functions directly. Sabre reports "nearly 80 customers both piloting and in full production mode." It says its MCP powers apps "live inside ChatGPT and Claude today" ([Sabre, Sep 2026](https://www.sabre.com/resources/newsroom/mcp-is-the-new-ndc-is-this-travels-shift-to-streaming-moment/)). These are Sabre's own figures, and the 80 includes pilots.
+**3. Give agents a structured door.** Some visitors want to act, not read. Sabre, which runs a large travel-booking platform, launched an MCP server in September 2026. MCP (Model Context Protocol) lets an AI agent call a company's functions directly. Sabre reports "nearly 80 customers both piloting and in full production mode." It says its MCP powers apps "live inside ChatGPT and Claude today" ([Sabre, Sep 2026](https://www.sabre.com/resources/newsroom/mcp-is-the-new-ndc-is-this-travels-shift-to-streaming-moment/)). These are Sabre's own figures, and the 80 includes pilots.
 
 **4. Measure it as a share, over time.** Track a fixed set of prompts on each AI platform. Run them more than once. Report how often the brand appears, how often its own domain is cited, and how the answers describe it.
 

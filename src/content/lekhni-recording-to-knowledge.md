@@ -1,6 +1,6 @@
 I record a lot of talks, calls, and study sessions. For a long time the recordings turned into transcripts, and the transcripts turned into nothing. A transcript is a record of what was said, not what I learned from it. Nobody rereads an hour of text.
 
-Lekhni (लेखनी, "pen") is the local app I built to close that gap. It takes a recording, a transcript, or pasted notes and turns them into structured notes. Then it hands the parts worth keeping to my knowledge base, [SakethWiki](#/writing/review-gated-knowledge-system). Everything runs on my Mac.
+Lekhni (लेखनी, "pen") is the local note-taking and meeting-summarizing app I built to close that gap. It takes a recording, a transcript, or pasted notes and turns them into structured notes. Then it hands the parts worth keeping to my knowledge base, [SakethWiki](#/writing/review-gated-knowledge-system). Everything runs on my Mac.
 
 This is a build log: what the pieces are, and the decisions that kept it small.
 

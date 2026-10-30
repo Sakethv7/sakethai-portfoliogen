@@ -132,9 +132,3 @@ document version
 ```
 
 This avoids re-embedding unchanged chunks. It must invalidate when the chunk text, embedding model, chunking policy, or preprocessing rules change. That is separate from a retrieval cache, which stores the result of searching an already-indexed corpus for a user request.
-
-## The interview answer
-
-“I choose the database from the access pattern. For transaction-heavy, relationship-rich workflows, I start with a relational database because joins and consistency are native. For high-volume event writes with evolving payloads and predictable key access, I consider NoSQL. Then I design the missing pieces deliberately: identifiers and event-time contracts, downstream analytical joins, idempotent incremental ETL, monitoring, and cache/TTL policy. Most real systems use more than one store.”
-
-That is a system-design answer. It does not worship a database, and it does not pretend that scale removes the need for careful data contracts.

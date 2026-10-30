@@ -45,7 +45,8 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         if (!active) return;
         if (markdown === null) throw new Error(`No content file for ${record.body}`);
         // Content is committed to this repo, so the HTML is trusted (ADR-023).
-        setHtml(marked.parse(markdown, { async: false }));
+        // The page already shows the title as an h1, so drop a leading "# Title" line.
+        setHtml(marked.parse(markdown.replace(/^# .*\n+/, ''), { async: false }));
       })
       .catch((error) => {
         if (import.meta.env.DEV) console.error(error);

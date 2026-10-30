@@ -2,7 +2,7 @@
 
 *Research note · 2026-10-28 · what I read, not what I built*
 
-> **In one paragraph.** Many of the meetings I record mix English with Hindi or Telugu, sometimes in the same sentence. My notes app, Lekhni, transcribes on the Mac with NVIDIA's Parakeet, and the version it uses is English-only. So a mixed-language meeting gets a poor transcript before any language model sees it, and changing the notes model cannot fix that. This note collects what I read about the options: Parakeet's newer multilingual version, and Sarvam's Saaras models, which have a mode for code-mixed speech. I have not run a pilot yet. Everything below comes from the vendors' own pages, and my own reading is labelled.
+> **In one paragraph.** Many of the meetings I record mix English with Hindi or Telugu, sometimes in the same sentence. My note-taking and meeting-summarizing app, Lekhni, transcribes on the Mac with NVIDIA's Parakeet, and the version it uses is English-only. So a mixed-language meeting gets a poor transcript before any language model sees it, and changing the notes model cannot fix that. This note collects what I read about the options: Parakeet's newer multilingual version, and Sarvam's Saaras models, which have a mode for code-mixed speech. I have not run a pilot yet. Everything below comes from the vendors' own pages, and my own reading is labelled.
 
 ## The problem is the first step, not the last
 
@@ -55,4 +55,4 @@ This part is my own thinking, not something I have built or measured.
 - Sarvam, [Speech-to-text overview](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/speech-to-text/overview)
 - Sarvam, [Saaras model page](https://docs.sarvam.ai/api-reference-docs/getting-started/models/saaras)
 
-*Related: [Choosing local Qwen models: memory, context and JSON](#/writing/choosing-local-qwen-models) · [Lekhni: system design of a local-first notes app](#/writing/lekhni-system-design)*
+*Related: [Choosing local Qwen models: memory, context and JSON](#/writing/choosing-local-qwen-models) · [Lekhni: system design of a local-first meeting-notes app](#/writing/lekhni-system-design)*

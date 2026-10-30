@@ -1,8 +1,8 @@
 # Stop a model call on silence, not on total time
 
-*System design · 2026-10-28 · built in Lekhni, my local notes app*
+*System design · 2026-10-28 · built in Lekhni, my local note-taking and meeting-summarizing app*
 
-> **In one paragraph.** A benchmark of local models found a bug in my notes app. One slow model call on a 58-minute recording passed a fixed 120-second limit, and the whole 20-minute note was lost. The limit was below the worst case the app allowed itself, and a fixed total-time limit is the wrong shape for text generation anyway. I changed three things: each call now streams its answer and stops only on silence, each limit is computed from the call's own token budget, and a failed chunk is retried once and then skipped with a visible gap, instead of losing the note. This note explains the failure, the arithmetic, the design, and what it gives up.
+> **In one paragraph.** A benchmark of local models found a bug in my note-taking and meeting-summarizing app. One slow model call on a 58-minute recording passed a fixed 120-second limit, and the whole 20-minute note was lost. The limit was below the worst case the app allowed itself, and a fixed total-time limit is the wrong shape for text generation anyway. I changed three things: each call now streams its answer and stops only on silence, each limit is computed from the call's own token budget, and a failed chunk is retried once and then skipped with a visible gap, instead of losing the note. This note explains the failure, the arithmetic, the design, and what it gives up.
 
 ## The failure
 

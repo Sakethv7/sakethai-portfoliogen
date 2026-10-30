@@ -77,19 +77,7 @@ How to read it:
 
 **The smaller chunk model did not help.** The 4B model was not faster in total, and its note dropped 44 evidence items. The reason is memory. During that run, Ollama logged "model predicted to exceed available memory, evicting" each time the pipeline switched between the 4B and the 8B model. The two models do not fit in GPU memory together, so every switch reloads a model. The section on the GPU memory limit below explains why.
 
-**The benchmark also found a bug in my app.** The first `qwen3:8b` run on the long recording failed. Chunk 6 took longer than Lekhni's 120-second limit for a chunk call, and the whole 20-minute note was lost. In the timed re-run, two of nine chunk calls took 124 and 133 seconds.
-
-The cause is arithmetic. A chunk call reads about 3,200 prompt tokens and may write up to 1,400. At this Mac's measured speeds, about 118 tokens per second to read and 13.6 to write, that is up to about 130 seconds. So the 120-second limit sits below the worst case the app allows itself. It dates from when chunks could write only 900 tokens, and nobody re-derived it when the cap rose. The JSON repair limit is worse. A repair runs only after a chunk hit its 1,400-token cap, so it must rewrite about 1,400 tokens, and that never fits in its 60 seconds. The repair can only fail in the case it exists for.
-
-The deeper problem is the shape of the limit. Lekhni asks Ollama for the whole answer at once, so Ollama sends nothing until it finishes. The HTTP client's timeout then measures total time. But generation time depends on how much the model writes and how busy the Mac is, so any fixed total is wrong for some calls.
-
-The fix, now built and tested in Lekhni:
-
-1. **Stream the answer** and stop a call only when nothing arrives for a while. A working model sends a token every fraction of a second, so silence means a stuck model.
-2. **Size each limit from the work.** Prompt tokens divided by a slow reading speed, plus the output cap divided by a slow writing speed, times 1.5. A chunk call gets 91 seconds of allowed silence and a 270-second ceiling, instead of a flat 120.
-3. **Retry a failed chunk once, then skip it** and say so in the note, instead of losing the whole note.
-
-The full design, with three real replays, is in [Stop a model call on silence, not on total time](#/writing/model-call-timeouts).
+**The benchmark also found a bug in my app.** The first `qwen3:8b` run on the long recording failed. One chunk call took longer than Lekhni's fixed 120-second limit, and the whole 20-minute note was lost. The limit was below the worst case the app allowed itself. The fix is to stream the answer, stop a call only on silence, size each limit from the work, and skip a failed chunk with a note instead of losing everything. The full design is in [Stop a model call on silence, not on total time](#/writing/model-call-timeouts).
 
 ## Memory is weights plus the KV cache
 
@@ -126,10 +114,7 @@ My first version used two windows: 40,960 tokens for the final note and 16,384 f
 
 The fix was one shared window, `OLLAMA_NUM_CTX=16384`, sized for the largest routine prompt. A function steps the window up only for a single call that would not fit. That trades a rare reload for a smaller, steady footprint.
 
-Two other levers exist, and I have not adopted either yet:
-
-- **A quantized cache.** The Ollama FAQ says a `q8_0` cache (`OLLAMA_KV_CACHE_TYPE`) uses about half the memory of `f16`, with a small loss of precision. It needs Flash Attention, and it applies to every model on the server.
-- **A different architecture.** The [Qwen3.5-9B card](https://huggingface.co/Qwen/Qwen3.5-9B) describes 32 layers in a repeating pattern: three Gated DeltaNet layers, then one gated-attention layer. Gated DeltaNet keeps a fixed-size state instead of a cache that grows with context ([explainer](https://sebastianraschka.com/llms-from-scratch/ch04/08_deltanet/)). So only 8 of its 32 layers keep a growing cache, against all 36 in `qwen3:8b`. On paper that makes long windows much cheaper. I have the harness to test it, but `qwen3:8b` is still my default.
+A quantized cache is another lever I have not adopted. The Ollama FAQ says a `q8_0` cache (`OLLAMA_KV_CACHE_TYPE`) uses about half the memory of `f16`, with a small loss of precision. It applies to every model on the server.
 
 ## Make the JSON valid by construction
 
@@ -147,18 +132,6 @@ I use a rule: **a candidate becomes the default only after the evals show it hol
 2. **`compare_models.py`** runs several setups side by side, for example `qwen3:8b` alone against a 9B final model with a 4B chunk model. It runs the fixtures and real long transcripts, prints pass counts and timings, and writes the notes out for me to read. The fixtures are all under 1,000 characters, so only the real transcripts test the chunk model. At the end it asks which setup to keep and offers to `ollama rm` the rest, so unused models do not fill the disk.
 
 The reading step is deliberate. Pass counts tell me a setup is safe. Reading the long notes tells me it is good.
-
-## A small model must beat the rules first
-
-For a newer feature, cleaning up live transcript lines, I wrote the test before choosing any model. A 1B to 4B model would add punctuation and remove filler words. The design requires a rules-only baseline (delete fillers and stutters, add a period) to run on the same 50 lines first. If the rules win or tie in a blind comparison, the model path does not get built. This feature is designed, not measured yet.
-
-The principle is the same as the eval gate. A model has to earn its memory.
-
-## Routing per task in SakethWiki
-
-SakethWiki, my knowledge app, takes the idea one step further. Each task has its own provider and model setting, for example `LLM_PROVIDER_TAG_CLASSIFY=ollama`. Cheap, frequent tasks such as tag classification can run on a local Qwen model at no API cost. The local example uses `qwen2.5:7b` for text and `qwen2.5vl:7b` for images. Harder tasks can stay on a hosted model.
-
-Local models can be stopped or busy. So each task can fall back to the hosted provider when Ollama does not answer. The fallback covers availability only. It never re-runs a call because the first answer was malformed, because that would hide a quality problem behind a second model.
 
 ## What I would tell someone starting
 
@@ -179,4 +152,4 @@ Local models can be stopped or busy. So each task can fall back to the hosted pr
 - llmconfigurator, [Increase the Metal VRAM limit on Apple Silicon](https://llmconfigurator.com/en/guides/troubleshooting/increase-metal-vram-limit-apple-silicon)
 - Sebastian Raschka, [Gated DeltaNet explainer](https://sebastianraschka.com/llms-from-scratch/ch04/08_deltanet/)
 
-*Related: [Ollama or MLX: how I benchmarked a local model runtime](#/writing/ollama-vs-mlx-benchmark) · [Lekhni: system design of a local-first notes app](#/writing/lekhni-system-design)*
+*Related: [Ollama or MLX: how I benchmarked a local model runtime](#/writing/ollama-vs-mlx-benchmark) · [Lekhni: system design of a local-first meeting-notes app](#/writing/lekhni-system-design)*

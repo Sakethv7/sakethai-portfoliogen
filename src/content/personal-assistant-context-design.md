@@ -77,5 +77,5 @@ I'm folding an earlier companion app into this one, so there is one routing poli
 ## Open problems
 
 - Watching a real hardware signal over a serial port is written but not tested against real hardware yet. That is the first thing on my list.
-- Voice alerts get annoying fast. The rule I'm using is to speak only on state changes, threshold crossings and recovery, and to leave raw streams in logs.
+- Alerts get annoying fast, which is part of why I dropped voice output. The rule I'm using is to speak only on state changes, threshold crossings and recovery, and to leave raw streams in logs.
 - I haven't measured how much the recent-activity layer improves answers over leaving it out.
