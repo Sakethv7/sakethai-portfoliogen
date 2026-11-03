@@ -77,16 +77,7 @@ It is two processes because the capture code is Swift. It has to run inside an a
 
 ## One decision I tested: Ollama or MLX
 
-My runtime is Ollama with a Qwen3 8B model. In late September I benchmarked MLX, Apple's own framework, against it with the same 4-bit model on an M4 with 16 GB of memory. These are single runs, so treat the numbers as a snapshot.
-
-| Measure | Ollama | MLX |
-|---|---|---|
-| Generation speed, short / long context | 19.3 / 13.6 tok/s | 21.6 / 18.4 tok/s |
-| Memory | 7.8 GB | 5.1 to 5.8 GB |
-| 5 eval fixtures | 5 of 5 pass | 4 of 5 pass |
-| 1-hour talk, chunked | 10.4 min | 8.9 min |
-
-MLX was faster and lighter. It also dropped a detail ("on Thursday") from an action item. Ollama can constrain its output to a schema, and MLX was run unconstrained. I stayed on Ollama because correctness on the fixtures mattered more than 15 percent in speed. That is my judgment, and one failed fixture is thin evidence either way.
+My runtime is Ollama with a Qwen3 8B model. I benchmarked MLX, Apple's own framework, against it three times. MLX writes faster per token, but it dropped a deadline from a test note and lost evidence on long recordings. I stayed on Ollama. The numbers and the reasons are in [Ollama or MLX: how I benchmarked a local model runtime](#/writing/ollama-vs-mlx-benchmark).
 
 ## Decisions and what each cost
 

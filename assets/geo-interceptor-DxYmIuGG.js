@@ -18,8 +18,6 @@ The third class is the hardest to see. NEC is one example of a company that buil
 
 HUMAN explains why that kind of agent is hard to detect. Local agents "operate within user browsers, inheriting the same fingerprints, session states, and network characteristics as legitimate manual activity." The NEC release does not say how its agent identifies itself to the sites it visits. *My reading:* a website that sorts traffic only by user-agent string may not see such an agent as an agent at all.
 
-NEC is also working on the identity problem from the agent side. In July 2026 NEC and Ava Labs signed a memorandum of understanding to explore biometric verifiable credentials on a blockchain. Biometric Update reports NEC's reasoning: as agents act for users, "identity verification, authority verification, and fraud prevention" become more important ([Biometric Update, 13 Jul 2026](https://www.biometricupdate.com/202607/nec-ava-labs-building-on-chain-verification-layer-for-ai-agents-stablecoins)). That article does not link NEC's own release, so treat the quote as reported, not primary.
-
 ## A name is a claim, robots.txt is a request
 
 Most of this rests on one fact. A website cannot trust what a visitor says about itself.
@@ -42,13 +40,7 @@ Use the method each operator documents. A valid signature or IP match proves who
 
 ## What vendors sell at the edge
 
-Several companies now work at the **edge**, the network layer in front of a website.
-
-**Verify identity and charge for access.** Cloudflare calls a bot verified when it "is transparent about who it is and what it does." The bot proves this with a cryptographic signature, a published IP list with a stable user agent, or reverse DNS. It must also follow robots.txt and keep reasonable request rates ([Cloudflare docs](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/)). Some sites charge for crawling. There, Cloudflare answers an unpaid AI crawler with HTTP status 402 and puts the price in a response header ([Cloudflare docs](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/)).
-
-**Serve agents a readable version.** Scrunch's Agent Experience Platform detects AI visitors such as ChatGPT-User and PerplexityBot at the CDN. It returns server-rendered HTML with "structured summaries and context blocks." Human visitors get the normal site. Googlebot and Bingbot are not routed ([Scrunch FAQ](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work)). Adobe's Optimize at Edge works the same way. It serves optimized HTML "only to AI agents," and says it "does not impact either human users or SEO bots" ([Adobe docs](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview)).
-
-**Control crawlers at runtime.** API7, an API gateway company, argues for "a runtime control layer that can observe, classify, limit, allow, challenge, or block crawler behavior" ([API7, 1 Jul 2026](https://api7.ai/blog/ai-crawlers-need-api-gateway-controls)).
+Several companies work at the **edge**, the network layer in front of a website. Cloudflare calls a bot verified when it "is transparent about who it is and what it does," proven by a signature, a published IP list or reverse DNS. For sites that charge for crawling, it answers an unpaid AI crawler with HTTP status 402 and the price in a header ([verified bots](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/), [pay per crawl](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/)). Scrunch and Adobe detect AI visitors at the CDN and serve them server-rendered HTML with "structured summaries," while human visitors get the normal site and Googlebot and Bingbot are not routed ([Scrunch FAQ](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work), [Adobe docs](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview)).
 
 ## What a GEO interceptor does
 
@@ -68,7 +60,7 @@ request arrives
 
 **3. Decide.** A verified retrieval bot gets the readable agent view, as Scrunch and Adobe do. An acting agent gets routed to a structured API, such as an MCP server. A training crawler may get a 402 and a price, as with Cloudflare. An unknown client that ignores robots.txt gets rate-limited or blocked. The policy can also differ by path. HUMAN's example is to let a scraper learn from marketing content but not from pricing pages.
 
-The same order already exists for agents that call tools. In Amazon Bedrock AgentCore Gateway, a request interceptor runs custom code before a request reaches a tool. AWS writes that "the Gateway evaluates the request interceptor before the Cedar policy." So the interceptor can check identity and add context before a fixed allow-or-deny rule runs ([AWS, 1 Jun 2026](https://aws.amazon.com/blogs/machine-learning/secure-ai-agents-with-policy-and-lambda-interceptors-in-amazon-bedrock-agentcore-gateway/)). A GEO interceptor applies the same order to inbound traffic: dynamic checks first, then a declared policy.
+The same order exists for agents that call tools. In Amazon Bedrock AgentCore Gateway, a request interceptor runs before the fixed policy check ([AWS, 1 Jun 2026](https://aws.amazon.com/blogs/machine-learning/secure-ai-agents-with-policy-and-lambda-interceptors-in-amazon-bedrock-agentcore-gateway/)). A GEO interceptor applies that order to inbound traffic: dynamic checks first, then a declared policy.
 
 **4. Record and report.** Every decision is a row with the identity level, the claimed agent and version, the class, the decision, and the outcome. From those rows a business can answer real questions. Which agents read our pricing page? Which claimed agents failed verification? Which clients ignored our robots.txt rules?
 
@@ -78,25 +70,17 @@ Serving a different version to bots has a known risk. Google's spam policies def
 
 Both vendors above stay clear of that line in the same way. Scrunch does not route Googlebot or Bingbot. Adobe says its service does not affect SEO bots. *My reading:* the safe rule is to change the format, not the meaning. The agent view can drop scripts, menus, and layout. It should not say anything the human page does not say.
 
-## Advice that does not hold up
+## Two pieces of advice that fail
 
-Some guides describe a stricter version of this pattern. The checks below compare that advice with the sources.
+**"Send AI crawlers an empty page with only JSON-LD."** Google says its AI features need no special markup, and that structured data should stay consistent with the visible text ([Google Search Central](https://developers.google.com/search/docs/appearance/ai-features)). A page of only structured data, while humans see a full page, moves toward the cloaking line.
 
-**"Verify every AI bot with reverse DNS."** Operators document different methods. Google documents reverse DNS hostnames and IP ranges. OpenAI's crawler page lists published IP addresses for each agent. Use the method each operator publishes, not one rule for all.
+**"Stripping the layout stops scrapers."** *My reading:* it does the opposite. The stripped version is the cleanest copy of the content. Protection comes from steps 1 to 3: identify, classify, decide.
 
-**"Send AI crawlers an empty page with only JSON-LD."** JSON-LD is a format for structured data inside a page. Google says its AI features need no special schema.org markup. It also says structured data should stay consistent with the visible page text ([Google Search Central](https://developers.google.com/search/docs/appearance/ai-features)). A page that holds only structured data, while humans see a full page, moves toward the cloaking line.
+## Where version and safety checks stop
 
-**"Stripping the layout stops scrapers."** *My reading:* it does the opposite for scrapers that want the text. The stripped version is the cleanest copy of the content. Stripping layout serves good agents better. It does not protect the content. Protection comes from steps 1 to 3: identify, classify, decide.
+A site can check what a client **declares**, such as a version number against a list of unsafe versions. It can check **behavior**: request rates, paths outside robots.txt, or form inputs shaped like prompt injection. It cannot see **inside** the client. It cannot know which local model runs on a laptop, or whether that model is patched. An agent in a browser extension, like the NEC example, may declare nothing. So an edge "vulnerability report" covers declared versions and observed behavior. It is not a security audit of the visitor.
 
-## Where version and safety checks fit, and where they stop
-
-Discussions of this layer often include two more jobs: checking crawler and local-model versions for known vulnerabilities, and checking requests against safety rules. *My reading:* part of this is possible at the edge, and part is not.
-
-A site can check what a client **declares**. If an agent sends a version number, the interceptor can compare it with a list of versions known to be unsafe. It flags those requests in the report. A site can also check **behavior**: request rates, paths outside robots.txt, or form inputs shaped like prompt injection.
-
-A site cannot see **inside** the client. It cannot know which local model runs on someone's laptop, or whether that model is patched. An agent inside a browser extension, like the NEC example, may declare nothing at all. So a "vulnerability report" from the edge is a report about declared versions and observed behavior. It is not a security audit of the visitor.
-
-The same limit applies to regulations. The interceptor can enforce the business's own published terms and log evidence of what happened. Whether a given agent's use breaks a specific law is a legal question. The logs support that question. They do not answer it.
+The same limit applies to regulations. The interceptor can enforce the business's published terms and log evidence. Whether an agent's use breaks a specific law is a legal question. The logs support it and do not answer it.
 
 ## What this note does not claim
 
@@ -110,7 +94,6 @@ The same limit applies to regulations. The interceptor can enforce the business'
 
 - HUMAN Security (Jeff Edwards), ["AI Agents, Scrapers, and Crawlers: Understanding the AI Traffic Ecosystem"](https://www.humansecurity.com/learn/blog/ai-ecosystem-agents-scrapers-crawlers/), 5 Aug 2026.
 - NEC, ["NEC cotomi Agent" on Microsoft Marketplace](https://jpn.nec.com/press/202608/20260818_01.html) (Japanese), 18 Aug 2026.
-- Biometric Update, ["NEC, Ava Labs building on-chain verification layer for AI agents, stablecoins"](https://www.biometricupdate.com/202607/nec-ava-labs-building-on-chain-verification-layer-for-ai-agents-stablecoins), 13 Jul 2026.
 - OpenAI, [Overview of OpenAI crawlers](https://developers.openai.com/api/docs/bots).
 - Google, [Google's common crawlers](https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers).
 - TollBit, [H1 2026 figures on the TollBit home page](https://tollbit.com/).
@@ -118,7 +101,6 @@ The same limit applies to regulations. The interceptor can enforce the business'
 - Cloudflare, [Verified bots](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/) and [Verify your AI crawler (pay per crawl)](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/).
 - Scrunch, ["What is Scrunch Agent Experience Platform (AXP) and how does it work?"](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work)
 - Adobe, [Optimize at Edge overview](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview).
-- API7, ["AI crawlers need API gateway controls at the edge"](https://api7.ai/blog/ai-crawlers-need-api-gateway-controls), 1 Jul 2026.
 - AWS, ["Secure AI agents with Policy and Lambda interceptors in Amazon Bedrock AgentCore gateway"](https://aws.amazon.com/blogs/machine-learning/secure-ai-agents-with-policy-and-lambda-interceptors-in-amazon-bedrock-agentcore-gateway/), 1 Jun 2026.
 - Google Search Central, [Spam policies](https://developers.google.com/search/docs/essentials/spam-policies) and ["AI features and your website"](https://developers.google.com/search/docs/appearance/ai-features).
 `;export{e as default};
