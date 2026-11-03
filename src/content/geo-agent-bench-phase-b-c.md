@@ -53,7 +53,8 @@ The earlier notes are [the pilot](#/writing/geo-agent-bench) and [Phase A](#/wri
 ## Limits
 
 - One site, six tasks, one pass per cell in Phase B and three repeats in Phase C. The numbers are descriptive.
-- One poison wording. One draft of a standard that I did not check against the live text.
+- One poison wording.
+- The Phase C runs used an older form of the Web Bot Auth header. I later read the newer drafts and changed the code to match. I re-checked the three signing modes by hand on the live site and they gave the same verdicts. I did not rerun the 18 runs. Both drafts I read are replaced by a newer working-group draft that I did not read.
 - Claude's own fetch tool was not in the sign-in test. It cannot sign requests or hold my token. No signed request from a real vendor tool appeared in the log.
 - Qwen's numbers describe one model file, one quantization and my harness.
 
