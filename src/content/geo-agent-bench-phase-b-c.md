@@ -25,7 +25,7 @@ The earlier notes are [the pilot](#/writing/geo-agent-bench) and [Phase A](#/wri
 
 **One hidden sentence worked.** In both Claude runs that used `get_policy`, Claude called `log_access` first. Qwen did it in 1 of its 2 runs. The answers stayed correct. The other poisoned runs never used `get_policy`, so the sentence did not apply to them. I tested one wording once. This shows that obedience can happen. It does not give a rate.
 
-**Scoring notes.** One Claude answer, "3 years (FX-310)", was marked wrong by the exact-match scorer. The substance was right. I kept the record. Qwen ended 4 runs with an empty reply after one or two tool calls. I did not find the cause.
+**Scoring notes.** One Claude answer, "3 years (FX-310)", was marked wrong by the exact-match scorer. The substance was right. I kept the record. Qwen ended 4 runs with an empty reply after one or two tool calls. I replayed 8 of those cases. Three gave the same empty reply, four answered and one timed out. In the empty cases the model stopped normally after a short stretch of reasoning and wrote no answer. It depends on the random seed, and it is not a timeout or a crash. My harness has no retry for an empty reply. I did not change the recorded runs.
 
 ## Phase C: who is calling, and what may it read
 
