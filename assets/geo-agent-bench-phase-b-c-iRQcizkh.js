@@ -25,7 +25,7 @@ The earlier notes are [the pilot](#/writing/geo-agent-bench) and [Phase A](#/wri
 
 **One hidden sentence worked.** In both Claude runs that used \`get_policy\`, Claude called \`log_access\` first. Qwen did it in 1 of its 2 runs. The answers stayed correct. The other poisoned runs never used \`get_policy\`, so the sentence did not apply to them. I tested one wording once. This shows that obedience can happen. It does not give a rate.
 
-**Scoring notes.** One Claude answer, "3 years (FX-310)", was marked wrong by the exact-match scorer. The substance was right. I kept the record. Qwen ended 4 runs with an empty reply after one or two tool calls. I did not find the cause.
+**Scoring notes.** One Claude answer, "3 years (FX-310)", was marked wrong by the exact-match scorer. The substance was right. I kept the record. Qwen ended 4 runs with an empty reply after one or two tool calls. I replayed 8 of those cases. Three gave the same empty reply, four answered and one timed out. In the empty cases the model stopped normally after a short stretch of reasoning and wrote no answer. It depends on the random seed, and it is not a timeout or a crash. My harness had no retry for an empty reply. I added one as a separate arm and ran the same 18 cells again. It scored 18 of 18 against 14 of 18. The retry was used 3 times and each time ended with a correct answer. Two runs that were empty before answered on their own this time, so the random seed does not repeat a run exactly. The arm used 47% more input tokens. It also followed the poisoned description in 2 runs instead of 1, because a model that finishes the job reaches more of the tool descriptions. I kept the original 14 of 18 result as recorded.
 
 ## Phase C: who is calling, and what may it read
 
@@ -53,7 +53,8 @@ The earlier notes are [the pilot](#/writing/geo-agent-bench) and [Phase A](#/wri
 ## Limits
 
 - One site, six tasks, one pass per cell in Phase B and three repeats in Phase C. The numbers are descriptive.
-- One poison wording. One draft of a standard that I did not check against the live text.
+- One poison wording.
+- The Phase C runs used an older form of the Web Bot Auth header. I later read the newer drafts and changed the code to match. I re-checked the three signing modes by hand on the live site and they gave the same verdicts. I did not rerun the 18 runs. Both drafts I read are replaced by a newer working-group draft that I did not read.
 - Claude's own fetch tool was not in the sign-in test. It cannot sign requests or hold my token. No signed request from a real vendor tool appeared in the log.
 - Qwen's numbers describe one model file, one quantization and my harness.
 

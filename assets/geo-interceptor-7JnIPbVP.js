@@ -28,11 +28,13 @@ The **user-agent string** is a line of text that the client chooses. Any scraper
 
 The scale is large. TollBit, which tracks AI bots across publisher sites, reports more than 22 billion AI bot scrapes in the first half of 2026. It reports more than 1.9 billion that "bypassed or ignored robots.txt instructions set by publishers" ([TollBit](https://tollbit.com/)). That is about 9% of the scrapes it detected.
 
+Cloudflare also describes a case of a client that hid its name. In August 2025 it said Perplexity changed to a generic Chrome user agent when its declared bots were blocked. It said the requests came from IP addresses outside Perplexity's published ranges, and that they rotated. Cloudflare tested this on new domains with a robots.txt that disallowed all bots. As a control, ChatGPT-User fetched robots.txt and stopped ([Cloudflare, 4 Aug 2025](https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/)). These are Cloudflare's claims. I found no reply from Perplexity.
+
 Three methods give real evidence of identity:
 
-1. **Published IP ranges.** OpenAI publishes the IP addresses for each of its crawlers. A request that claims to be GPTBot but comes from another address is not GPTBot.
+1. **Published IP ranges.** OpenAI publishes the IP addresses for each of its crawlers, one file per crawler. Its page lists these files and does not mention reverse DNS. A request that claims to be GPTBot but comes from another address is not GPTBot.
 2. **Reverse DNS.** Google documents the hostnames its crawlers resolve to, and publishes IP ranges in \`common-crawlers.json\`. Google also warns that user-agent strings can be spoofed ([Google crawler docs](https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers)).
-3. **Signed requests.** Web Bot Auth lets an agent operator sign each HTTP request with a private key and publish the public key. The site checks the signature. The IETF has a working group for it, and its main document is the working-group draft "HTTP Message Signatures for automated traffic" ([IETF datatracker](https://datatracker.ietf.org/wg/webbotauth/)). It is a draft, not a finished standard.
+3. **Signed requests.** Web Bot Auth lets an agent operator sign each HTTP request with a private key and publish the public key. The site checks the signature. The IETF has a working group for it, and its main document is the working-group draft "HTTP Message Signatures for automated traffic" ([IETF datatracker](https://datatracker.ietf.org/wg/webbotauth/)). On 29 October 2026 it was at revision 01, and it had no RFC number. The charter set April 2026 as the date to send it to the IESG, the group that approves IETF standards. Other drafts cover a JSON format for publishing IP ranges and crawler best practices. They are not working-group documents. All of it is draft work, not a finished standard.
 
 HUMAN reports that OpenAI's ChatGPT agent already signs its requests with HTTP Message Signatures (RFC 9421), so websites can check it. HUMAN also warns that declared crawlers are only the visible part: some collection likely runs through "secondary, undeclared crawlers." Those never sign anything.
 
@@ -40,7 +42,7 @@ Use the method each operator documents. A valid signature or IP match proves who
 
 ## What vendors sell at the edge
 
-Several companies work at the **edge**, the network layer in front of a website. Cloudflare calls a bot verified when it "is transparent about who it is and what it does," proven by a signature, a published IP list or reverse DNS. For sites that charge for crawling, it answers an unpaid AI crawler with HTTP status 402 and the price in a header ([verified bots](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/), [pay per crawl](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/)). Scrunch and Adobe detect AI visitors at the CDN and serve them server-rendered HTML with "structured summaries," while human visitors get the normal site and Googlebot and Bingbot are not routed ([Scrunch FAQ](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work), [Adobe docs](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview)).
+Several companies work at the **edge**, the network layer in front of a website. Cloudflare calls a bot verified when it "is transparent about who it is and what it does," proven by a signature, a published IP list or reverse DNS. Since 1 July 2026 its docs mark each verified bot as Direct or Intermediary in a metadata field. For sites that charge for crawling, it answers an unpaid AI crawler with HTTP status 402 and the price in a header ([verified bots](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/), [pay per crawl](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/)). Scrunch and Adobe detect AI visitors at the CDN and serve them server-rendered HTML with "structured summaries," while human visitors get the normal site and Googlebot and Bingbot are not routed ([Scrunch FAQ](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work), [Adobe docs](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview)).
 
 ## What a GEO interceptor does
 
@@ -86,7 +88,8 @@ The same limit applies to regulations. The interceptor can enforce the business'
 
 - NEC's and TollBit's figures are company-reported. I found no independent check of them.
 - NEC's release does not describe how its agent identifies itself to websites.
-- HUMAN's report that ChatGPT agent signs its requests is HUMAN's statement. I did not check it against OpenAI's documentation.
+- HUMAN's report that ChatGPT agent signs its requests is HUMAN's statement. I checked OpenAI's crawler page and Cloudflare's verified-bots page. Neither says it. So I could not confirm it.
+- Cloudflare's account of Perplexity's stealth crawling is Cloudflare's own. I found no reply from Perplexity.
 - Web Bot Auth is still a draft. Support for it differs by agent operator and by CDN.
 - "GEO interceptor" is an informal name. No vendor or standard I found uses it. The four-step split, the cloaking rule of thumb, and the limits on version checks are my reading of the sources, not a tested system.
 
@@ -98,6 +101,7 @@ The same limit applies to regulations. The interceptor can enforce the business'
 - Google, [Google's common crawlers](https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers).
 - TollBit, [H1 2026 figures on the TollBit home page](https://tollbit.com/).
 - IETF, [Web Bot Auth working group](https://datatracker.ietf.org/wg/webbotauth/).
+- Cloudflare, ["Perplexity is using stealth, undeclared crawlers to evade website no-crawl directives"](https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/), 4 Aug 2025.
 - Cloudflare, [Verified bots](https://developers.cloudflare.com/bots/concepts/bot/verified-bots/) and [Verify your AI crawler (pay per crawl)](https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/use-pay-per-crawl-as-ai-owner/verify-ai-crawler/).
 - Scrunch, ["What is Scrunch Agent Experience Platform (AXP) and how does it work?"](https://scrunch.com/faqs/what-is-scrunch-agent-experience-platform-axp-and-how-does-it-work)
 - Adobe, [Optimize at Edge overview](https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview).
