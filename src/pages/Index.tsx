@@ -27,7 +27,7 @@ const Index = () => {
         <p className="eyebrow">Applied AI Systems Engineer</p>
         <h1>Saketh Velidimalla</h1>
         <p className="hero-thesis">I build and measure AI systems. At work, I own evaluation, observability, guardrails and red-teaming for a production RAG platform used by about 140,000 employees. I trace each failure to retrieval, ranking, generation or handoff. I also design the data schemas, the pipelines and the KPIs, and I triage what misses them.</p>
-        <p className="hero-thesis hero-thesis-own">On my own time, I test how AI systems behave and publish what I find. I benchmarked local model runtimes, Ollama against MLX. I write about checking LLM judges for bias. I build pipelines such as Lekhni and an SDLC agent, and I build and test MCP servers. I study networking, DNS and web security by running my own test sites. I am now learning hardware: ESP32, Arduino and robotics.</p>
+        <p className="hero-thesis hero-thesis-own">On my own time, I test how AI systems behave and publish what I find. I benchmarked local model runtimes, Ollama against MLX, and read chip power, heat and memory counters while they ran. I write about calibrating LLM judges. I build pipelines such as Lekhni and an SDLC agent, and I build and test MCP servers. I study networking, DNS and web security by running my own test sites. I am now learning hardware: ESP32, Arduino and robotics.</p>
         <ul className="topic-links" aria-label="Topics">
           {topics.map(([label, to]) => <li key={label}><Link to={to}>{label}</Link></li>)}
         </ul>
