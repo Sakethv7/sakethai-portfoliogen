@@ -6,6 +6,18 @@ import { activity, noteCounts, publications, work } from '@/data/portfolio';
 import { heroProof } from '@/data/proof';
 import { resumeExperiences } from '@/data/experience';
 
+// Each topic opens the note or project that backs it. Hardware has no published artifact yet, so it links to the closest one.
+const topics: [string, string][] = [
+  ['Runtimes', '/writing/ollama-vs-mlx-benchmark'],
+  ['LLM judges', '/writing/calibrate-your-llm-judge'],
+  ['Pipelines', '/work/lekhni'],
+  ['MCP', '/writing/geo-agent-bench-phase-b-c'],
+  ['Small models', '/writing/choosing-local-qwen-models'],
+  ['Networking and DNS', '/writing/geo-agent-bench-setup'],
+  ['Security', '/writing/geo-agent-bench-signatures'],
+  ['Hardware (learning)', '/work/agentic-maintenance'],
+];
+
 const Index = () => {
   const featured = work.filter((item) => item.featured).slice(0, 3);
   const research = ['geo-agent-bench-phase-e', 'geo-agent-bench-phase-b-c', 'geo-agent-bench'].map((slug) => publications.find((item) => item.slug === slug)).filter((item) => item?.status === 'Published');
@@ -14,7 +26,11 @@ const Index = () => {
       <div className="hero-copy">
         <p className="eyebrow">Applied AI Systems Engineer</p>
         <h1>Saketh Velidimalla</h1>
-        <p className="hero-thesis">I engineer evaluation, observability, guardrails and red-teaming for production RAG systems. I trace failures to retrieval, ranking, generation or handoff. I design the database and vector schemas, and the data pipelines that feed them. I work with leadership to define the KPIs, set quarterly goals against them, and triage what misses them. Today I do this on a RAG platform used by about 140,000 employees.</p>
+        <p className="hero-thesis">I build and measure AI systems. At work, I own evaluation, observability, guardrails and red-teaming for a production RAG platform used by about 140,000 employees. I trace each failure to retrieval, ranking, generation or handoff. I also design the data schemas, the pipelines and the KPIs, and I triage what misses them.</p>
+        <p className="hero-thesis hero-thesis-own">On my own time, I test how AI systems behave and publish what I find. I benchmarked local model runtimes, Ollama against MLX. I write about checking LLM judges for bias. I build pipelines such as Lekhni and an SDLC agent, and I build and test MCP servers. I study networking, DNS and web security by running my own test sites. I am now learning hardware: ESP32, Arduino and robotics.</p>
+        <ul className="topic-links" aria-label="Topics">
+          {topics.map(([label, to]) => <li key={label}><Link to={to}>{label}</Link></li>)}
+        </ul>
         <div className="hero-links">
           {/* Scrolls rather than navigating: under HashRouter a bare #contact would be read as a route. */}
           <a className="primary-link" href="#contact" onClick={(event) => { event.preventDefault(); const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; document.getElementById('contact')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); }}>Get in touch <ArrowRight /></a>

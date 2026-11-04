@@ -256,3 +256,8 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .note-links { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; font-size: .82rem; }
 .note-links > span { color: hsl(var(--muted-foreground)); text-transform: uppercase; letter-spacing: .08em; font-size: .66rem; align-self: center; }
 .note-links a { text-decoration: underline; text-underline-offset: 3px; }
+.hero-grid .hero-thesis-own { margin-top: 14px; }
+.topic-links { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.topic-links a { display: inline-block; border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 4px 12px; font-size: .78rem; color: hsl(var(--muted-foreground)); }
+.topic-links a:hover { border-color: hsl(var(--primary)); color: hsl(var(--primary)); }
+@media (max-width: 640px) { .hero-grid .hero-thesis { font-size: 1.02rem; line-height: 1.55; } }
