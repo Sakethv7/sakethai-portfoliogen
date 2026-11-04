@@ -6,7 +6,7 @@
 
 ## The question and the setup
 
-A runtime is the program that loads model weights and generates tokens. Ollama wraps llama.cpp and serves GGUF files. MLX is Apple's array framework, and `mlx-lm` runs language models on it. [LM Studio](https://lmstudio.ai/mlx) is a desktop app that runs both kinds of model.
+A runtime is the program that loads model weights and generates tokens. Ollama wraps llama.cpp and serves GGUF files. MLX is Apple's array framework, and `mlx-lm` runs language models on it. [LM Studio](https://lmstudio.ai/mlx) ships an engine for each kind of model. I ran those engines through [Bionic](https://9to5mac.com/2026/07/16/lm-studio-expands-beyond-chat-with-bionic-a-new-ai-agent-app-for-open-models/), the newer desktop app from the LM Studio team. Bionic served the model on a local port. From round 2 on, "LM Studio" in this note means that setup.
 
 The claim was "MLX is faster on a Mac, so switch." My question was wider: **does the faster runtime give the same notes, in a format my code can trust, inside the memory I have?**
 
@@ -54,7 +54,15 @@ LM Studio can run the same file with either engine, so every test below used LM 
 
 **Why answers hit the cap.** The model fell into a repetition loop in the list of key terms. After 23 distinct terms, one answer cycled through the same 10 until the cap. The repair copied the loop. This happened only on LM Studio's chat route with MLX: 15 cut-offs in 18 calls. The same prompt sent the way Lekhni sends it to Ollama gave 0 in 135. Capping the term list at 15 items gave 0 in 18. A second cap on item length stalled MLX for about 30 minutes, so I do not use it.
 
-**Heat and energy.** I measured chip power and thermal pressure with `powermetrics`: 3 runs per engine, 12 minutes each, on the charger.
+**Heat and energy.** I measured chip power and thermal pressure with Apple's `powermetrics`. It needs root, so I ran it with `sudo` in my own Terminal. The test script itself never used sudo.
+
+```bash
+sudo powermetrics --samplers cpu_power,gpu_power,thermal -i 1000 -f plist -n 10800 -o powermetrics.plist
+```
+
+This takes one sample per second. I left out the `tasks` sampler, so the file holds no per-app data. The watts cover the CPU, GPU and Neural Engine, not the display, SSD or memory chips. So these numbers compare the chip, not the whole Mac.
+
+I ran 3 runs per engine, in alternating order, on the charger. Each run loaded the model, cooled for 5 minutes, recorded 60 seconds of idle, then looped over the same 3 chunks for 12 minutes. For each call, I added up the power samples that overlapped it to get joules, then divided by the tokens it wrote. Round 4 memory came from system-wide counters (`vm_stat` and `sysctl`), read once per second without sudo, because process memory misses GPU buffers.
 
 | Measure | llama.cpp 4-bit | MLX 4-bit |
 |---|---|---|
@@ -93,13 +101,14 @@ The cut-off cause is no longer a reason, because the term cap fixes it. What I g
 
 The power test has 3 runs per engine. The pipeline test has 1 run per setup. The short-meeting test has one meeting. Granola's note is a reference, not the truth. I did not check whether llama.cpp's 58 extra evidence items are content or repeats. The 356 count came from an earlier harness. Ollama's total time moved from 22.1 to 15.7 minutes between two runs of the same recording, so one run is a direction, not a result.
 
-Next time I would save the text of every cut-off answer, which would have found the cause a day sooner. I would read GPU memory from the runtime, not from process memory. And I would run each long recording more than once.
+Next time I would save the text of every cut-off answer, which would have found the cause a day sooner. I would read system-wide memory from round 1, as I did in round 4, not process memory. And I would run each long recording more than once.
 
 ## Sources
 
 - Ollama, [Structured outputs](https://docs.ollama.com/capabilities/structured-outputs)
 - ml-explore, [mlx-lm server documentation](https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md)
 - LM Studio, [Structured output](https://lmstudio.ai/docs/developer/openai-compat/structured-output), [MLX support](https://lmstudio.ai/mlx) and [mlx-engine](https://github.com/lmstudio-ai/mlx-engine)
+- 9to5Mac, [LM Studio expands beyond chat with Bionic](https://9to5mac.com/2026/07/16/lm-studio-expands-beyond-chat-with-bionic-a-new-ai-agent-app-for-open-models/)
 - Qwen, [Qwen3-8B model card](https://huggingface.co/Qwen/Qwen3-8B)
 
 *Related: [Lekhni: system design of a local-first meeting-notes app](#/writing/lekhni-system-design) · [Choosing local Qwen models: memory, context and JSON](#/writing/choosing-local-qwen-models)*
