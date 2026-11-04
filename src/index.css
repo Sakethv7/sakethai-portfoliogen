@@ -261,3 +261,9 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .topic-links a { display: inline-block; border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 4px 12px; font-size: .78rem; color: hsl(var(--muted-foreground)); }
 .topic-links a:hover { border-color: hsl(var(--primary)); color: hsl(var(--primary)); }
 @media (max-width: 640px) { .hero-grid .hero-thesis { font-size: 1.02rem; line-height: 1.55; } }
+.commit-chart { margin: 0; max-width: 560px; }
+.commit-chart svg { width: 100%; height: auto; display: block; }
+.commit-chart .bar { fill: hsl(var(--primary)); }
+.commit-chart .bar-partial { fill: hsl(var(--primary) / .45); }
+.commit-chart .bar-value, .commit-chart .bar-label { fill: hsl(var(--muted-foreground)); font-size: 13px; }
+.commit-chart figcaption { margin-top: 10px; font-size: .78rem; color: hsl(var(--muted-foreground)); max-width: 560px; }

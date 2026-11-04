@@ -1,5 +1,6 @@
 import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CommitChart } from '@/components/CommitChart';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { noteCounts, publications, work, workCategories } from '@/data/portfolio';
 
@@ -19,6 +20,7 @@ export default function Work() {
         </div>
       </article>)}</div>
     </section>)}
+    <section className="editorial-section"><CommitChart /></section>
     <section className="editorial-section github-archive"><p>Older coursework, data-analysis projects, and forks remain available in the complete GitHub archive.</p><a className="primary-link" href="https://github.com/Sakethv7?tab=repositories" target="_blank" rel="noreferrer">All repositories <ExternalLink /></a></section>
   </PortfolioShell>;
 }
