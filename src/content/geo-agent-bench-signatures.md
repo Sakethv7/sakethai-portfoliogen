@@ -19,7 +19,7 @@ A draft standard called Web Bot Auth works like this. The agent has a private ke
 - **A key on my laptop.** The private key stays there, outside my code repository.
 - **A public key directory.** The key's public half is served at `bot.wanderingcodersv.dev`.
 - **A check in the site.** Every request on every host gets a verdict: valid, unknown key, invalid, expired, key directory unreachable, or no signature.
-- **No blocking.** The check only records. The page is served in every case. I wanted complete data, and a blocked agent never reaches the page.
+- **No blocking by default.** The check records. The page is served in every case. I wanted complete data, and a blocked agent never reaches the page. I added an optional gate later. See "Blocking" below.
 
 The check also guards itself. It fetches a web address named by the client, which could be abused. So it accepts only an `https` address on a public host, follows no redirects, reads at most 64 KB, and waits 2 seconds.
 
@@ -43,6 +43,31 @@ Then I read the newest working-group draft, from 2026-10-29. It changed the valu
 
 The lesson is the same both times. Code that I write for both sides of a check agrees with itself, so only the text of the standard can show a mismatch. My 18 sign-in runs used the oldest form, and I did not rerun them.
 
+## Other people's code
+
+My signer and verifier agreed with each other, and I had found two mismatches only by reading. So I ran someone else's code. Cloudflare publishes a reference package for Node, `web-bot-auth`, under the Apache-2.0 license. I installed it in a scratch folder without running its install scripts. I tested in both directions, offline, with a throwaway key.
+
+- **Their signer, my verifier.** The newest form verified. The form in their README did not. That was a bug in my code. For a covered `"signature-agent";key="sig1"`, the standard signs the dictionary member with its parameters, so the signed value is `"https://origin";type=directory`. My code left the parameters out. I fixed it. Both of their forms now verify.
+- **My signer, their verifier.** All four of my header forms verified.
+
+Reading the standard did not show this bug. Running another person's code did. Their package follows an older draft, so the test covers mostly the older forms. One implementation is also not a test suite. The tests are in my repository, and they skip unless the package is installed.
+
+## Blocking
+
+Until now the site never blocked. That left one question: does a signature work as a gate? I added an optional policy, off by default. When it is on, the site answers 403 only if three things are true. The host is the account host, the user agent claims my own bot name, and the signature is not valid. Other clients, other hosts and other bot names are never blocked. I can test a gate only on a name that I own. I cannot sign for `Claude-User`.
+
+I ran the same Qwen agent as before in three modes, three times each, with the gate on:
+
+| Mode | Runs | Blocked | Reached the page | Made-up order number |
+|---|---:|---:|---:|---:|
+| signed | 3 | 0 | 3 | 0 |
+| spoofed key | 3 | 3 | 0 | 0 |
+| unsigned | 3 | 3 | 0 | 0 |
+
+The signed agent passed with no false block and finished the sign-in. Each spoofed or unsigned agent was blocked on its first request with a 403, and none got past it. Each then wrote that the information was unavailable because of access restrictions. Before the runs I also checked the gate by hand on the live site. Unsigned and throwaway-key requests got 403. The real key got 200. A curl request and a request to another host were untouched. I switched the gate off afterwards.
+
+This is a narrow test. A real spoofer would not use my bot name, and I did not test retries, rate limits or caches.
+
 ## What the log shows
 
 After 29.5 hours of logging, 141 requests carried signature headers. 74 were valid and 67 named an unknown key. All 141 came from my own laptop. No other client sent a signature, not Claude's tools and not any crawler. That does not mean no vendor signs requests anywhere. It means none did on my site in this time.
@@ -65,8 +90,8 @@ The 612 include my own Claude runs. My own bot name has no published range, so o
 
 ## What I did not test
 
-- Blocking by signature.
+- A gate for names that I do not own. I cannot sign for them.
 - Whether Claude's own fetch tool or any vendor tool sends signatures. None appeared.
-- Whether other people's signers or verifiers accept mine. I tested only against my own code and the text of the drafts.
+- More than one other implementation, and any implementation of the newest draft.
 
 *Related: [Agentic OAuth](#/writing/geo-agent-bench-oauth) · [Real crawlers on the plain and the AI site](#/writing/geo-agent-bench-crawlers) · [How I set up the test website](#/writing/geo-agent-bench-setup)*

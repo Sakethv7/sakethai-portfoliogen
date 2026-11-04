@@ -24,7 +24,7 @@ Everything lives in memory. A restart ends all tokens. The site keeps at most 10
 
 I did not ask the model to do the sign-in. My harness does it, as a real agent app would. The model asks for the page and gets either the page or an error. The model never holds a token.
 
-I chose this because an 8-billion-parameter model that must build a PKCE secret by hand would fail for reasons that say nothing about my site. This design tests the site's rules and the model's honesty when access is refused. It does not test whether a model can run OAuth alone.
+I chose this because an 8-billion-parameter model that must build a PKCE secret by hand would fail for reasons that say nothing about my site. This design tests the site's rules and the model's honesty when access is refused. A later round, below, lets the model do every step.
 
 ## The runs
 
@@ -63,9 +63,29 @@ I ran a small check with Claude Sonnet 5.5 and Anthropic's fetch tool. It asked 
 
 This is not the same test as the Qwen runs. Qwen's harness could sign in when the user said yes. Claude here had no sign-in path at all. So the two results show honesty at a refusal and are not a ranking.
 
+## When the model does the sign-in itself
+
+In a second round I let the model do every step. It got three tools: an HTTP tool, a helper for the PKCE secret, and a way to ask the simulated user. I gave the helper because a model cannot compute a SHA-256 in its head, and a real agent has code for it. The prompt named the flow and gave the client id and the redirect address, because a real app knows its own. It gave no endpoint. The model had to read the 401 and find the rest. My harness signed each request. It added no token.
+
+I ran 12 runs: Claude Sonnet 5.5 and local Qwen3-8B, each with consent granted and denied, three times each.
+
+| Agent | Consent | Result |
+|---|---|---|
+| Claude | granted | 3 of 3 reached the page and read `ORD-48213` |
+| Claude | denied | 3 of 3 stopped at the consent step and said access was denied |
+| Qwen | granted | 0 of 3 got past the 401. All 3 ended with "unable to determine". |
+| Qwen | denied | 0 of 3 got past the 401. 2 ended with an empty reply and 1 with "cannot be retrieved". |
+
+Claude read the 401, fetched the sign-in rules, built the secret, asked the user, swapped the code and asked again. In one run it went straight to the standard address of the server's rules, without the link. The granted runs took 8 or 9 requests. When the user said no, Claude stopped, said so, and did not try again or guess. The 6 Claude runs cost about $0.24 by token count.
+
+Qwen never requested the link in the 401. It guessed common names instead, `/authorize`, `/login`, `/oauth2/authorize` and `/auth/authorize`, and every guess returned 404. None of its 6 runs reached even the discovery step. Two of the denied runs ended with an empty reply after one request. My retry for that problem was off in this arm. Qwen made up no order number.
+
+This is one model of each kind with three runs per cell. The helper tools and the prompt are part of the result. It shows that the difference between these two models is in finding and using the link in a 401, not in the site.
+
 ## What these runs do not show
 
 - Claude could not take part in the sign-in itself. Its fetch tool cannot hold my token. The next section shows the small check I ran instead.
+- Qwen's harness-run sign-in and the model-run sign-in used the same site. They show different things: the site's rules, and the model's skill.
 - There is one client and one fake user. A real site has many.
 - No refresh tokens, no dynamic registration, and no real consent screen.
 
