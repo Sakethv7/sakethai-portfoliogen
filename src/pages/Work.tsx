@@ -1,15 +1,15 @@
 import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
-import { work, workCategories } from '@/data/portfolio';
+import { noteCounts, publications, work, workCategories } from '@/data/portfolio';
 
 export default function Work() {
   return <PortfolioShell>
-    <header className="page-header editorial-section"><p className="eyebrow">Work archive</p><h1>Systems, tools, and experiments</h1><p>Selected production-facing systems, developer tools, and technical experiments. Each entry distinguishes deployed impact from prototype and learning work.</p></header>
+    <header className="page-header editorial-section"><p className="eyebrow">Work archive</p><h1>Systems, tools, and experiments</h1><p>Selected production-facing systems, developer tools, and technical experiments. Each entry distinguishes deployed impact from prototype and learning work. {work.length} projects. {noteCounts.total} published notes: {noteCounts.engineering} engineering, {noteCounts.research} research, {noteCounts.systemDesign} system design and {noteCounts.buildLog} build logs. Projects list the notes written about them.</p></header>
     {workCategories.map((category) => <section className="editorial-section archive-section" key={category}>
       <div className="archive-heading"><h2>{category}</h2><span>{work.filter((item) => item.category === category).length}</span></div>
       <div className="archive-list">{work.filter((item) => item.category === category).map((item) => <article key={item.slug}>
-        <div className="archive-copy">{item.evidenceStatus && <p className="evidence-status">{item.evidenceStatus}</p>}<h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>Technical scope</span>{item.summary}</p><div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div></div>
+        <div className="archive-copy">{item.evidenceStatus && <p className="evidence-status">{item.evidenceStatus}</p>}<h3>{item.title}</h3><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>Technical scope</span>{item.summary}</p><div className="tag-row">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>{item.notes && <p className="note-links"><span>{item.notes.length} notes</span>{item.notes.map((slug) => publications.find((entry) => entry.slug === slug)).filter((entry) => entry?.status === 'Published').map((entry) => <Link key={entry!.slug} to={`/writing/${entry!.slug}`}>{entry!.title}</Link>)}</p>}</div>
         <div className="archive-links">
           {item.updated && <time>Updated {item.updated}</time>}
           {item.github && <a href={item.github} target="_blank" rel="noreferrer"><Github /> Code</a>}

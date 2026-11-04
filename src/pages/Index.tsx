@@ -2,12 +2,13 @@ import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { ContactSection } from '@/components/ContactSection';
-import { activity, work } from '@/data/portfolio';
+import { activity, noteCounts, publications, work } from '@/data/portfolio';
 import { heroProof } from '@/data/proof';
 import { resumeExperiences } from '@/data/experience';
 
 const Index = () => {
   const featured = work.filter((item) => item.featured).slice(0, 3);
+  const research = ['geo-agent-bench-phase-e', 'geo-agent-bench-phase-b-c', 'geo-agent-bench'].map((slug) => publications.find((item) => item.slug === slug)).filter((item) => item?.status === 'Published');
   return <PortfolioShell>
     <section className={`hero editorial-section${heroProof.length > 0 ? ' hero-grid' : ''}`}>
       <div className="hero-copy">
@@ -67,7 +68,21 @@ const Index = () => {
       </div>
     </section>
 
-    {/* Writing & research block hidden until the first post ships; publications data and routes remain. */}
+    <section className="editorial-section">
+      <div className="section-heading">
+        <div><p className="eyebrow">Research</p><h2>Measuring how AI agents use a website</h2></div>
+        <Link to="/research">All {noteCounts.research} research notes <ArrowRight /></Link>
+      </div>
+      <p className="section-intro">One project, the GEO agent benchmark: test sites, a request log and a scorer. It covers formats such as llms.txt, who an agent is, and how it signs in. Each note has its own limits stated.</p>
+      <div className="featured-grid">
+        {research.map((item, index) => <article className="featured-card" key={item!.slug}>
+          <p className="item-index">0{index + 1}</p><p className="evidence-status">{item!.kind} · {item!.date}</p><h3>{item!.title}</h3><p className="plain-line">{item!.plain}</p>
+          <div className="card-links"><Link to={`/writing/${item!.slug}`}><ArrowRight /> Read the note</Link></div>
+        </article>)}
+      </div>
+      <p className="section-intro"><Link to="/work/geo-agent-bench">Read the project overview</Link>, <Link to="/writing">browse all {noteCounts.total} notes</Link>, or open the <a href="https://github.com/Sakethv7/geo-agent-bench" target="_blank" rel="noreferrer">code</a>.</p>
+    </section>
+
     <section className="editorial-section">
       <div className="section-heading"><div><p className="eyebrow">Recent activity</p><h2>Recent releases</h2></div></div>
       <p className="section-intro">Things I shipped, not commit counts.</p>

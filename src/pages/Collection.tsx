@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
-import { publications } from '@/data/portfolio';
+import { publications, work } from '@/data/portfolio';
+import type { PublicationItem } from '@/data/portfolio';
 
 const descriptions = {
   writing: ['Writing', 'Engineering notes on evaluating, operating, and debugging AI systems.'],
@@ -8,17 +9,47 @@ const descriptions = {
   notes: ['Notes', 'Short technical observations, paper notes, and ideas that are useful before they become essays.'],
 } as const;
 
+// A series groups the notes of one project into one card. Its overview page is the project's case study.
+const seriesInfo: Record<string, { to: string; plain: string }> = {
+  'GEO agent benchmark': { to: '/work/geo-agent-bench', plain: 'Test sites, a request log and a scorer that measure how AI agents behave when a website changes its format, who they say they are, and how they sign in. One note per phase, in order.' },
+};
+
+type Entry = { kind: 'note'; item: PublicationItem } | { kind: 'series'; name: string; chapters: PublicationItem[] };
+
+// Chapters follow the order of the project's `notes` list in portfolio.ts, so the card matches the overview page.
+function chapterRank(name: string, item: PublicationItem): number {
+  const order = work.find((entry) => seriesInfo[name].to.endsWith(`/${entry.slug}`))?.notes ?? [];
+  const index = order.indexOf(item.slug);
+  return index === -1 ? order.length : index;
+}
+
+function toEntries(notes: PublicationItem[], inSeriesTab: boolean): Entry[] {
+  const loose: Entry[] = notes.filter((item) => !item.series).map((item) => ({ kind: 'note', item }));
+  if (!inSeriesTab) return loose;
+  const names = [...new Set(publications.filter((item) => item.series && (item.status === 'Published' || import.meta.env.DEV)).map((item) => item.series!))];
+  const groups: Entry[] = names.map((name) => ({ kind: 'series', name, chapters: publications.filter((item) => item.series === name && (item.status === 'Published' || import.meta.env.DEV)).toSorted((a, b) => chapterRank(name, a) - chapterRank(name, b)) }));
+  return [...loose, ...groups];
+}
+
+const entryDate = (entry: Entry) => entry.kind === 'note' ? entry.item.date! : entry.chapters[entry.chapters.length - 1].date!;
+
 export default function Collection({ type }: { type: keyof typeof descriptions }) {
   const [title, description] = descriptions[type];
   // Only published work is public; planned items show in `vite dev` so drafts can be previewed.
-  const items = publications
+  const notes = publications
     .filter((item) => item.status === 'Published' || import.meta.env.DEV)
-    .filter((item) => type === 'writing' ? item.kind !== 'Research note' : type === 'research' ? item.kind === 'Research note' : false)
-    .toSorted((a, b) => b.date.localeCompare(a.date));
+    .filter((item) => type === 'writing' ? item.kind !== 'Research note' : type === 'research' ? item.kind === 'Research note' : false);
+  const items = toEntries(notes, type === 'research').toSorted((a, b) => entryDate(b).localeCompare(entryDate(a)));
   return <PortfolioShell>
     <header className="page-header editorial-section"><p className="eyebrow">Public work</p><h1>{title}</h1><p>{description}</p></header>
-    <section className="editorial-section collection-list">{items.length ? items.map((item) => <article key={item.title}>
-      <div className="meta-line"><span>{item.kind}</span><span>{item.status === 'Published' ? item.date : item.status}</span></div><h2>{item.status === 'Published' ? <Link to={`/writing/${item.slug}`}>{item.title}</Link> : item.title}</h2><p className="plain-line">{item.plain}</p><p className="for-engineers"><span>Technical focus</span>{item.summary}</p>
+    <section className="editorial-section collection-list">{items.length ? items.map((entry) => entry.kind === 'series' ? <article className="series-card" key={entry.name}>
+      <div className="meta-line"><span>Project series · {entry.chapters.length} notes</span><span>{entryDate(entry)}</span></div>
+      <h2><Link to={seriesInfo[entry.name].to}>{entry.name}</Link></h2>
+      <p className="plain-line">{seriesInfo[entry.name].plain}</p>
+      <ol className="series-chapters">{entry.chapters.map((chapter) => <li key={chapter.slug}><time>{chapter.date}</time><Link to={`/writing/${chapter.slug}`}>{chapter.title}</Link></li>)}</ol>
+      <p className="series-link"><Link to={seriesInfo[entry.name].to}>Read the project overview</Link></p>
+    </article> : <article key={entry.item.title}>
+      <div className="meta-line"><span>{entry.item.kind}</span><span>{entry.item.status === 'Published' ? entry.item.date : entry.item.status}</span></div><h2>{entry.item.status === 'Published' ? <Link to={`/writing/${entry.item.slug}`}>{entry.item.title}</Link> : entry.item.title}</h2><p className="plain-line">{entry.item.plain}</p><p className="for-engineers"><span>Technical focus</span>{entry.item.summary}</p>
     </article>) : <div className="honest-empty"><p className="eyebrow">Nothing published yet</p><h2>This shelf starts empty on purpose.</h2><p>New notes will appear here only when there is a real, dated artifact to read.</p></div>}</section>
   </PortfolioShell>;
 }

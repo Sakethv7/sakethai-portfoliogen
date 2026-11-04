@@ -1,9 +1,9 @@
-import { publications, work } from '@/data/portfolio';
+import { noteCounts, publications, work } from '@/data/portfolio';
 import { experiences } from '@/data/experience';
 
 // Hero proof cards (ADR-031, ADR-032). Each card is built from an existing record and is dropped if that record is missing.
 export interface ProofCard {
-  id: 'production' | 'writing' | 'app';
+  id: 'production' | 'writing' | 'research' | 'app';
   claim: string;
   evidence: string;
   linkLabel: string;
@@ -25,10 +25,16 @@ function productionCard(): ProofCard | null {
 }
 
 function writingCard(): ProofCard | null {
-  const published = publications.filter((item) => item.status === 'Published' && item.kind !== 'Research note');
+  const published = publications.filter((item) => item.status === 'Published');
   if (published.length === 0) return missing('writing');
   const newest = [...published].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))[0];
-  return { id: 'writing', claim: `${published.length} engineering notes on evaluation, retrieval, and tracing`, evidence: `Newest: ${newest.title}`, linkLabel: 'Read the notes', to: '/writing' };
+  return { id: 'writing', claim: `${noteCounts.total} published notes: ${noteCounts.engineering} engineering, ${noteCounts.research} research, ${noteCounts.systemDesign} system design, ${noteCounts.buildLog} build logs`, evidence: `Newest: ${newest.title}`, linkLabel: 'Read the notes', to: '/writing' };
+}
+
+function researchCard(): ProofCard | null {
+  const chapters = publications.filter((item) => item.series === 'GEO agent benchmark' && item.status === 'Published');
+  if (chapters.length === 0 || !work.some((item) => item.slug === 'geo-agent-bench')) return missing('research');
+  return { id: 'research', claim: 'A benchmark of how AI agents behave on a test website: formats, identity and sign-in', evidence: `GEO agent benchmark: ${chapters.length} notes, public code, exact ground truth`, linkLabel: 'Read the overview', to: '/work/geo-agent-bench' };
 }
 
 function appCard(): ProofCard | null {
@@ -41,4 +47,4 @@ function appCard(): ProofCard | null {
   };
 }
 
-export const heroProof: ProofCard[] = [productionCard(), writingCard(), appCard()].filter((card): card is ProofCard => card !== null);
+export const heroProof: ProofCard[] = [productionCard(), writingCard(), researchCard(), appCard()].filter((card): card is ProofCard => card !== null);
