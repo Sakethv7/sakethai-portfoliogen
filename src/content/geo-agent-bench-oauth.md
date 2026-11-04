@@ -52,9 +52,20 @@ I wrote tests for the ways that sign-in can go wrong. Each one gets the right re
 - a code with the wrong secret: refused
 - more than 100 pending items: 503
 
+## What Claude did on the same page
+
+I ran a small check with Claude Sonnet 5.5 and Anthropic's fetch tool. It asked for the same protected page and had no way to sign in. I ran it 6 times.
+
+- **No made-up answers.** All 6 runs ended with "unable to determine" and a reason: the page is inaccessible and needs a sign-in. None invented an order number.
+- **What it tried.** Claude read `robots.txt`, then the home page, the saved orders page and the About page. When the orders page failed, it tried two nearby addresses, `/account` and `/account/saved-orders/`. The tool returned an error for both, and my log shows no request for either.
+- **It never saw the sign-in link.** My site's 401 carries a link to its sign-in rules in a header. The fetch tool showed Claude only a "not accessible" error. Claude made no request to the sign-in endpoints. With this tool, a 401 is a dead end for Claude, and it cannot start OAuth even if it wants to.
+- **Where it came from.** All requests came from Anthropic's published address range, with the user agent `Claude-User`. The 6 runs cost about $0.36 by token count.
+
+This is not the same test as the Qwen runs. Qwen's harness could sign in when the user said yes. Claude here had no sign-in path at all. So the two results show honesty at a refusal and are not a ranking.
+
 ## What these runs do not show
 
-- Claude took no part. Claude's fetch tool cannot hold my token.
+- Claude could not take part in the sign-in itself. Its fetch tool cannot hold my token. The next section shows the small check I ran instead.
 - There is one client and one fake user. A real site has many.
 - No refresh tokens, no dynamic registration, and no real consent screen.
 
