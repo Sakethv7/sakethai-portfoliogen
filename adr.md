@@ -668,3 +668,132 @@ flowchart TD
 3. A small amount of code: a chip row, a query-string read, and a redirect route.
 
 **Explainer ladder:** Levels 1, 2 and 3 are done. No video (see the no-narrated-videos rule).
+
+## ADR-035: Home stops repeating the benchmark
+
+**Status:** Proposed (2026-11-05). Waits for Saketh's review. Amends ADR-031 and ADR-032 (the writing card).
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build proof cards] --> B[Leave out the writing card]
+    B --> C[Pick releases not in the Research block]
+    C --> D{Is any release left?}
+    D -- no --> E[Hide the section]
+    D -- yes --> F[Show the 4 newest releases]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,F new
+    class E fail
+```
+
+*Caption: green is new. Red is the failure path. Explainer with the steps of today around it: [adr-035-trim-home-and-work.html](docs/visuals/adr-035-trim-home-and-work.html).*
+
+**Context:** The GEO benchmark shows four times on the home page: in a proof card, in the Selected work card, in the Research block, and in 4 of the 9 Recent activity entries. The J&J work shows once. A skimming reader sees one project and may think it is the only one. The "30 published notes" claim in the writing card counts 8 notes that belong to one project. The research card already says "8 notes". The code returns 4 proof cards, but ADR-032 says 3 or fewer.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep all | No change | The repeat stays |
+| B. Show the 4 newest releases | Short list | All 4 newest are benchmark entries, so the repeat stays |
+| C. Remove the writing card. Show the 4 newest releases that are not in the Research block. | 3 proof cards. The activity list shows Lekhni, SakethWiki and Job Tracker. | 5 entries leave the home page |
+| D. Remove the Recent activity section | Shortest page | Loses the only view of the other projects |
+
+**Choice:** Option C.
+
+- Remove the `writing` proof card. `ProofCard['id']` loses `'writing'`.
+- `ActivityItem` gets an optional `series` field, with the same value as `PublicationItem.series`. The four benchmark entries get `series: 'GEO agent benchmark'`.
+- The home page shows the 4 newest entries whose `series` is not `'GEO agent benchmark'`. The section is hidden if none remain. The heading changes from "Recent releases" to "Also shipped".
+- The "browse all 30 notes" text becomes "browse all notes". `noteCounts` keeps only the `research` field. The other fields have no reader left.
+
+**Why:** The Research block already tells the benchmark story in full. The activity list then shows the rest of the work. This also restores the 3-card limit in ADR-032.
+
+**Given up:**
+
+1. The hero no longer links to the Writing page. The nav and the Research block still do.
+2. The 4 benchmark release entries leave the home page. Their notes stay on Writing.
+3. The `series` field is one more thing to set by hand on a new entry.
+
+## ADR-036: The second hero paragraph is four short sentences
+
+**Status:** Proposed (2026-11-05). Waits for Saketh's review.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader reads the second hero paragraph] --> B{Is each topic still reachable?}
+    B -- yes --> C[Topic links carry the cut topics]
+    B -- no --> D[Restore that topic as a link]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C new
+    class D fail
+```
+
+*Caption: green is the new text. Red is the check that no topic loses its path.*
+
+**Context:** The second paragraph lists eight topics in about 95 words. The topic links below it already name the same topics. A reader who skims sees a list twice.
+
+**Options:**
+
+| Option | Words | Weakness |
+|---|---|---|
+| A. Keep | About 95 | The list repeats the links |
+| B. Four sentences | About 55 | Names such as Lekhni and the SDLC agent leave the hero text |
+| C. Delete the paragraph | 0 | Loses the "on my own time" framing and the chip readings Saketh asked for in a0ff77a |
+
+**Choice:** Option B. Proposed text:
+
+> On my own time, I test how AI systems behave and publish what I find. I benchmarked Ollama against MLX while reading chip power, heat and memory counters. I run my own test sites to study networking, DNS, web security and AI agent behavior. I am now learning hardware: ESP32, Arduino and robotics.
+
+The first paragraph does not change.
+
+**Why:** Each cut topic has a link: LLM judges, Pipelines, MCP, Small models. The chip readings stay, as commit a0ff77a chose. The sentences stay at 25 words or fewer.
+
+**Given up:** Lekhni, the SDLC agent and MCP servers are no longer named in the hero text. A reader reaches them through the chips and the Selected work cards.
+
+## ADR-037: The Work page header has no counts, and two groups fold
+
+**Status:** Proposed (2026-11-05). Waits for Saketh's review.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader opens Work] --> B[Read a header with no counts]
+    B --> C[Flagship and Developer tools show open]
+    C --> D{Does the reader open Experiments or Creative builds?}
+    D -- yes --> E[List its projects]
+    D -- no --> F[Group stays folded with its count]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E new
+    class F fail
+```
+
+*Caption: green is new. Red is the cost: a folded group hides its projects until opened.*
+
+**Context:** The header holds a count of projects and four note counts. The Writing page now owns the note counts. Of 22 projects, the Experiments and Creative builds groups hold 9. They are real work but not the first thing to read.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep | 22 projects open | The page is long |
+| B. Fold two groups with `<details>`. Header without counts. | Two open groups and two closed | Folded projects are hidden at first |
+| C. Remove the two groups | Shortest page | Deletes real work |
+
+**Choice:** Option B. The header reads: "Production-facing systems, developer tools and experiments. Each entry says whether it is deployed work, a prototype or learning work. The notes on a project are listed with it." The `<details>` summary shows the group name and its count. No new dependency or script. The Flagship group is already first, so no re-sorting.
+
+**Why:** `<details>` is native HTML. It needs no JavaScript. The count in the summary tells a reader what is inside.
+
+**Given up:**
+
+1. A reader who skims sees 13 projects first, not 22.
+2. Find-in-page may not open a folded group in every browser. I will test Chrome and Safari before shipping. The result goes in this ADR.
+3. The project and note counts leave the page header.
+
+**Explainer ladder:** Levels 1, 2 and 3 are done for ADR-035, ADR-036 and ADR-037. One explainer covers all three. No video.

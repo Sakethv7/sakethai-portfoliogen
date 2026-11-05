@@ -16,7 +16,7 @@ export interface PublicationItem {
   series?: string; // notes that belong to one project are grouped under it on /writing
 }
 
-export interface ActivityItem { date: string; title: string; summary: string; href?: string; }
+export interface ActivityItem { date: string; title: string; summary: string; href?: string; series?: string; }
 
 export const work: WorkItem[] = [
   { slug: 'sakethwiki', plain: 'Review-gated personal knowledge system that preserves source notes while proposing auditable changes for human approval.', title: 'SakethWiki', summary: 'Curation-first ingestion, retrieval memory, trace-driven evaluation, and controlled knowledge evolution.', category: 'Flagship systems', tags: ['RAG', 'Memory', 'Evaluation'], github: 'https://github.com/Sakethv7/SakethWiki', featured: true, updated: '2026-08-11', evidenceStatus: 'Public prototype', notes: ['review-gated-knowledge-system', 'sakethwiki-system-design', 'retrieval-quality-review'] },
@@ -77,10 +77,10 @@ export const publications: PublicationItem[] = [
 ];
 
 export const activity: ActivityItem[] = [
-  { date: '2026-11-04', title: 'GEO agent benchmark: a 101-page site and a markdown interceptor', summary: 'Three versions of one large site. After one link bug fix, the verified-agent markdown version used about a third of the input tokens. One run per cell.', href: 'https://github.com/Sakethv7/geo-agent-bench' },
-  { date: '2026-11-04', title: 'GEO agent benchmark: OpenAI web search probe', summary: 'OpenAI hosted search fetched my test site live as ChatGPT-User, from IPs in its published file. A repeat page came from a cache.', href: 'https://github.com/Sakethv7/geo-agent-bench/blob/master/FINDINGS.md' },
-  { date: '2026-11-03', title: 'GEO agent benchmark: signed requests and agent sign-in', summary: 'A signature gate blocked 6 of 6 spoofed or unsigned runs and passed 3 of 3 signed. Claude ran OAuth alone 3 of 3. Qwen 0 of 3.', href: 'https://github.com/Sakethv7/geo-agent-bench' },
-  { date: '2026-11-03', title: 'GEO agent benchmark: 60-run pilot', summary: 'Does an agent use llms.txt or a markdown copy? 60 of 60 correct. llms.txt was read in 6 of 30 runs.', href: 'https://github.com/Sakethv7/geo-agent-bench' },
+  { date: '2026-11-04', title: 'GEO agent benchmark: a 101-page site and a markdown interceptor', summary: 'Three versions of one large site. After one link bug fix, the verified-agent markdown version used about a third of the input tokens. One run per cell.', href: 'https://github.com/Sakethv7/geo-agent-bench' , series: 'GEO agent benchmark' },
+  { date: '2026-11-04', title: 'GEO agent benchmark: OpenAI web search probe', summary: 'OpenAI hosted search fetched my test site live as ChatGPT-User, from IPs in its published file. A repeat page came from a cache.', href: 'https://github.com/Sakethv7/geo-agent-bench/blob/master/FINDINGS.md' , series: 'GEO agent benchmark' },
+  { date: '2026-11-03', title: 'GEO agent benchmark: signed requests and agent sign-in', summary: 'A signature gate blocked 6 of 6 spoofed or unsigned runs and passed 3 of 3 signed. Claude ran OAuth alone 3 of 3. Qwen 0 of 3.', href: 'https://github.com/Sakethv7/geo-agent-bench' , series: 'GEO agent benchmark' },
+  { date: '2026-11-03', title: 'GEO agent benchmark: 60-run pilot', summary: 'Does an agent use llms.txt or a markdown copy? 60 of 60 correct. llms.txt was read in 6 of 30 runs.', href: 'https://github.com/Sakethv7/geo-agent-bench' , series: 'GEO agent benchmark' },
   { date: '2026-10-08', title: 'Lekhni: live transcription and call notes', summary: 'Live transcription while recording, call detection for FaceTime, iPhone and Remote Desktop calls, and notes from calls. Audio and text stay on the Mac. Private repository.' },
   { date: '2026-10-08', title: 'SakethWiki: conflict review at capture', summary: 'A new clip is compared with the closest existing page and shown side by side, and I pick the action. The local app now refuses callers from other machines.', href: 'https://github.com/Sakethv7/SakethWiki' },
   { date: '2026-10-07', title: 'Job Tracker: a local-first application pipeline', summary: 'A macOS app that turns job-application emails into a tracked pipeline. Each status links to its evidence, and records the parser could not read go to a review queue. Private repository.' },
@@ -94,9 +94,5 @@ export const hasPublishedWriting = publications.some((item) => item.status === '
 
 const published = publications.filter((item) => item.status === 'Published');
 export const noteCounts = {
-  total: published.length,
   research: published.filter((item) => item.kind === 'Research note').length,
-  engineering: published.filter((item) => item.kind === 'Engineering note').length,
-  systemDesign: published.filter((item) => item.kind === 'System design').length,
-  buildLog: published.filter((item) => item.kind === 'Build log').length,
 };

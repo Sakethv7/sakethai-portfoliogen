@@ -1,9 +1,9 @@
-import { noteCounts, publications, work } from '@/data/portfolio';
+import { publications, work } from '@/data/portfolio';
 import { experiences } from '@/data/experience';
 
 // Hero proof cards (ADR-031, ADR-032). Each card is built from an existing record and is dropped if that record is missing.
 export interface ProofCard {
-  id: 'production' | 'writing' | 'research' | 'app';
+  id: 'production' | 'research' | 'app';
   claim: string;
   evidence: string;
   linkLabel: string;
@@ -24,13 +24,6 @@ function productionCard(): ProofCard | null {
   return { id: 'production', claim: 'I work on evals, observability, red-teaming, guardrails, and data and vector schemas for a production RAG platform', evidence: 'The platform serves about 140,000 employees', linkLabel: 'Read the case study', to: `/experience/${role.caseStudy.slug}` };
 }
 
-function writingCard(): ProofCard | null {
-  const published = publications.filter((item) => item.status === 'Published');
-  if (published.length === 0) return missing('writing');
-  const newest = [...published].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))[0];
-  return { id: 'writing', claim: `${noteCounts.total} published notes: ${noteCounts.engineering} engineering, ${noteCounts.research} research, ${noteCounts.systemDesign} system design, ${noteCounts.buildLog} build logs`, evidence: `Newest: ${newest.title}`, linkLabel: 'Read the notes', to: '/writing' };
-}
-
 function researchCard(): ProofCard | null {
   const chapters = publications.filter((item) => item.series === 'GEO agent benchmark' && item.status === 'Published');
   if (chapters.length === 0 || !work.some((item) => item.slug === 'geo-agent-bench')) return missing('research');
@@ -47,4 +40,4 @@ function appCard(): ProofCard | null {
   };
 }
 
-export const heroProof: ProofCard[] = [productionCard(), writingCard(), researchCard(), appCard()].filter((card): card is ProofCard => card !== null);
+export const heroProof: ProofCard[] = [productionCard(), researchCard(), appCard()].filter((card): card is ProofCard => card !== null);

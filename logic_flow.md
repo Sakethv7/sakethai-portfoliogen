@@ -483,3 +483,48 @@ There are no retries and no loading states. The data is static.
 ### State transitions
 
 The chip is the only state. It lives in the address, not in React state. A click changes the query string with `replace: false`, so Back returns to the previous chip. Reload keeps the chip.
+
+---
+
+## Trim home and Work (ADR-035 to 037, proposed 2026-11-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build home] --> B[Make 3 proof cards]
+    B --> C[Filter out benchmark releases]
+    C --> D{Is any release left?}
+    D -- no --> E[Hide the section]
+    D -- yes --> F[Show up to 4]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,F new
+    class E fail
+```
+
+*Caption: green is new. Red is the failure path. The full picture, with the Work page, is in [adr-035-trim-home-and-work.html](docs/visuals/adr-035-trim-home-and-work.html).*
+
+### Home render path
+
+1. Make a card from each record: production, research, app. Drop a card whose source record is missing, and warn in dev.
+2. Take `activity` entries whose `series` is not `'GEO agent benchmark'`.
+3. Sort by newest date and keep 4.
+4. If none remain, do not draw the section.
+
+### Work render path
+
+1. Draw the header text. It holds no counts.
+2. For Flagship systems and Developer tools, draw an open section.
+3. For Experiments & learning and Creative builds, draw a `<details>` element, closed. The summary shows the name and the project count.
+
+### Failure behavior
+
+| Event | Result | Who notices |
+|---|---|---|
+| A new activity entry has no `series` | It shows on home if it is among the 4 newest | Nobody needs to. This is correct. |
+| A new benchmark entry has no `series` | It shows on home and repeats the Research block | The author, at review |
+| Find-in-page does not open a folded group | The match is hidden | The author, in the browser test |
+| All non-benchmark entries are removed | The section is hidden | Nobody needs to |
+
+There are no retries and no loading states. The data is static.

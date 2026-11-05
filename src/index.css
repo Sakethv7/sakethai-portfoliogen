@@ -272,3 +272,10 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .filter-chips a { border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 5px 14px; color: hsl(var(--muted-foreground)); font-size: .85rem; text-decoration: none; }
 .filter-chips a:hover { color: hsl(var(--foreground)); }
 .filter-chips a[aria-current="true"] { background: hsl(var(--primary)); border-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+
+.archive-fold > summary { cursor: pointer; list-style: none; }
+.archive-fold > summary::-webkit-details-marker { display: none; }
+.archive-fold > summary .archive-heading { margin-bottom: 0; }
+.archive-fold > summary .archive-heading h2::after { content: " +"; color: hsl(var(--muted-foreground)); }
+.archive-fold[open] > summary .archive-heading h2::after { content: " \2212"; }
+.archive-fold[open] > summary .archive-heading { margin-bottom: 24px; }

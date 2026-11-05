@@ -732,3 +732,31 @@ flowchart TD
 - The `series` comment in `portfolio.ts` says notes are "grouped under it on /research". It becomes untrue. The ADR fixes the comment.
 - The `/notes` route and the `notes` entry in `descriptions` match no content. `Collection` filters them to an empty list. I propose to remove both. Saketh decides.
 - The "Information architecture" section earlier in this file still lists Research as a nav item. This section supersedes it for nav.
+
+---
+
+## Trim home and Work (ADR-035 to 037, proposed 2026-11-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Home data] --> B[3 proof cards]
+    A --> C[Activity without benchmark entries]
+    A --> D[Shorter hero text]
+    E[Work data] --> F[Header without counts]
+    E --> G[Two groups folded]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class B,C,D,F,G new
+```
+
+*Caption: green marks every step that changes. All inputs are static data in `portfolio.ts` and `proof.ts`.*
+
+**Complexity tier:** single-process tool. This change moves text and filters data. No component, route or dependency is added.
+
+**Touched parts:** `Index.tsx` (hero text, activity filter), `proof.ts` (one card removed), `portfolio.ts` (`series` on activity, `noteCounts` trimmed), `Work.tsx` (header, `<details>`), `index.css` (summary style).
+
+**Contradictions found, not fixed:**
+
+- ADR-032 says `heroProof` holds 3 cards or fewer. The code returns 4. ADR-035 fixes the code.
+- The "Information architecture" section earlier in this file still lists "Recent publications (3 items)" on Home. This section supersedes it.

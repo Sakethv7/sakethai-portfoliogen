@@ -638,3 +638,37 @@ An unknown value behaves as absent. No error shows.
 - Every note keeps its URL `/writing/:slug`.
 - The series order still follows the project's `notes` list in `portfolio.ts`.
 - No new dependency. `useSearchParams` and `Navigate` come from `react-router-dom`.
+
+---
+
+## Trim home and Work (ADR-035 to 037, proposed 2026-11-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[ActivityItem gains series] --> B[Home filters on series]
+    C[ProofCard id loses writing] --> D[heroProof has 3 cards]
+    E[noteCounts keeps research] --> F[Index reads research only]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class A,B,C,D,E,F new
+```
+
+*Caption: green marks each contract change. All are type changes in `portfolio.ts` and `proof.ts`.*
+
+### Type changes
+
+| Type | Before | After |
+|---|---|---|
+| `ActivityItem` | `date, title, summary, href?` | adds `series?: string`, the same value as `PublicationItem.series` |
+| `ProofCard['id']` | `'production' \| 'writing' \| 'research' \| 'app'` | `'production' \| 'research' \| 'app'` |
+| `noteCounts` | `total, research, engineering, systemDesign, buildLog` | `research` only |
+
+### Invariants
+
+- The four benchmark entries in `activity` set `series: 'GEO agent benchmark'`.
+- Home shows at most 4 activity entries, none with that series.
+- `heroProof` has 3 cards or fewer.
+- Every cut topic in the hero text has a topic link or a Selected work card.
+- Work shows Flagship systems and Developer tools open. It shows Experiments & learning and Creative builds inside a closed `<details>`.
+- No new dependency, route or script.

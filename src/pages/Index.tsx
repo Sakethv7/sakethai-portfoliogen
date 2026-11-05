@@ -19,6 +19,8 @@ const topics: [string, string][] = [
 ];
 
 const Index = () => {
+  // The Research block already covers the benchmark, so its releases stay off this list (ADR-035).
+  const shipped = activity.filter((item) => item.series !== 'GEO agent benchmark').slice(0, 4);
   const featured = work.filter((item) => item.featured).slice(0, 3);
   const research = ['geo-agent-bench-phase-e', 'geo-agent-bench-phase-b-c', 'geo-agent-bench'].map((slug) => publications.find((item) => item.slug === slug)).filter((item) => item?.status === 'Published');
   return <PortfolioShell>
@@ -27,7 +29,7 @@ const Index = () => {
         <p className="eyebrow">Applied AI Systems Engineer</p>
         <h1>Saketh Velidimalla</h1>
         <p className="hero-thesis">I build and measure AI systems. At work, I own evaluation, observability, guardrails and red-teaming for a production RAG platform used by about 140,000 employees. I trace each failure to retrieval, ranking, generation or handoff. I also design the data schemas, the pipelines and the KPIs, and I triage what misses them.</p>
-        <p className="hero-thesis hero-thesis-own">On my own time, I test how AI systems behave and publish what I find. I benchmarked local model runtimes, Ollama against MLX, and read chip power, heat and memory counters while they ran. I write about calibrating LLM judges. I build pipelines such as Lekhni and an SDLC agent, and I build and test MCP servers. I study networking, DNS and web security by running my own test sites. I am now learning hardware: ESP32, Arduino and robotics.</p>
+        <p className="hero-thesis hero-thesis-own">On my own time, I test how AI systems behave and publish what I find. I benchmarked Ollama against MLX while reading chip power, heat and memory counters. I run my own test sites to study networking, DNS, web security and AI agent behavior. I am now learning hardware: ESP32, Arduino and robotics.</p>
         <ul className="topic-links" aria-label="Topics">
           {topics.map(([label, to]) => <li key={label}><Link to={to}>{label}</Link></li>)}
         </ul>
@@ -96,17 +98,17 @@ const Index = () => {
           <div className="card-links"><Link to={`/writing/${item!.slug}`}><ArrowRight /> Read the note</Link></div>
         </article>)}
       </div>
-      <p className="section-intro"><Link to="/work/geo-agent-bench">Read the project overview</Link>, <Link to="/writing">browse all {noteCounts.total} notes</Link>, or open the <a href="https://github.com/Sakethv7/geo-agent-bench" target="_blank" rel="noreferrer">code</a>.</p>
+      <p className="section-intro"><Link to="/work/geo-agent-bench">Read the project overview</Link>, <Link to="/writing">browse all notes</Link>, or open the <a href="https://github.com/Sakethv7/geo-agent-bench" target="_blank" rel="noreferrer">code</a>.</p>
     </section>
 
-    <section className="editorial-section">
-      <div className="section-heading"><div><p className="eyebrow">Recent activity</p><h2>Recent releases</h2></div></div>
+    {shipped.length > 0 && <section className="editorial-section">
+      <div className="section-heading"><div><p className="eyebrow">Recent activity</p><h2>Also shipped</h2></div></div>
       <p className="section-intro">Things I shipped, not commit counts.</p>
-      <ol className="activity-list">{activity.map((item) => <li key={`${item.date}-${item.title}`}>
+      <ol className="activity-list">{shipped.map((item) => <li key={`${item.date}-${item.title}`}>
         <time>{item.date}</time><div><h3>{item.title}</h3><p>{item.summary}</p>
         {item.href && <a href={item.href} target="_blank" rel="noreferrer" aria-label={`Evidence for ${item.title}`}><ExternalLink /></a>}</div>
       </li>)}</ol>
-    </section>
+    </section>}
 
     <ContactSection />
   </PortfolioShell>;
