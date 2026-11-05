@@ -248,7 +248,7 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
   .experience-node, .neural-dot, .neural-connection span { animation: none; }
   .experience-card { transition: none; }
 }
-.series-card { border-left: 3px solid hsl(var(--primary)); padding-left: 22px; }
+.collection-list .series-card { border-left: 3px solid hsl(var(--primary)); padding-left: 22px; }
 .series-chapters { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; font-size: .92rem; }
 .series-chapters li { display: flex; gap: 14px; }
 .series-chapters time { color: hsl(var(--muted-foreground)); font-size: .78rem; min-width: 5.6em; padding-top: 2px; }
