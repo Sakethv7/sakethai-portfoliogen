@@ -13,7 +13,7 @@ export interface PublicationItem {
   slug: string; title: string; plain: string; kind: 'Engineering note' | 'Research note' | 'Build log' | 'System design';
   status: 'Planned' | 'In progress' | 'Published'; summary: string;
   date?: string; // required once Published
-  series?: string; // notes that belong to one project are grouped under it on /research
+  series?: string; // notes that belong to one project are grouped under it on /writing
 }
 
 export interface ActivityItem { date: string; title: string; summary: string; href?: string; }
@@ -90,8 +90,7 @@ export const activity: ActivityItem[] = [
 
 export const workCategories: WorkCategory[] = ['Flagship systems', 'Developer tools', 'Experiments & learning', 'Creative builds'];
 
-export const hasPublishedWriting = publications.some((item) => item.status === 'Published' && item.kind !== 'Research note');
-export const hasPublishedResearch = publications.some((item) => item.status === 'Published' && item.kind === 'Research note');
+export const hasPublishedWriting = publications.some((item) => item.status === 'Published');
 
 const published = publications.filter((item) => item.status === 'Published');
 export const noteCounts = {

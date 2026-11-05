@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR-034 explainer: one Writing page</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111418; --muted: #5b6470; --line: #6b7280;
+    --grey-fill: #eceff3; --grey-stroke: #8b94a1;
+    --blue-fill: #dbeafe; --blue-stroke: #1d4ed8;
+    --red-fill: #fde2e4; --red-stroke: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1218; --fg: #e8ebf0; --muted: #9aa4b2; --line: #8b94a1;
+      --grey-fill: #1f2530; --grey-stroke: #6b7686;
+      --blue-fill: #12294f; --blue-stroke: #6ea8fe;
+      --red-fill: #4a1a1f; --red-stroke: #f1857f;
+    }
+  }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 0 0 12px; color: var(--muted); }
+  .key { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 12px; font-size: 14px; }
+  .key span { display: inline-flex; align-items: center; gap: 6px; }
+  .key i { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; display: inline-block; }
+  .k-grey i { background: var(--grey-fill); border-color: var(--grey-stroke); }
+  .k-blue i { background: var(--blue-fill); border-color: var(--blue-stroke); }
+  .k-red i { background: var(--red-fill); border-color: var(--red-stroke); }
+  svg { width: 100%; height: auto; display: block; }
+  .box { stroke-width: 2; }
+  .grey { fill: var(--grey-fill); stroke: var(--grey-stroke); }
+  .blue { fill: var(--blue-fill); stroke: var(--blue-stroke); }
+  .red { fill: var(--red-fill); stroke: var(--red-stroke); }
+  text { fill: var(--fg); font: 14px system-ui, sans-serif; text-anchor: middle; }
+  .lbl { fill: var(--muted); font-size: 13px; }
+  .edge { stroke: var(--line); stroke-width: 2; fill: none; }
+  .head { fill: var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <h1>ADR-034: one Writing page, no Research page</h1>
+  <p>Read from the top. The reader opens Writing, or follows an old Research link. Both paths end on one filtered list.</p>
+  <div class="key">
+    <span class="k-grey"><i></i>Exists today</span>
+    <span class="k-blue"><i></i>New or changed</span>
+    <span class="k-red"><i></i>Failure path</span>
+  </div>
+  <svg viewBox="0 0 800 870" role="img" aria-label="Flowchart of the merged Writing page, from nav click or old Research link to the filtered note list">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="head" d="M0 0L10 5L0 10z"/></marker>
+    </defs>
+
+    <!-- main column -->
+    <rect class="box grey" x="150" y="20" width="300" height="44" rx="8"/><text x="300" y="47">Reader opens the site</text>
+    <rect class="box blue" x="150" y="100" width="300" height="44" rx="8"/><text x="300" y="127">Nav shows Home, Work, Experience, Writing</text>
+    <rect class="box grey" x="150" y="180" width="300" height="44" rx="8"/><text x="300" y="207">Reader clicks Writing</text>
+    <rect class="box blue" x="150" y="260" width="300" height="44" rx="8"/><text x="300" y="287">Read the kind from the address</text>
+    <polygon class="box blue" points="300,340 450,375 300,410 150,375"/><text x="300" y="380">Is the kind known?</text>
+    <rect class="box blue" x="150" y="450" width="300" height="44" rx="8"/><text x="300" y="477">Keep only notes of that kind</text>
+    <rect class="box blue" x="150" y="530" width="300" height="44" rx="8"/><text x="300" y="557">Group one project's notes as a series</text>
+    <polygon class="box blue" points="300,610 450,645 300,680 150,645"/><text x="300" y="650">Is any note left?</text>
+    <rect class="box grey" x="150" y="720" width="300" height="44" rx="8"/><text x="300" y="747">List the cards, newest first</text>
+    <rect class="box grey" x="150" y="800" width="300" height="44" rx="8"/><text x="300" y="827">Reader opens a note</text>
+
+    <!-- right column -->
+    <rect class="box grey" x="530" y="100" width="240" height="44" rx="8"/><text x="650" y="127">Reader opens an old Research link</text>
+    <rect class="box blue" x="530" y="180" width="240" height="44" rx="8"/><text x="650" y="207">Redirect to Writing, Research on</text>
+    <rect class="box red" x="530" y="353" width="240" height="44" rx="8"/><text x="650" y="380">Treat the value as All</text>
+    <rect class="box red" x="530" y="623" width="240" height="44" rx="8"/><text x="650" y="650">Show "Nothing published yet"</text>
+
+    <!-- edges, main column -->
+    <path class="edge" marker-end="url(#a)" d="M300 64V100"/>
+    <path class="edge" marker-end="url(#a)" d="M300 144V180"/>
+    <path class="edge" marker-end="url(#a)" d="M300 224V260"/>
+    <path class="edge" marker-end="url(#a)" d="M300 304V340"/>
+    <path class="edge" marker-end="url(#a)" d="M300 410V450"/>
+    <path class="edge" marker-end="url(#a)" d="M300 494V530"/>
+    <path class="edge" marker-end="url(#a)" d="M300 574V610"/>
+    <path class="edge" marker-end="url(#a)" d="M300 680V720"/>
+    <path class="edge" marker-end="url(#a)" d="M300 764V800"/>
+
+    <!-- edges, right column -->
+    <path class="edge" marker-end="url(#a)" d="M650 144V180"/>
+    <path class="edge" marker-end="url(#a)" d="M650 224V282H450"/>
+    <path class="edge" marker-end="url(#a)" d="M450 375H530"/>
+    <path class="edge" marker-end="url(#a)" d="M650 397V552H450"/>
+    <path class="edge" marker-end="url(#a)" d="M450 645H530"/>
+
+    <!-- labels -->
+    <text class="lbl" x="326" y="436">yes</text>
+    <text class="lbl" x="490" y="366">no</text>
+    <text class="lbl" x="326" y="706">yes</text>
+    <text class="lbl" x="490" y="636">no</text>
+  </svg>
+</main>
+</body>
+</html>

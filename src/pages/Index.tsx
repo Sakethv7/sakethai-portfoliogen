@@ -87,7 +87,7 @@ const Index = () => {
     <section className="editorial-section">
       <div className="section-heading">
         <div><p className="eyebrow">Research</p><h2>Measuring how AI agents use a website</h2></div>
-        <Link to="/research">All {noteCounts.research} research notes <ArrowRight /></Link>
+        <Link to="/writing?kind=research">All {noteCounts.research} research notes <ArrowRight /></Link>
       </div>
       <p className="section-intro">One project, the GEO agent benchmark: test sites, a request log and a scorer. It covers formats such as llms.txt, who an agent is, and how it signs in. Each note has its own limits stated.</p>
       <div className="featured-grid">

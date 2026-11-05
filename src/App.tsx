@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 
 const Work = lazy(() => import("./pages/Work"));
@@ -41,10 +41,9 @@ const App = () => (
             <Route path="/work/:slug" element={<Article collection="work" />} />
             <Route path="/experience" element={<Experience />} />
             <Route path="/experience/:slug" element={<Article collection="experience" />} />
-            <Route path="/writing" element={<Collection type="writing" />} />
+            <Route path="/writing" element={<Collection />} />
             <Route path="/writing/:slug" element={<Article collection="writing" />} />
-            <Route path="/research" element={<Collection type="research" />} />
-            <Route path="/notes" element={<Collection type="notes" />} />
+            <Route path="/research" element={<Navigate to="/writing?kind=research" replace />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

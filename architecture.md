@@ -698,3 +698,37 @@ The card can hold only one line of this. The full list belongs in the case study
 1. Lead the featured cards with the enterprise case study.
 2. Shorten the featured cards.
 3. Add one personal line to the hero.
+
+---
+
+## Writing page merge (ADR-034, proposed 2026-11-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader opens Writing] --> B[Read the kind from the address]
+    B --> C[Filter published notes by kind]
+    C --> D[Group one project's notes as a series]
+    D --> E[List the cards]
+    F[Reader opens old Research link] --> G[Redirect to Writing with kind research]
+    G --> B
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    class B,C,D new
+    class F,G changed
+```
+
+*Caption: green is new: the filter and the series grouping on one page. Amber is changed: the old Research route now redirects.*
+
+**Complexity tier:** single-process tool. This is a static site with client-side routes. The change touches one page component, one route table and one nav list. A higher tier is not needed.
+
+**What changes.** Today `Collection.tsx` takes a `type` prop (`writing`, `research`, `notes`). Two routes use it. After this change the `/writing` route reads one query value, `kind`, with `useSearchParams`. The component filters `publications` by that value. It always groups series, not only in the research view. `PortfolioShell.tsx` drops the Research link and the `hasPublishedResearch` check. `/research` becomes a `Navigate` redirect. A redirect is a route that sends the browser to another route at once. Article routes stay at `/writing/:slug`.
+
+**Boundaries.** `portfolio.ts` stays the one source of truth. The component derives the chips from `PublicationItem['kind']`. It does not keep its own list of kinds.
+
+**Contradictions found, not fixed:**
+
+- The `series` comment in `portfolio.ts` says notes are "grouped under it on /research". It becomes untrue. The ADR fixes the comment.
+- The `/notes` route and the `notes` entry in `descriptions` match no content. `Collection` filters them to an empty list. I propose to remove both. Saketh decides.
+- The "Information architecture" section earlier in this file still lists Research as a nav item. This section supersedes it for nav.

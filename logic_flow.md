@@ -432,3 +432,54 @@ None. The cards are computed once from static data. The primary action keeps no 
 ```
 
 Each step is one commit.
+
+---
+
+## Writing page merge (ADR-034, proposed 2026-11-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Open Writing] --> B[Read the kind from the address]
+    B --> C{Is the kind known?}
+    C -- no --> D[Treat the value as All]
+    C -- yes --> E[Keep only notes of that kind]
+    D --> F[Group one project's notes as a series]
+    E --> F
+    F --> G{Is any note left?}
+    G -- no --> H[Show Nothing published yet]
+    G -- yes --> I[List the cards, newest first]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F new
+    class D,H fail
+```
+
+*Caption: green is new. Red is a failure path. The full picture, with the redirect and today's steps, is in [adr-034-writing-one-page.html](docs/visuals/adr-034-writing-one-page.html).*
+
+### Render path
+
+1. Take published notes. In `vite dev`, planned notes also show, as today.
+2. Read `kind` from the query string.
+3. If the value is not one of the four kinds, treat it as All.
+4. Keep notes of that kind. Keep all notes for All.
+5. Group notes that share a `series`. Order chapters by the project's `notes` list. Drop a series card whose chapters were all filtered out.
+6. Sort entries by newest date. A series uses its newest chapter date.
+7. Draw the chip row, then the cards. The active chip has `aria-current="true"`.
+
+### Failure behavior
+
+| Event | Result | Who notices |
+|---|---|---|
+| `?kind=` holds an unknown value | Show All. The chip row marks All. | Nobody needs to. |
+| A kind has no published notes | Hide that chip. If all are hidden, show the empty state. | Nobody needs to. |
+| A reader opens `/research` | Redirect to `/writing?kind=research` with `replace`, so Back does not loop. | Nobody needs to. |
+| A reader opens `/research/<x>` | No such route. It shows Not Found, as today. | The link check |
+| A planned note has a `series` | It shows only in `vite dev` | The author |
+
+There are no retries and no loading states. The data is static.
+
+### State transitions
+
+The chip is the only state. It lives in the address, not in React state. A click changes the query string with `replace: false`, so Back returns to the previous chip. Reload keeps the chip.

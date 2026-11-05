@@ -579,3 +579,62 @@ Append to "Content validation rules":
 - Every proof card claim is 12 words or fewer. Every evidence line is 8 words or fewer, except the `writing` card, which shows the newest note title in full.
 - Every number on a proof card is on the résumé or confirmed by Saketh.
 - Every proof card link resolves: internal routes match a registered route, and external URLs answer over HTTPS.
+
+---
+
+## Writing page merge (ADR-034, proposed 2026-11-05)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Address: /writing with optional kind] --> B[Collection reads kind]
+    B --> C{Is kind one of four?}
+    C -- no --> D[Use All]
+    C -- yes --> E[Filter publications]
+    D --> F[Return entries]
+    E --> F
+    G[Address: /research] --> H[Navigate to /writing?kind=research]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,H new
+    class D fail
+```
+
+*Caption: green is the new contract. Red is the fallback for a bad value.*
+
+### Routes
+
+| Route | Before | After |
+|---|---|---|
+| `/writing` | `Collection type="writing"` | `Collection`. Reads `?kind=`. |
+| `/research` | `Collection type="research"` | `<Navigate to="/writing?kind=research" replace />` |
+| `/notes` | `Collection type="notes"`, always empty | Removed, if Saketh agrees (open question) |
+| `/writing/:slug` | Article | No change |
+
+### Query contract
+
+`kind` is optional. Allowed values, matched to `PublicationItem['kind']`:
+
+| Value | Matches |
+|---|---|
+| (absent) | All published notes |
+| `engineering` | `Engineering note` |
+| `research` | `Research note` |
+| `system-design` | `System design` |
+| `build-log` | `Build log` |
+
+An unknown value behaves as absent. No error shows.
+
+### Signature change
+
+`Collection({ type })` becomes `Collection()`. The `descriptions` map has one entry for Writing. The page text says it holds engineering notes, research notes, system design and build logs.
+
+### Invariants
+
+- The nav shows Writing when at least one note is Published. `hasPublishedResearch` is removed. `hasPublishedWriting` becomes "any note is Published".
+- A chip shows only when its kind has a Published note.
+- `noteCounts` stays. The Work header and the home proof card still read it. Their `/writing` links may add `?kind=`.
+- Every note keeps its URL `/writing/:slug`.
+- The series order still follows the project's `notes` list in `portfolio.ts`.
+- No new dependency. `useSearchParams` and `Navigate` come from `react-router-dom`.

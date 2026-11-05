@@ -1,13 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { publications, work } from '@/data/portfolio';
 import type { PublicationItem } from '@/data/portfolio';
 
-const descriptions = {
-  writing: ['Writing', 'Engineering notes on evaluating, operating, and debugging AI systems.'],
-  research: ['Research', 'Sourced notes on what I am reading and testing. Other people\'s claims are cited, and my own reading is labelled.'],
-  notes: ['Notes', 'Short technical observations, paper notes, and ideas that are useful before they become essays.'],
-} as const;
+const description = 'Notes on evaluating, operating, and debugging AI systems. Research notes cite their sources, and my own reading is labelled.';
+
+// The `kind` value in the address maps to a publication kind (ADR-034).
+const kinds: Record<string, { label: string; kind: PublicationItem['kind'] }> = {
+  engineering: { label: 'Engineering', kind: 'Engineering note' },
+  research: { label: 'Research', kind: 'Research note' },
+  'system-design': { label: 'System design', kind: 'System design' },
+  'build-log': { label: 'Build logs', kind: 'Build log' },
+};
 
 // A series groups the notes of one project into one card. Its overview page is the project's case study.
 const seriesInfo: Record<string, { to: string; plain: string }> = {
@@ -23,25 +27,29 @@ function chapterRank(name: string, item: PublicationItem): number {
   return index === -1 ? order.length : index;
 }
 
-function toEntries(notes: PublicationItem[], inSeriesTab: boolean): Entry[] {
+function toEntries(notes: PublicationItem[]): Entry[] {
   const loose: Entry[] = notes.filter((item) => !item.series).map((item) => ({ kind: 'note', item }));
-  if (!inSeriesTab) return loose;
-  const names = [...new Set(publications.filter((item) => item.series && (item.status === 'Published' || import.meta.env.DEV)).map((item) => item.series!))];
-  const groups: Entry[] = names.map((name) => ({ kind: 'series', name, chapters: publications.filter((item) => item.series === name && (item.status === 'Published' || import.meta.env.DEV)).toSorted((a, b) => chapterRank(name, a) - chapterRank(name, b)) }));
+  const names = [...new Set(notes.filter((item) => item.series).map((item) => item.series!))];
+  const groups: Entry[] = names.map((name) => ({ kind: 'series', name, chapters: notes.filter((item) => item.series === name).toSorted((a, b) => chapterRank(name, a) - chapterRank(name, b)) }));
   return [...loose, ...groups];
 }
 
 const entryDate = (entry: Entry) => entry.kind === 'note' ? entry.item.date! : entry.chapters[entry.chapters.length - 1].date!;
 
-export default function Collection({ type }: { type: keyof typeof descriptions }) {
-  const [title, description] = descriptions[type];
+export default function Collection() {
+  const [params] = useSearchParams();
+  // An unknown `kind` value falls back to All.
+  const active = kinds[params.get('kind') ?? ''] ? params.get('kind')! : '';
   // Only published work is public; planned items show in `vite dev` so drafts can be previewed.
-  const notes = publications
-    .filter((item) => item.status === 'Published' || import.meta.env.DEV)
-    .filter((item) => type === 'writing' ? item.kind !== 'Research note' : type === 'research' ? item.kind === 'Research note' : false);
-  const items = toEntries(notes, type === 'research').toSorted((a, b) => entryDate(b).localeCompare(entryDate(a)));
+  const visible = publications.filter((item) => item.status === 'Published' || import.meta.env.DEV);
+  const notes = active ? visible.filter((item) => item.kind === kinds[active].kind) : visible;
+  const items = toEntries(notes).toSorted((a, b) => entryDate(b).localeCompare(entryDate(a)));
+  // A chip shows only when its kind has a note.
+  const chips = [['', 'All'], ...Object.entries(kinds).filter(([, { kind }]) => visible.some((item) => item.kind === kind)).map(([key, { label }]) => [key, label])];
   return <PortfolioShell>
-    <header className="page-header editorial-section"><p className="eyebrow">Public work</p><h1>{title}</h1><p>{description}</p></header>
+    <header className="page-header editorial-section"><p className="eyebrow">Public work</p><h1>Writing</h1><p>{description}</p>
+      <nav className="filter-chips" aria-label="Filter notes by kind">{chips.map(([key, label]) => <Link key={key} to={key ? `/writing?kind=${key}` : '/writing'} aria-current={key === active ? 'true' : undefined}>{label}</Link>)}</nav>
+    </header>
     <section className="editorial-section collection-list">{items.length ? items.map((entry) => entry.kind === 'series' ? <article className="series-card" key={entry.name}>
       <div className="meta-line"><span>Project series · {entry.chapters.length} notes</span><span>{entryDate(entry)}</span></div>
       <h2><Link to={seriesInfo[entry.name].to}>{entry.name}</Link></h2>

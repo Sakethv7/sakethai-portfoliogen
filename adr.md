@@ -612,3 +612,59 @@ The first draft of this ADR kept one button and made "View résumé" a plain lin
 3. One extra step for email. "Get in touch" shows the address. It does not open a compose window. That step is the cost of a contact path that always works.
 
 **Explainer ladder:** Levels 3 and 4 skipped. A button change and one scroll have no flow that a viewer needs to watch.
+
+## ADR-034: One Writing page replaces the Writing and Research pages
+
+**Status:** Proposed (2026-11-05). Waits for Saketh's review. Amends ADR-022 (nav rule) and ADR-004 (taxonomy, display only).
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader opens Writing or an old Research link] --> B[Read the kind from the address]
+    B --> C{Is the kind known?}
+    C -- no --> D[Treat the value as All]
+    C -- yes --> E[Keep only notes of that kind]
+    D --> F[Group one project's notes as a series]
+    E --> F
+    F --> G{Is any note left?}
+    G -- no --> H[Show Nothing published yet]
+    G -- yes --> I[List the cards, newest first]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef changed fill:#fff3cd,stroke:#8a6d00,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F new
+    class A changed
+    class D,H fail
+```
+
+*Caption: green is new: a kind filter on one page. Amber is changed: the old Research link now lands here. Red is the failure path: an unknown kind or an empty result. Explainer with today's steps around the change: [adr-034-writing-one-page.html](docs/visuals/adr-034-writing-one-page.html).*
+
+**Context:** The nav shows Work, Writing and Research. The same notes appear on all three. Work lists the notes under each project. Writing shows notes whose `kind` is not "Research note". Research shows the rest. Both pages use one component, `Collection.tsx`. The only difference is a filter on `kind`. A reader does not choose a page by that kind. They choose by project or by topic. Notes for one project already sit on the Work page.
+
+**Options:**
+
+| Option | Nav | Strength | Weakness |
+|---|---|---|---|
+| A. Keep three pages | Work, Writing, Research | No change | Same notes in three places. The Research split means little to a skimming reader. |
+| B. Merge Writing and Research. Filter by kind. | Work, Writing | One list of notes. Kind stays visible as a chip. Work keeps the projects. | The Research label leaves the nav. |
+| C. One Work page with Projects and Notes tabs | Work | One place, as first asked | Adds a tab level. Work already nests notes per project, so little duplication goes away. |
+
+**Choice:** Option B. Saketh said "you decide" on 2026-11-05.
+
+- `/writing` shows every published note. Chips filter by kind: All, Engineering, Research, System design, Build log.
+- The chip is stored in the address as `?kind=`. A reader can link to a filtered view.
+- A series card (one project's notes) appears in every view. Under a kind filter it lists only the chapters of that kind. It disappears if none match.
+- `/research` redirects to `/writing?kind=research`. Old links keep working.
+- The nav drops the Research link. Home keeps its Research block and links it to the filtered view.
+- Work does not change.
+
+**Why:** One list answers "what has he written". The kind stays as a label, so the research notes (which cite sources) stay easy to find. Work keeps one job: projects.
+
+**Given up:**
+
+1. A top-level "Research" label in the nav. A recruiter who looks for it must open Writing first.
+2. One more click to see only research notes, unless they follow a link with `?kind=research`.
+3. A small amount of code: a chip row, a query-string read, and a redirect route.
+
+**Explainer ladder:** Levels 1, 2 and 3 are done. No video (see the no-narrated-videos rule).
