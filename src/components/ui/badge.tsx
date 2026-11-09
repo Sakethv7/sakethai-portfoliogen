@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- shadcn primitive intentionally exports its variant helper. */
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 

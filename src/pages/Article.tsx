@@ -32,18 +32,19 @@ function findRecord(collection: 'work' | 'writing' | 'experience', slug: string)
 export default function Article({ collection }: { collection: 'work' | 'writing' | 'experience' }) {
   const { slug = '' } = useParams();
   const record = findRecord(collection, slug);
+  const body = record?.body;
   const [html, setHtml] = useState<string | null>(null);
   const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    if (!record) return;
+    if (!body) return;
     let active = true;
     setHtml(null);
     setMissing(false);
-    loadBody(record.body)
+    loadBody(body)
       .then((markdown) => {
         if (!active) return;
-        if (markdown === null) throw new Error(`No content file for ${record.body}`);
+        if (markdown === null) throw new Error(`No content file for ${body}`);
         // Content is committed to this repo, so the HTML is trusted (ADR-023).
         // The page already shows the title as an h1, so drop a leading "# Title" line.
         setHtml(marked.parse(markdown.replace(/^# .*\n+/, ''), { async: false }));
@@ -53,7 +54,7 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         if (active) setMissing(true);
       });
     return () => { active = false; };
-  }, [record?.body]);
+  }, [body]);
 
   if (!record || missing) return <NotFound />;
 

@@ -797,3 +797,41 @@ flowchart TD
 3. The project and note counts leave the page header.
 
 **Explainer ladder:** Levels 1, 2 and 3 are done for ADR-035, ADR-036 and ADR-037. One explainer covers all three. No video.
+
+## ADR-038: Frame GEO-agent-bench as a behavior and security harness
+
+**Status:** Accepted (2026-11-08).
+
+**Context:** The portfolio described GEO-agent-bench mainly through formats such as `llms.txt`, the markdown interceptor and its token result. That made one Phase E observation look like the project's thesis. The implemented project is broader: it compares legacy, agent-readable and agent-native web surfaces while testing navigation, instruction adherence, data exposure, identity, OAuth and signed requests. Its evidence also comes from different client types. Qwen and Claude ran as agents in the harness; Anthropic and OpenAI crawlers appeared in public logs; OpenAI hosted search was a separate probe. Calling all of them crawlers or a three-agent comparison would be false. The interceptor returns a cleaner representation of a requested page; it is not yet a task-aware least-privilege filter.
+
+**Choice:** Keep the project name, but call it a descriptive experimental harness and state that it is not yet a general benchmark of GEO effectiveness. Lead with the three web surfaces and the behavior/security questions. Keep the token reduction as one finding with its one-run-per-cell limit.
+
+**Why:** This framing matches the implemented system and prevents a reader from generalizing the Phase E result beyond its evidence.
+
+**Rejected alternatives:**
+
+1. Lead with the two-thirds token reduction. Rejected because it describes one agent tool on one synthetic site with one run per cell.
+2. Say Qwen, Claude and GPT were three crawlers or three comparable agents. Rejected because Qwen ran locally through the harness, while GPT evidence came from crawler traffic and a hosted-search probe.
+3. Rename the repository. Rejected because the current name is established and the limitation can be made explicit in the description.
+
+**Given up:** The short description is less promotional. It gains a more accurate account of what the project demonstrates.
+
+## ADR-039: Translate the homepage into recruiter language without replacing the systems position
+
+**Status:** Accepted (2026-11-08) after teach-back.
+
+**Context:** The hero leads with “Applied AI Systems Engineer,” while the current role is Data Scientist and the target search includes data-science work. The homepage did not name the recruiter stack near the title. The compact experience list showed only dates, titles and companies even though the J&J record already contains approved public evidence. The activity list deliberately excludes GEO-agent-bench releases because the Research block owns them, but its “Recent activity” label made the October entries appear to be the newest work on the site.
+
+**Decision:** Keep “Applied AI Systems Engineer” as the hero eyebrow. Add one supporting line naming data science, production AI evaluation and data systems, followed by Python, SQL, PySpark and AWS. For the current experience only, render the existing `caseStudy.plain` evidence; do not copy its metrics into the component. Rename the non-GEO activity block “Outside this research / Other work shipped.”
+
+**Why:** The supporting line maps the systems position to common recruiter language without presenting three competing job titles. Reusing `caseStudy.plain` keeps the homepage and experience case study on one evidence source. The new activity label explains the section boundary instead of implying that October is the latest site activity.
+
+**Rejected alternatives:**
+
+1. Replace the headline with “Data Scientist / Data Engineer / AI Engineer.” Rejected because three titles weaken the positioning and imply equal evidence for each role.
+2. Hard-code a shorter J&J metric sentence in `Index.tsx`. Rejected because it would create a second claim that could drift from the approved experience record.
+3. Put GEO releases back into the activity list. Rejected because that would duplicate the Research block and reverse ADR-035.
+
+**Failure and recovery:** A future current role without a case study shows no evidence line rather than inventing one. If the supporting line or evidence makes the hero or experience strip too dense, the change is recoverable by reverting this ADR's `Index.tsx` and CSS additions; it has no persistent or external write.
+
+**Teach-back:** Saketh confirmed that “Applied AI Systems Engineer” expresses the end-to-end direction: proven AI and data-system work now, hardware fundamentals in progress, and eventual ownership of AI-enabled industrial products. Homepage evidence remains sourced from `caseStudy.plain`; a résumé-only metric is not copied automatically, and a missing case study produces no evidence line. The 390 px mobile render was reviewed. Both additions remain; if later copy makes the page too dense, the longer current-job evidence line is removed before the recruiter-facing role-and-stack line. GEO releases remain in Research instead of being duplicated under “Other work shipped.”

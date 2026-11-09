@@ -2,7 +2,7 @@
 
 *Research build log · 2026-11-04 · my own test site and my own runs*
 
-> **In one paragraph.** The [first pilot](#/writing/geo-agent-bench) ended at a ceiling. The site had 9 pages, and Claude answered every question correctly with or without shortcuts. In Phase E I built a site of 101 short pages in three versions. One is plain HTML. One is Stripe-style, with `llms.txt` and markdown copies. In the third, the site itself sends markdown to a verified agent. I ran 32 runs, one per task and version. The plain and `llms.txt` versions each missed one task. The agent ran out of fetch allowance. The interceptor version failed 0 of 8 the first time, because of my bug. After the fix it answered 8 of 8. It used about one third of the input tokens of the plain version. This is one agent and one run per cell. It shows a direction, not a measured size.
+> **In one paragraph.** The [first pilot](#/writing/geo-agent-bench) ended at a ceiling. The site had 9 pages, and Claude answered every question correctly with or without shortcuts. In Phase E I built a site of 101 short pages in three versions. One is plain HTML. One is Stripe-style, with `llms.txt` and markdown copies. In the third, the site itself sends markdown to a verified agent. I ran 24 initial cells, then reran the 8 interceptor cells after fixing a link bug: 32 runs total. The plain and `llms.txt` versions each missed one task after running out of fetch allowance. The interceptor version initially answered 0 of 8 correctly, then answered 8 of 8 after the fix. It used about one third of the input tokens of the plain version. This is one agent and one observation per final cell. It shows a direction, not a measured size.
 
 ## Why a bigger site
 

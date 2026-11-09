@@ -27,7 +27,7 @@ function productionCard(): ProofCard | null {
 function researchCard(): ProofCard | null {
   const chapters = publications.filter((item) => item.series === 'GEO agent benchmark' && item.status === 'Published');
   if (chapters.length === 0 || !work.some((item) => item.slug === 'geo-agent-bench')) return missing('research');
-  return { id: 'research', claim: 'A benchmark of how AI agents behave on a test website: formats, identity and sign-in', evidence: `GEO agent benchmark: ${chapters.length} notes, public code, exact ground truth`, linkLabel: 'Read the overview', to: '/work/geo-agent-bench' };
+  return { id: 'research', claim: 'An experimental harness for studying AI agents on test websites: formats, identity and sign-in', evidence: `GEO agent benchmark: ${chapters.length} notes, public code, exact ground truth`, linkLabel: 'Read the overview', to: '/work/geo-agent-bench' };
 }
 
 function appCard(): ProofCard | null {

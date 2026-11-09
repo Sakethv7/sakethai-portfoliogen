@@ -2,20 +2,21 @@
 
 *Project overview · 2026-11-04 · my own test sites, my own runs · [code](https://github.com/Sakethv7/geo-agent-bench)*
 
-> **In one paragraph.** I built a test website, a request log, a run harness and a scorer. I used them to measure how AI agents behave when a site changes its format. Does an agent use `llms.txt`? What does it get if the site sends markdown to a verified agent? Can a site tell a real agent from one that copies its name? The work ran in phases over a few weeks. Each step has its own note, and this page links them in order. Most results are one run per cell, so they show a direction, not a size.
+> **In one paragraph.** GEO-agent-bench is a well-engineered experimental harness for studying agent web behavior, identity, tools and access. It is not yet a general benchmark of GEO effectiveness. I use it to compare three kinds of web surface: legacy HTML built for people, agent-readable sites with `llms.txt` and markdown copies, and agent-native interfaces built from MCP tools or identity-aware responses. Across them I measure navigation, instruction adherence, data exposure, OAuth and signed identity. Qwen and Claude ran as agents in my harness; Anthropic and OpenAI crawlers arrived in the public logs; OpenAI hosted search was a separate probe. Most results are one run per cell, so they show a direction, not a size.
 
 ## Why I built it
 
-Advice on generative engine optimization (GEO) says to publish a version of your site that agents read more easily. I found little measured evidence. I wanted to see what agents do, with a log that does not depend on what the agent says about itself. The same setup then answered security questions: who is asking, and can the site check?
+Advice on generative engine optimization (GEO) says to publish a version of a site that agents can read more easily. I found little measured evidence. I wanted to compare the old web, an agent-readable web and an agent-native web while keeping the underlying facts fixed. A request log I own lets me check what each client actually fetched instead of trusting its answer. The same setup tests security questions: does an agent follow a hidden instruction, ask for more data than it needs, respect denied access, and prove who is asking?
 
 ## What exists
 
-- A fictional company site in several versions, on one small cloud VM with its own domain and HTTPS. The text is invented, so the model cannot know the answers.
+- A fictional company site on one small cloud VM with its own domain and HTTPS. The same facts appear as legacy HTML, agent-readable HTML plus markdown, and agent-native tools or identity-aware responses. The text is invented, so the model cannot know the answers.
 - A site that writes its own request log. Each run has its own host name with a random token, so the log matches each request to one run.
 - A runner and a scorer. A run counts as correct only if the normalized answer matches the stored one. No model grades the answer.
 - Identity checks: published IP ranges, user agent names and signed requests (Web Bot Auth).
 - One OAuth-protected page, a set of MCP tools, and a markdown interceptor.
-- 190 tests, 29 design records (ADRs), and result tables for every run.
+- Qwen and Claude agent runs, public-log observations of Anthropic and OpenAI crawlers, and a separate OpenAI hosted-search probe. These are different kinds of evidence, not one three-agent comparison.
+- 190 tests, 30 design records (ADRs), and result tables for every run.
 
 ## The notes, in order
 
@@ -35,7 +36,7 @@ The background reading is in two earlier notes: [SEO, AEO, GEO](#/writing/seo-ae
 ## What I would tell an engineer who builds for agents
 
 1. Put a shortcut in the visible page body. A fetch tool may drop the HTML head.
-2. Use absolute links in any markdown you serve to agents. My first version used relative links and failed 0 of 8.
+2. Use absolute links in any markdown you serve to agents. My first version used relative links and answered 0 of 8 correctly.
 3. Check identity with more than the user agent name. Copying a name is common. A valid sign-in does not prove who is asking.
 4. Match runs by a host token, not by IP. One agent used three IPs in one probe.
 5. For a small local model, fix the harness before you blame the model.
