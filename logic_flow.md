@@ -508,11 +508,23 @@ flowchart TD
 ### Home render path
 
 1. Render the systems-engineer eyebrow, then the recruiter-facing data-science and stack line.
-2. Make a card from each record: production, research, app. Drop a card whose source record is missing, and warn in dev.
+2. Make a card from each proof record: production, research, app. Drop a card whose source record is missing, and warn in dev.
 3. Render the first three résumé experiences. If the current experience has a case study, reuse its `plain` evidence below the company; otherwise show no evidence line.
 4. Take `activity` entries whose `series` is not `'GEO agent benchmark'`.
 5. Sort by newest date and keep 4 under “Outside this research / Other work shipped.”
 6. If none remain, do not draw the section.
+
+### Home Research selection
+
+1. Select the published e-means reproduction note, followed by the two newest
+   featured GEO-agent-bench chapters.
+2. Render each note from its `publications` record, so its title, plain-language
+   result and date have one source.
+3. Link the section to the Research filter on Writing. Keep GEO's project
+   overview as a separate link; do not describe the e-means study as part of
+   the GEO series.
+4. If a selected slug is absent or not published, omit that card rather than
+   manufacture a placeholder.
 
 ### Work render path
 

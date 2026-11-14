@@ -22,7 +22,7 @@ const Index = () => {
   // The Research block already covers the benchmark, so its releases stay off this list (ADR-035).
   const shipped = activity.filter((item) => item.series !== 'GEO agent benchmark').slice(0, 4);
   const featured = work.filter((item) => item.featured).slice(0, 3);
-  const research = ['geo-agent-bench-phase-e', 'geo-agent-bench-phase-b-c', 'geo-agent-bench'].map((slug) => publications.find((item) => item.slug === slug)).filter((item) => item?.status === 'Published');
+  const research = ['e-means-reproduction-lab', 'geo-agent-bench-phase-e', 'geo-agent-bench-phase-b-c'].map((slug) => publications.find((item) => item.slug === slug)).filter((item) => item?.status === 'Published');
   return <PortfolioShell>
     <section className={`hero editorial-section${heroProof.length > 0 ? ' hero-grid' : ''}`}>
       <div className="hero-copy">
@@ -89,17 +89,17 @@ const Index = () => {
 
     <section className="editorial-section">
       <div className="section-heading">
-        <div><p className="eyebrow">Research</p><h2>Measuring how AI agents use a website</h2></div>
+        <div><p className="eyebrow">Research</p><h2>Experiments with measured limits</h2></div>
         <Link to="/writing?kind=research">All {noteCounts.research} research notes <ArrowRight /></Link>
       </div>
-      <p className="section-intro">One descriptive experimental harness across legacy, agent-readable and agent-native web surfaces. It measures navigation, instruction adherence, data exposure, identity and sign-in. Each note states its own limits.</p>
+      <p className="section-intro">Independent experiments on clustering algorithms and AI-agent behavior. Each study separates its measured result from what it does not prove.</p>
       <div className="featured-grid">
         {research.map((item, index) => <article className="featured-card" key={item!.slug}>
           <p className="item-index">0{index + 1}</p><p className="evidence-status">{item!.kind} · {item!.date}</p><h3>{item!.title}</h3><p className="plain-line">{item!.plain}</p>
           <div className="card-links"><Link to={`/writing/${item!.slug}`}><ArrowRight /> Read the note</Link></div>
         </article>)}
       </div>
-      <p className="section-intro"><Link to="/work/geo-agent-bench">Read the project overview</Link>, <Link to="/writing">browse all notes</Link>, or open the <a href="https://github.com/Sakethv7/geo-agent-bench" target="_blank" rel="noreferrer">code</a>.</p>
+      <p className="section-intro"><Link to="/writing">Browse all notes</Link>, or read the <Link to="/work/geo-agent-bench">GEO-agent-bench project overview</Link>.</p>
     </section>
 
     {shipped.length > 0 && <section className="editorial-section">

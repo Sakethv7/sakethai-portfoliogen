@@ -835,3 +835,47 @@ flowchart TD
 **Failure and recovery:** A future current role without a case study shows no evidence line rather than inventing one. If the supporting line or evidence makes the hero or experience strip too dense, the change is recoverable by reverting this ADR's `Index.tsx` and CSS additions; it has no persistent or external write.
 
 **Teach-back:** Saketh confirmed that “Applied AI Systems Engineer” expresses the end-to-end direction: proven AI and data-system work now, hardware fundamentals in progress, and eventual ownership of AI-enabled industrial products. Homepage evidence remains sourced from `caseStudy.plain`; a résumé-only metric is not copied automatically, and a missing case study produces no evidence line. The 390 px mobile render was reviewed. Both additions remain; if later copy makes the page too dense, the longer current-job evidence line is removed before the recruiter-facing role-and-stack line. GEO releases remain in Research instead of being duplicated under “Other work shipped.”
+
+## ADR-040: Publish the e-means reproduction as bounded applied research
+
+**Status:** Accepted by explicit teach-back waiver (2026-11-14).
+
+**Context:** The completed e-means experiment has a defensible result and a
+rejected-campaign trail, but the portfolio's homepage Research block is framed
+as one GEO-agent-bench series. Adding only a Work item would classify the study
+as a generic learning project and hide its experimental contribution in a
+folded section. Replacing GEO would erase existing public research.
+
+**Decision:** Publish the e-means case study as a dated Research note and place
+it first in the three-card homepage Research block. Retain two GEO chapters and
+link GEO's project overview separately. Broaden the section heading from one
+agent-web experiment to “Experiments with measured limits.” Ship the two V5
+plots with the static site and lock the accepted result and non-claims in a
+regression test.
+
+**Evidence invariant:** Public copy may state the accepted V5 result: 10 paired
+seeds, crossing at e-means epoch 4, median 2.55x time-to-target speedup and
+0.333% lower median held-out MSE at epoch 5. It must also state that the result
+is machine- and configuration-specific, does not reproduce the GPU claim and
+does not represent a new algorithm.
+
+**Rejected alternatives:**
+
+1. Add it only under Experiments & learning. Rejected because the portfolio
+   category describes its evidence as applied research, not only coursework.
+2. Add both a Work card and a Research note. Rejected because it duplicates one
+   artifact across the homepage and archive before a separate public code
+   repository exists.
+3. Replace the GEO research cards. Rejected because GEO remains a separate,
+   evidenced research system.
+
+**Failure and recovery:** A missing Markdown body routes to the existing real
+not-found page. A missing plot is caught by the content regression test. A
+missing or unpublished publication record is omitted from the homepage. The
+change is static and recoverable by reverting the publication, content, plot,
+homepage-selection and ADR changes.
+
+**Teach-back:** Waived by Saketh on 2026-11-14 because he wanted the completed
+portfolio change published immediately. The waiver applies only to ADR-040 and
+does not change the evidence invariant or waive review for later public-interface
+changes.
