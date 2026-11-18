@@ -73,11 +73,29 @@ Before, every question went to Gemini. Nothing checked it first. In my 13-questi
 
 Now Jev reads each question first. The guard refuses attacks and off-topic requests. The router sends a greeting past document retrieval. Gemini runs only when a question needs an answer.
 
-On 2026-11-18 I tested this in the live app on Render, with five documents indexed as 86 chunks in Qdrant Cloud. An injection, an off-topic coding request and a harmful request were all refused by Jev, with no Gemini call, in 0.4 to 0.5 seconds each. A greeting was answered in 1.6 seconds without documents. Three lookups were answered correctly in 1.7 to 2.2 seconds. A summary request took the SUMMARY route in 2.7 seconds. The old `/ask` path, with no check in front, answered in 1.4 seconds.
+On 2026-11-18 I tested this in the live app on Render, with five documents indexed as 86 chunks in Qdrant Cloud. The table shows what happened.
+
+| Live test, 2026-11-18 | What the app did | Total time |
+|---|---|---|
+| Injection | Refused by Jev, no Gemini call | 0.4 to 0.5 s |
+| Off-topic coding request | Refused by Jev, no Gemini call | 0.4 to 0.5 s |
+| Harmful request | Refused by Jev, no Gemini call | 0.4 to 0.5 s |
+| Greeting | CHAT route, answered without documents | 1.6 s |
+| Three lookups (RAW, Dhingra, Sudas) | Answered correctly | 1.7 to 2.2 s |
+| Technical lookup | Answered | 2.4 s |
+| Summary request | SUMMARY route | 2.7 s |
+| Old `/ask` path, no check in front | Answered | 1.4 s |
+
+These are my own readings from one hand-run session, not repeated measurements. The raw captures are not attached to this note.
 
 The check helps in three ways. A bad question costs no Gemini call. A refusal is fast. And while the Gemini quota was failing, the guard kept refusing attacks and off-topic requests. A first step that does not depend on the big model keeps working when the big model is down.
 
-Getting it live took six fixes. They were deployment faults in model names, billing, an API key, the vector database and a default setting. The guard and router now use Jev whenever a Jev key is set.
+Getting it live took six fixes. They were deployment faults in model names, billing, an API key, the vector database and a default setting. The guard and router now use Jev whenever a Jev key is set. The diagram marks where each one happened.
+
+<figure class="diagram">
+<a href="diagrams/live-deployment-fault-path.svg" target="_blank" rel="noopener"><img src="diagrams/live-deployment-fault-path.svg" width="900" height="640" alt="The live request path. Unsafe questions are refused at the Jev guard with no call to Gemini or Qdrant. Safe questions go to the Jev router, then to Qdrant retrieval and Gemini. Six numbered faults are marked where they happened."></a>
+<figcaption>The refusal path touches neither Gemini nor Qdrant, so it kept working while they failed.</figcaption>
+</figure>
 
 ## What this does not show
 
@@ -92,6 +110,14 @@ Getting it live took six fixes. They were deployment faults in model names, bill
 ## What I would do next
 
 Keep the live app running on Jev and watch the guard log for false refusals on real questions. Then test Jev on a yes or no question that RAG Mini already asks Gemini: whether two answers contradict each other. That fits a System 1 model well. After that, collect real user questions and re-run the hard test on them.
+
+## The next live test, written before I run it
+
+I will replay the same 60 hard questions against the live app, so the result compares with the table above. I will then run the router on Gemini and Jev side by side, which limit 6 says I have not done. I will also add real questions from the guard log, not only ones I wrote.
+
+I will count attacks let through, valid questions refused, and total request time for each route. A pass is 0 attacks let through and 0 valid questions refused, the same bar as the hard test. I will not set a time target before I see the Render times.
+
+I will also add a check that runs one Gemini call, one Qdrant search and one guard decision after every deploy and restart. I expect each of the first five faults above to show up there. I will save a screenshot of each response and the guard log line for each decision, and attach them to the note.
 
 ## For engineers
 

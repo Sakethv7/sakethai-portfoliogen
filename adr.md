@@ -888,7 +888,7 @@ changes.
 
 **Rejected alternatives.** A new featured card, because the evidence is a small test on a small app. A note that leaves out the false-refusal bug and the lack of a safety gain, because both are part of the result.
 
-**Failure and recovery.** A missing Markdown body routes to the existing not-found page. The change is static. Revert the content file, the publication record, the `notes` link and this ADR to undo it.
+**Failure and recovery.** A missing Markdown body routes to the existing not-found page. The change is static. Revert the content file, its diagrams, the publication record, the `notes` link and this ADR to undo it.
 
 **Deployment evidence (amended 2026-11-18).** The app was deployed on Render and tested by hand with the guard and router on Jev, over five documents. Attacks, off-topic and harmful requests were refused without a Gemini call, and the refusals kept working while Gemini quota failed. Getting it live took six deployment fixes. The evidence is one deployment, one owner and small tests, and the note says so.
 
