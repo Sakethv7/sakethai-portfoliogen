@@ -890,6 +890,8 @@ changes.
 
 **Failure and recovery.** A missing Markdown body routes to the existing not-found page. The change is static. Revert the content file, the publication record, the `notes` link and this ADR to undo it.
 
+**Deployment evidence (amended 2026-11-18).** The app was then deployed on Render and tested by hand with the guard and router on Jev, over five documents. Attacks, off-topic and harmful requests were refused without a Gemini call. Six faults surfaced on the way, none of them in the guard: retired model names, depleted Gemini credits, an API key from the wrong project, a dead Qdrant cluster, a collection-size bug after restart, and a Jev default. While Gemini failed, the guard kept refusing. The evidence is one deployment, one owner and small tests, and the note says so.
+
 **Teach-back:** pending.
 
 ## ADR-042: Parse each article once, and take ids, headings and reading time from that parse
