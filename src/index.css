@@ -342,3 +342,10 @@ h2:hover > .heading-anchor, h3:hover > .heading-anchor, .heading-anchor:focus-vi
 .end-links a span { color: hsl(var(--primary)); text-transform: uppercase; letter-spacing: .1em; font-size: .66rem; font-weight: 700; }
 .end-links a strong { font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 1.25rem; line-height: 1.25; }
 .end-links a em { font-style: normal; color: hsl(var(--muted-foreground)); font-size: .9rem; line-height: 1.5; }
+
+/* Phone tables: tighter cells, and numbers stay on one line so "587 ms" does not split. */
+@media (max-width: 560px) {
+  .article-body table { font-size: .82rem; }
+  .article-body th, .article-body td { padding: 8px 8px; }
+  .article-body td:not(:first-child) { white-space: nowrap; }
+}
