@@ -90,7 +90,7 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .page-header h1 { font-size: clamp(3rem, 7vw, 6rem); font-weight: 500; margin-bottom: 25px; max-width: 900px; }
 .page-header > p:last-child { color: hsl(var(--muted-foreground)); font-size: 1.15rem; max-width: 760px; }
 .page-header > p.plain-line { color: hsl(var(--foreground)); font-size: 1.4rem; line-height: 1.45; max-width: 760px; margin: 0 0 16px; }
-.page-header > p.for-engineers { font-size: .9rem; max-width: 760px; }
+.page-header > .for-engineers { font-size: .9rem; max-width: 760px; }
 .archive-section { padding-block: 70px; }
 .archive-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .archive-heading h2 { font-size: 2rem; font-weight: 500; margin: 0; }
@@ -190,7 +190,7 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .article-body blockquote p { margin: 0; }
 .article-body table { width: 100%; border-collapse: collapse; margin: 8px 0 28px; font-size: .95rem; display: block; overflow-x: auto; }
 .article-body th, .article-body td { border: 1px solid hsl(var(--border)); padding: 10px 14px; text-align: left; }
-.article-body th { background: hsl(var(--card)); font-weight: 600; }
+.article-body th { background: hsl(var(--card) / .55); font-weight: 600; }
 .article-body code { font-family: ui-monospace, monospace; font-size: .88em; background: hsl(var(--secondary)); padding: 2px 6px; border-radius: 4px; }
 .article-body pre { overflow-x: auto; color-scheme: dark; scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--secondary)); background: hsl(var(--secondary)); padding: 16px 18px; border-radius: 6px; line-height: 1.35; }
 .article-body pre code { background: none; padding: 0; font-size: .8rem; }
@@ -216,7 +216,8 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
   .experience-card-head { flex-direction: column; gap: 12px; }
 }
 @media (max-width: 560px) {
-  .article-header h1 { font-size: clamp(2.35rem, 12vw, 3.15rem); }
+  .article-header h1 { font-size: clamp(1.9rem, 9vw, 2.6rem); }
+  .article-header { padding-bottom: 36px; }
   .article-body { font-size: 1rem; padding-top: 40px; }
   .article-body h2 { margin-top: 44px; }
   .site-header { min-height: 108px; grid-template-columns: 1fr auto; grid-template-rows: 52px 52px; }
@@ -283,3 +284,61 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .archive-fold > summary .archive-heading h2::after { content: " +"; color: hsl(var(--muted-foreground)); }
 .archive-fold[open] > summary .archive-heading h2::after { content: " \2212"; }
 .archive-fold[open] > summary .archive-heading { margin-bottom: 24px; }
+
+/* Article reading aids (ADR-042 to 046) */
+.article-layout { padding-top: 0; border-bottom: 0; }
+.article-body { padding-top: 56px; }
+.article-body h2, .article-body h3 { scroll-margin-top: 24px; }
+.heading-anchor { margin-left: .35em; color: hsl(var(--muted-foreground)); text-decoration: none; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: .7em; opacity: 0; transition: opacity .15s; }
+.article-body a.heading-anchor { color: hsl(var(--muted-foreground)); text-decoration: none; }
+h2:hover > .heading-anchor, h3:hover > .heading-anchor, .heading-anchor:focus-visible { opacity: 1; }
+@media (hover: none) { .heading-anchor { opacity: .45; } }
+.article-body img { max-width: 100%; height: auto; }
+.article-body figure.diagram { margin: 8px 0 32px; max-width: 900px; }
+.article-body figure.diagram img { display: block; width: 100%; border-radius: 12px; }
+.article-body figcaption { margin-top: 10px; color: hsl(var(--muted-foreground)); font-size: .88rem; line-height: 1.5; }
+
+.focus-fold summary { display: block; cursor: pointer; list-style: none; color: hsl(var(--primary)); text-transform: uppercase; letter-spacing: .12em; font-size: .62rem; font-weight: 700; margin-bottom: 3px; }
+.focus-fold summary::-webkit-details-marker { display: none; }
+.focus-fold:not([open]) summary::after { content: " · tap to read"; letter-spacing: .04em; text-transform: none; font-weight: 500; color: hsl(var(--muted-foreground)); }
+@media (min-width: 561px) { .focus-fold summary { pointer-events: none; cursor: default; } }
+
+.article-contents { margin: 0 0 8px; padding-top: 28px; font-size: .86rem; }
+.article-contents summary { cursor: pointer; color: hsl(var(--primary)); text-transform: uppercase; letter-spacing: .12em; font-size: .68rem; font-weight: 700; padding: 6px 0; }
+.article-contents ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 9px; border-left: 1px solid hsl(var(--border)); }
+.article-contents li { padding-left: 14px; line-height: 1.4; }
+.article-contents li.sub { padding-left: 28px; font-size: .82rem; }
+.article-contents a { color: hsl(var(--muted-foreground)); }
+.article-contents a:hover, .article-contents a:focus-visible { color: hsl(var(--foreground)); }
+@media (min-width: 1100px) {
+  .article-layout { display: grid; grid-template-columns: minmax(0, 720px) 240px; column-gap: 80px; justify-content: start; }
+  .article-layout > .article-body { grid-column: 1; grid-row: 1; }
+  .article-layout > .article-contents { grid-column: 2; grid-row: 1; position: sticky; top: 24px; align-self: start; margin-top: 56px; padding-top: 0; max-height: calc(100vh - 48px); overflow-y: auto; }
+  .article-contents summary { pointer-events: none; cursor: default; list-style: none; }
+  .article-contents summary::-webkit-details-marker { display: none; }
+}
+
+/* Progress bar: a CSS scroll-driven animation. Browsers without support show no bar. */
+.reading-progress { display: none; }
+@supports (animation-timeline: scroll()) {
+  .reading-progress { display: block; position: fixed; inset: 0 0 auto 0; height: 3px; background: hsl(var(--primary)); transform: scaleX(0); transform-origin: 0 50%; z-index: 50; animation: reading-grow linear both; animation-timeline: scroll(root); }
+}
+@keyframes reading-grow { to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { .reading-progress { display: none !important; } }
+
+/* Table edge fade: the shadows stay put while the cover gradients scroll with the content, so a fade shows only where more content is hidden. */
+.article-body table {
+  background:
+    linear-gradient(to right, hsl(var(--background)) 30%, transparent) left center / 36px 100% no-repeat local,
+    linear-gradient(to left, hsl(var(--background)) 30%, transparent) right center / 36px 100% no-repeat local,
+    linear-gradient(to right, hsl(var(--primary) / .35), transparent) left center / 22px 100% no-repeat scroll,
+    linear-gradient(to left, hsl(var(--primary) / .35), transparent) right center / 22px 100% no-repeat scroll;
+}
+
+.end-links { padding-block: 56px; }
+.end-links ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.end-links a { display: flex; flex-direction: column; gap: 6px; height: 100%; border: 1px solid hsl(var(--border)); border-radius: 6px; padding: 18px 20px; background: hsl(var(--card)); transition: border-color .16s; }
+.end-links a:hover, .end-links a:focus-visible { border-color: hsl(var(--primary) / .7); }
+.end-links a span { color: hsl(var(--primary)); text-transform: uppercase; letter-spacing: .1em; font-size: .66rem; font-weight: 700; }
+.end-links a strong { font-family: Georgia, 'Times New Roman', serif; font-weight: 500; font-size: 1.25rem; line-height: 1.25; }
+.end-links a em { font-style: normal; color: hsl(var(--muted-foreground)); font-size: .9rem; line-height: 1.5; }

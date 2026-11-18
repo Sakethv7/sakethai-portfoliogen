@@ -14,6 +14,11 @@ I fixed everything except the runtime: an M4 Mac with 16 GB of unified memory, Q
 
 I measured raw speed, memory, five eval fixtures (plain string checks, not an LLM judge) and real recordings. Raw speed is what most benchmark posts report. The fixtures and recordings decide whether a user gets a better product.
 
+<figure class="diagram">
+<a href="diagrams/ollama-vs-mlx-setup.svg" target="_blank" rel="noopener"><img src="diagrams/ollama-vs-mlx-setup.svg" width="900" height="770" alt="One model on one Mac, run through two runtimes, Ollama and MLX. Four measurements: raw speed, memory, five eval fixtures and real recordings. Three findings: MLX is faster per token, MLX 4-bit dropped a deadline in 20 of 20 runs, and MLX 6-bit fixes it at a cost. The decision is that Lekhni stays on Ollama."></a>
+<figcaption>Only the runtime changed. The findings on the last row led to the decision.</figcaption>
+</figure>
+
 ## Round 1: September, through `mlx_lm.server`
 
 LM Studio was not installed, so I ran MLX through `mlx_lm.server`. LM Studio's [mlx-engine](https://github.com/lmstudio-ai/mlx-engine) is built on `mlx-lm`, so generation speed should be close.

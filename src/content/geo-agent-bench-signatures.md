@@ -10,7 +10,7 @@ An address check has limits. Vendors change their ranges. An agent can also run 
 
 A draft standard called Web Bot Auth works like this. The agent has a private key. It signs each request, and it adds three headers: the signature, a description of what it signed, and the address where it publishes its public key. The site fetches the public key and checks the signature. A copycat has no private key, so its signature fails.
 
-<a href="diagrams/signature-check.svg" target="_blank" rel="noopener"><img src="diagrams/signature-check.svg" alt="Signed requests: the site checks the agent address, fetches the key directory, finds the key, checks the time window, and checks the signature" style="width:100%;max-width:900px;border-radius:12px"></a>
+<a href="diagrams/signature-check.svg" target="_blank" rel="noopener"><img src="diagrams/signature-check.svg" width="900" height="780" alt="Signed requests: the site checks the agent address, fetches the key directory, finds the key, checks the time window, and checks the signature" style="width:100%;max-width:900px;border-radius:12px"></a>
 
 *Click the diagram to open it full size.*
 

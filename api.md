@@ -672,3 +672,102 @@ flowchart TD
 - Every cut topic in the hero text has a topic link or a Selected work card.
 - Work shows Flagship systems and Developer tools open. It shows Experiments & learning and Creative builds inside a closed `<details>`.
 - No new dependency, route or script.
+
+## Article reading aids and diagrams (ADR-042 to 046, proposed 2026-11-17)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[prepareArticle added] --> B[Article reads html, headings, minutes]
+    C[ArticleContents added] --> B
+    D[endLinks added to portfolio.ts] --> E[EndLinks reads it]
+    F[Figure rule for Markdown] --> G[Content test checks files and alt text]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class A,B,C,D,E,F,G new
+```
+
+*Caption: green marks each new contract. No existing type changes.*
+
+### New function: `prepareArticle`
+
+File: `src/lib/article.ts`. It imports only `marked`. It must not import through the `@/` alias, so `node --test` can load it.
+
+```ts
+export interface Heading { id: string; text: string; level: 2 | 3 }
+
+export interface PreparedArticle {
+  html: string;          // heading elements carry ids and an anchor link
+  headings: Heading[];   // document order, h2 and h3 only
+  minutes: number;       // integer, 1 or more
+}
+
+export function prepareArticle(markdown: string, basePath: string): PreparedArticle
+```
+
+Rules:
+
+- A leading `# Title` line is removed first, as today.
+- `id` is the lowercase heading text, with each run of non-letters and non-digits turned into one `-`, and the ends trimmed. An empty result becomes `section`. A repeated id gets `-2`, `-3` and so on. Ids are unique per article.
+- Each `h2` and `h3` becomes `<h2 id="x">Text <a class="heading-anchor" href="#/{basePath}?section=x" aria-label="Link to this section">#</a></h2>`. Link text is not part of `Heading.text`.
+- `h1` and `h4` to `h6` get no id and are not listed.
+- `minutes` is `max(1, ceil(words / 230))`. `words` counts words outside fenced code blocks. 230 is an assumption (see the open questions in `architecture.md`).
+- The function is pure. The same input gives the same output.
+- `html` is trusted for the same reason as before: every Markdown file is committed to this repo (ADR-023). Heading text is escaped when it goes into an attribute.
+
+### New component: `ArticleContents`
+
+```ts
+function ArticleContents(props: { headings: Heading[]; basePath: string }): JSX.Element | null
+```
+
+- Returns `null` when `headings.filter(h => h.level === 2).length < 3`.
+- Each entry is a router `Link` to `{ pathname: basePath, search: '?section=' + id }`.
+- At 1100 px and wider it is a sticky aside. Below that, it is a `<details>` element, closed, with the summary "Contents".
+- `h3` entries are indented under their `h2`.
+
+### New helper: `endLinks`
+
+File: `src/data/portfolio.ts`.
+
+```ts
+export interface EndLinks { label: 'Next in this series' | 'More notes'; items: PublicationItem[] }
+
+export function endLinks(slug: string): EndLinks | null
+```
+
+- Considers only `status === 'Published'` records.
+- Series rule and fallback rule are in `logic_flow.md`.
+- `items` has 1 or 2 entries. It never includes the note itself.
+- Returns `null` if the slug is unknown or no other published note exists.
+
+### Route contract change
+
+| Route | Before | After |
+|---|---|---|
+| `/writing/:slug`, `/work/:slug`, `/experience/:slug` | no query | accepts optional `?section=<heading id>` |
+
+An unknown `section` value is ignored.
+
+### Figure contract for Markdown
+
+```html
+<figure class="diagram">
+  <a href="diagrams/<name>.svg" target="_blank" rel="noopener"><img src="diagrams/<name>.svg" alt="<what the diagram shows>" width="<w>" height="<h>"></a>
+  <figcaption>One sentence that says what to look at.</figcaption>
+</figure>
+```
+
+Invariants:
+
+- Every `diagrams/<name>.svg` named in a content file exists in `public/diagrams/`.
+- Every figure image has a non-empty `alt` that states the reading, not only the topic. It also has `width` and `height`, so the page does not jump while it loads.
+- Every number in a diagram appears in the note's text. A diagram adds no new claim (project copy rule 3).
+- Diagrams use only the site palette. The site is dark only, so each SVG has a dark background or a transparent one that reads on the dark page.
+- No Markdown diagram library is added to the bundle.
+
+### Invariants for the whole change
+
+- No new dependency. No new route. No change to any existing type.
+- `Article` chunk growth stays small. I will report the gzipped size before and after.
+- A content test fails if a figure file is missing or an `alt` is empty.

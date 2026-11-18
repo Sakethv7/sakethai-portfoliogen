@@ -59,6 +59,11 @@ Treat the judge prompt like code under test.
 3. Edit the prompt, add examples from the disagreements, and rerun.
 4. When it looks good, run once on the held-out half. That number is the one you report.
 
+<figure class="diagram">
+<a href="diagrams/judge-calibration-loop.svg" target="_blank" rel="noopener"><img src="diagrams/judge-calibration-loop.svg" width="900" height="960" alt="A loop in four steps. Run the judge on the development half, read the disagreements, edit the prompt and rerun until it looks good. Then run once on the held-out half and report the true positive and true negative rates. Store the calibration with every run and re-run the held-out check when the prompt, model or questions change."></a>
+<figcaption>Tune on one half, report from the other, and keep the calibration attached to the scores.</figcaption>
+</figure>
+
 If you tune on every example, your agreement number will be optimistic. The held-out half keeps it honest. Husain's write-up describes a team reaching over 90% agreement in three rounds of this loop.
 
 When agreement stays low, fix the rubric before you swap the model. A vague rubric will not improve with a bigger judge.

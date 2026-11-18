@@ -6,7 +6,7 @@ My benchmark needs a real public website. Cloud agents cannot reach my laptop, a
 
 ## The pieces
 
-<a href="diagrams/system-overview.svg" target="_blank" rel="noopener"><img src="diagrams/system-overview.svg" alt="System overview: a laptop with the runner and a local model, Anthropic's servers, and one small cloud VM that hosts the test site and its request log" style="width:100%;max-width:1000px;border-radius:12px"></a>
+<a href="diagrams/system-overview.svg" target="_blank" rel="noopener"><img src="diagrams/system-overview.svg" width="1000" height="660" alt="System overview: a laptop with the runner and a local model, Anthropic's servers, and one small cloud VM that hosts the test site and its request log" style="width:100%;max-width:1000px;border-radius:12px"></a>
 
 *Click the diagram to open it full size.*
 
@@ -42,7 +42,7 @@ Claude's fetch tool keeps a copy of a page. In a probe, it returned a stored cop
 
 The site is one process that serves all five kinds of host. It writes one line to the log for each request. A line holds the host, the run token, the path, the status, the size, the user agent, the IP address and a label. It also holds fields for tool calls, signatures and sign-in steps.
 
-<a href="diagrams/request-path.svg" target="_blank" rel="noopener"><img src="diagrams/request-path.svg" alt="One request through the test site: read the host name, check the signature, route by variant, label the client, write a log line, then match by token on the laptop" style="width:100%;max-width:900px;border-radius:12px"></a>
+<a href="diagrams/request-path.svg" target="_blank" rel="noopener"><img src="diagrams/request-path.svg" width="900" height="720" alt="One request through the test site: read the host name, check the signature, route by variant, label the client, write a log line, then match by token on the laptop" style="width:100%;max-width:900px;border-radius:12px"></a>
 
 *Click the diagram to open it full size.*
 

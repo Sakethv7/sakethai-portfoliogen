@@ -8,7 +8,7 @@ I wanted to see what happens when an AI agent meets a page like that. So I built
 
 ## What I built
 
-<a href="diagrams/oauth-flow.svg" target="_blank" rel="noopener"><img src="diagrams/oauth-flow.svg" alt="Agentic OAuth: the model asks for the page, the site answers 401, the harness signs in as a simulated user, swaps a code for a token, and asks again" style="width:100%;max-width:900px;border-radius:12px"></a>
+<a href="diagrams/oauth-flow.svg" target="_blank" rel="noopener"><img src="diagrams/oauth-flow.svg" width="900" height="760" alt="Agentic OAuth: the model asks for the page, the site answers 401, the harness signs in as a simulated user, swaps a code for a token, and asks again" style="width:100%;max-width:900px;border-radius:12px"></a>
 
 *Click the diagram to open it full size.*
 

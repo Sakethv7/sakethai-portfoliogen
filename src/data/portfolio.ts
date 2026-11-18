@@ -98,3 +98,23 @@ const published = publications.filter((item) => item.status === 'Published');
 export const noteCounts = {
   research: published.filter((item) => item.kind === 'Research note').length,
 };
+
+export interface EndLinks { label: 'Next in this series' | 'More notes'; items: PublicationItem[] }
+
+const newestFirst = (a: PublicationItem, b: PublicationItem) => (b.date ?? '').localeCompare(a.date ?? '');
+
+// What a note links to at its end (ADR-044). A series note links to its next chapter, or back from the last one.
+// Other notes link to the 2 newest notes of the same kind, filled from any kind. The rule knows no topics, so the label is "More notes".
+export function endLinks(slug: string): EndLinks | null {
+  const current = published.find((item) => item.slug === slug);
+  if (!current) return null;
+  if (current.series) {
+    const order = (work.find((entry) => entry.notes?.includes(slug))?.notes ?? []).filter((s) => published.some((item) => item.slug === s && item.series === current.series));
+    const index = order.indexOf(slug);
+    const neighbour = published.find((item) => item.slug === (order[index + 1] ?? order[index - 1]));
+    if (index !== -1 && neighbour) return { label: 'Next in this series', items: [neighbour] };
+  }
+  const others = published.filter((item) => item.slug !== slug).sort(newestFirst);
+  const items = [...others.filter((item) => item.kind === current.kind), ...others.filter((item) => item.kind !== current.kind)].slice(0, 2);
+  return items.length ? { label: 'More notes', items } : null;
+}

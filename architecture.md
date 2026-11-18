@@ -760,3 +760,80 @@ flowchart TD
 
 - ADR-032 says `heroProof` holds 3 cards or fewer. The code returns 4. ADR-035 fixes the code.
 - The "Information architecture" section earlier in this file still lists "Recent publications (3 items)" on Home. This section supersedes it.
+
+## Article reading aids and diagrams (ADR-042 to 046, proposed 2026-11-17)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Read the Markdown file] --> B[Parse it once]
+    B --> C[Add ids and anchors to headings]
+    B --> D[List the headings]
+    B --> E[Count the reading minutes]
+    D --> F[Show the contents list]
+    E --> G[Show minutes in the header]
+    H[Read the series order] --> I[Pick the end-of-article links]
+    J[Draw SVG figures by hand] --> K[Place them in the Markdown]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class B,C,D,E,F,G,H,I,J,K new
+```
+
+*Caption: green marks every new step. The Markdown file and the page shell exist today. The full flow, with failure paths, is in [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+**Complexity tier: single-process tool.** The site is a static page that runs in the browser. It has no server and no database. This change adds one pure function (a function with no side effects), one component, some CSS and a few SVG files. No smaller tier fits a React app. No larger tier is needed.
+
+**Why this change exists.** Each article has 1,500 to 2,000 words and 7 or more headings. A reader cannot see the outline, cannot link to a section and meets a dead end at the last line. On a 375 px phone, the header fills the first screen. These are reading problems, not content problems.
+
+**How the pieces fit.** `marked` turns Markdown into HTML. It already walks every heading while it does this. So the same pass can add an `id` to each heading, collect the headings into a list and count the words. This is cheaper and safer than searching the finished HTML in the browser, because the page and the list then always come from one parse.
+
+A heading `id` is the name a link can point to. Here the plain form `#section` does not work. The site uses `HashRouter`, which stores the page route after the `#`. A link to `#section` would be read as a route. So a section link carries the route and a query value: `#/writing/<slug>?section=<id>`. The page scrolls to the heading after the body renders (ADR-043).
+
+**Data flow.**
+
+```text
+src/content/<slug>.md
+        |  loadBody()                       (exists today)
+        v
+prepareArticle(markdown, basePath)          (new, src/lib/article.ts)
+        |--> html       (headings carry ids and anchor links)
+        |--> headings   [{ id, text, level }]
+        |--> minutes    (whole minutes, 1 or more)
+        v
+Article.tsx --> header (minutes, folded focus line on phone)
+            --> ArticleContents (side list or folded list)
+            --> body + progress bar
+            --> EndLinks (writing only; reads series order from portfolio.ts)
+```
+
+*Caption: one parse feeds the header, the contents list and the body.*
+
+**Parts and what changes.**
+
+| Part | Change |
+|---|---|
+| `src/lib/article.ts` | New. `prepareArticle`. No alias imports, so `node --test` can load it. |
+| `src/pages/Article.tsx` | Calls `prepareArticle`. Scrolls to `?section=`. Renders the new parts. |
+| `src/components/ArticleContents.tsx` | New. Sticky list on wide screens, `<details>` list on narrow ones. |
+| `src/data/portfolio.ts` | New `endLinks(slug)` helper. No new field on any record. |
+| `src/index.css` | Progress bar, contents list, anchor link, phone header, table edge fade. |
+| `public/diagrams/*.svg` | New hand-drawn figures. First batch is listed in ADR-046. |
+| `src/content/*.md` | Only the notes that get a figure. Each adds one `<figure>` block. |
+
+**Not touched:** routes, `Collection.tsx`, the Work and Experience page layouts, and the résumé.
+
+**Contradictions found, not fixed:**
+
+- The "Long-form content contract" in `api.md` says the nav includes a Research link. `PortfolioShell.tsx` has no Research link, and `App.tsx` redirects `/research` to `/writing?kind=research`. ADR-034 explains this. The old line in `api.md` is stale.
+- The same section gives an entry-bundle budget of about 107.7 kB gzipped. I did not re-measure it. I saw only raw sizes: the entry script is 365 KB.
+- `Navigation.tsx`, `ParticleBackground.tsx`, `ProductionWork.tsx` and other old components are not imported by any page. `Navigation.tsx` still holds a "J&J Production" label. It is not shipped, so it is not public. This change does not touch it.
+
+### Open questions
+
+1. **Reading speed.** I propose 230 words per minute. This is my assumption, not from a source. The label says "about N min read".
+2. **Contents threshold.** I propose to show the list when a page has 3 or more `h2` headings. Case studies and experience pages share the same component.
+3. **Current-section highlight.** The list will not highlight the section you are in. That needs an `IntersectionObserver` (a browser API that reports when an element enters the view). I left it out of the first version. Do you want it?
+4. **End links.** I propose them on notes only, not on case studies. Confirm.
+5. **Diagrams.** Which notes get the first figures? I chose three from titles only. I have not yet read those notes in full.
+6. **Progress bar support.** It uses a CSS scroll-driven animation. I believe Chromium and recent Safari support it and Firefox may not by default. I will check before shipping. Where it is absent, the bar is simply missing.
+7. **Path routing.** Replacing `HashRouter` is a separate decision. This change works within it.

@@ -16,6 +16,11 @@ Put the two together and every query lands in one of four cells:
 | **Context good** | Working as intended | **Generation failure** |
 | **Context bad** | Suspicious pass | **Retrieval failure** |
 
+<figure class="diagram">
+<a href="diagrams/retrieval-vs-generation.svg" target="_blank" rel="noopener"><img src="diagrams/retrieval-vs-generation.svg" width="900" height="700" alt="A grid of two questions. Good context with a good answer works. Good context with a bad answer is a generation failure. Bad context with a good answer is a suspicious pass. Bad context with a bad answer is a retrieval failure, or a knowledge gap when the document does not exist."></a>
+<figcaption>Read across for the answer, down for the context. Each failing cell names where to look.</figcaption>
+</figure>
+
 Each cell points somewhere different.
 
 **Generation failure: the context had it, the answer didn't.** The model ignored, misread, or contradicted what it was given. Look at the prompt, the model, how much context you pass in, and whether the instructions tell the model to stick to its sources.

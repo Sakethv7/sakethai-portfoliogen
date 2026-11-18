@@ -542,3 +542,62 @@ flowchart TD
 | All non-benchmark entries are removed | The section is hidden | Nobody needs to |
 
 There are no retries and no loading states. The data is static.
+
+## Article reading aids and diagrams (ADR-042 to 046, proposed 2026-11-17)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader opens a note] --> B[Load the Markdown file]
+    B --> C{File found?}
+    C -- no --> D[Show the Not found page]
+    C -- yes --> E[Parse once: ids, headings, minutes]
+    E --> F{3 or more headings?}
+    F -- yes --> G[Show the contents list]
+    F -- no --> H[Skip the contents list]
+    G --> I{Address names a heading?}
+    H --> I
+    I -- yes --> J[Scroll to that heading]
+    I -- no --> K[Stay at the top]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class E,F,G,H,I,J new
+    class D,K fail
+```
+
+*Caption: green is new. Red is a failure or empty path. The full picture is in [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+### Article render path
+
+1. `Article` finds the record for the route, as today. No record gives NotFound.
+2. `loadBody(slug)` returns Markdown or `null`. `null` gives NotFound, as today.
+3. `prepareArticle(markdown, basePath)` drops a leading `# Title` line, then parses once. It returns `html`, `headings` and `minutes`.
+4. The header shows the eyebrow, the `minutes` label, the title, the plain sentence and the technical focus line. On a phone, the focus line sits inside a `<details>` element. It starts closed.
+5. If `headings` has 3 or more `h2` entries, draw `ArticleContents`. Otherwise draw none.
+6. After the HTML is set, read the `section` query value. If a heading has that id, call `scrollIntoView`. If not, stay at the top and show no error.
+7. On a notes page, draw `EndLinks`. If there is no other published note, draw nothing.
+
+### Section links
+
+A click on a contents entry or a heading anchor goes to `#/<route>?section=<id>`. The route does not change, so `ScrollToTop` does not run. The `section` value changes, so the scroll effect runs again. A link pasted into a new tab loads the page, then scrolls once the body is set.
+
+### End links
+
+1. If the note has a `series`, take the series order from the project's `notes` list in `portfolio.ts`.
+2. Show the next chapter. If the note is the last chapter, show the previous one. Label the block "Next in this series".
+3. If the note has no series, show the 2 newest published notes of the same kind, not including itself. If fewer than 2 exist, fill from the newest notes of any kind. Label the block "More notes".
+4. If no other published note exists, draw nothing.
+
+### Failure behavior
+
+| Event | Result | Who notices |
+|---|---|---|
+| Markdown file missing | NotFound page, `console.error` in dev | The author, in dev |
+| `?section=` names no heading | Page stays at the top | Nobody needs to |
+| Two headings have the same text | The second id gets `-2`, the third `-3` | Nobody needs to |
+| Heading text is only symbols | Id becomes `section`, then `section-2` | The author, if links look odd |
+| Browser has no scroll-driven animation | No progress bar | Nobody needs to |
+| Find-in-page does not open the folded phone focus line | The match is hidden | The author, in the browser test |
+
+There are no retries and no loading states beyond the existing body load.

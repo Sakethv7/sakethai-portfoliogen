@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 960" role="img" aria-label="Judge calibration loop: label a small set, split it, run the judge on the development half, read disagreements, edit the prompt until it looks good, run once on the held-out half, report true positive and true negative rates, store the calibration with each run, and re-run the held-out check when anything changes" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="960" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">Calibrate the judge before you trust the score</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">Tune on the development half. Report from the held-out half. Keep the calibration with every run.</text>
+<rect x="140" y="84" width="380" height="52" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="330.0" y="101.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Label a small set</text>
+<text x="330.0" y="118.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">One accountable expert, a short written reason for each label</text>
+<rect x="140" y="164" width="380" height="52" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="330.0" y="181.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Split the labeled set</text>
+<text x="330.0" y="198.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">A development half and a held-out half</text>
+<rect x="140" y="244" width="380" height="52" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="330.0" y="270.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Run the judge on the development half</text>
+<rect x="140" y="324" width="380" height="52" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="330.0" y="350.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Read the disagreements one by one</text>
+<polygon points="330,402 500,444 330,486 160,444" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="330" y="444.0" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">Does it look good?</text>
+<rect x="140" y="530" width="380" height="52" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="330.0" y="547.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Run once on the held-out half</text>
+<text x="330.0" y="564.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">This is the number you report</text>
+<rect x="140" y="610" width="380" height="52" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="330.0" y="627.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Report two rates</text>
+<text x="330.0" y="644.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">True positive rate and true negative rate</text>
+<rect x="140" y="690" width="380" height="52" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="330.0" y="707.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Store the calibration with every run</text>
+<text x="330.0" y="724.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Judge model, prompt version, date, both rates</text>
+<polygon points="330,768 500,810 330,852 160,810" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="330" y="810.0" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">Prompt, model or questions changed?</text>
+<rect x="140" y="880" width="380" height="48" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="330.0" y="904.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Keep using the judge</text>
+<rect x="600" y="424" width="280" height="60" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="740.0" y="445.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Edit the prompt</text>
+<text x="740.0" y="462.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Add examples from the disagreements</text>
+<rect x="600" y="790" width="280" height="60" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="740.0" y="811.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Re-run the held-out check</text>
+<text x="740.0" y="828.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Before you trust the new trend</text>
+<path d="M330 136 V164" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 216 V244" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 296 V324" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 376 V402" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 486 V530" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 582 V610" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 662 V690" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 742 V768" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M330 852 V880" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M500 444 H600" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="540" y="436" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">no</text>
+<text x="344" y="512" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">yes</text>
+<path d="M740 424 V270 H520" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="612" y="508" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">Still low? Fix the rubric</text>
+<text x="612" y="524" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">before you swap the model.</text>
+<path d="M500 810 H600" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="550" y="802" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">yes</text>
+<path d="M740 790 V556 H520" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="344" y="872" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">no</text>
+</svg>

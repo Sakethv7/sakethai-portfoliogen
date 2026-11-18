@@ -891,3 +891,250 @@ changes.
 **Failure and recovery.** A missing Markdown body routes to the existing not-found page. The change is static. Revert the content file, the publication record, the `notes` link and this ADR to undo it.
 
 **Teach-back:** pending.
+
+## ADR-042: Parse each article once, and take ids, headings and reading time from that parse
+
+**Status:** Accepted by Saketh (2026-11-17). Built 2026-11-18. Not committed.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Read the Markdown] --> B[Parse it once]
+    B --> C[Give each heading an id]
+    B --> D[Collect the headings]
+    B --> E[Count the words]
+    C --> F[Return html, headings, minutes]
+    D --> F
+    E --> F
+    F --> G{Heading text empty or repeated?}
+    G -- yes --> H[Use section, section-2, section-3]
+    G -- no --> I[Use the text as the id]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E,F,G,I new
+    class H fail
+```
+
+*Caption: green is new. Red is the edge case. Explainer: [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+**Context:** `Article.tsx` calls `marked.parse` and puts the HTML in the page. A contents list, a section link and a reading time all need facts about the text. Those facts are the heading list, the heading ids and the word count.
+
+**Options:**
+
+| Option | How | Weakness |
+|---|---|---|
+| A. Search the finished HTML in the browser | After render, query `h2` and `h3`, set ids, build the list | Runs after paint. The list flickers in. Two sources of truth. |
+| B. One parse with a `marked` renderer | A custom heading renderer sets ids and records headings during the parse | A small amount of new code in `src/lib/article.ts` |
+| C. A build-time step | A Vite plugin writes headings into each chunk | New build code. Harder to test. |
+
+**Choice:** Option B. `prepareArticle(markdown, basePath)` is a pure function that returns `html`, `headings` and `minutes`. It has no alias imports. Node 24 strips TypeScript types, so `node --test` can import it. I will write the tests first.
+
+**Why:** The headings and the HTML come from the same pass, so they cannot disagree. A pure function is easy to test. The page has no flicker, because the list exists when the body is set.
+
+**Given up:**
+
+1. The reading time is an estimate with an assumed speed of 230 words per minute. I have no source for that number. A reader who reads faster or slower sees a wrong label. The label says "about".
+2. Code blocks are not counted. A note with large code blocks reads longer than its label says.
+3. `Article.tsx` gains logic, and `marked` is configured in one more place.
+
+**Explainer ladder:** Levels 1, 2 and 3 are done. One explainer covers ADR-042 to ADR-046. No video.
+
+## ADR-043: Section links use a query value, and the page shows a contents list and a progress bar
+
+**Status:** Accepted by Saketh (2026-11-17). Built 2026-11-18. Not committed.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader clicks a contents entry] --> B[Address becomes route plus section value]
+    B --> C{Does a heading have that id?}
+    C -- yes --> D[Scroll to the heading]
+    C -- no --> E[Stay at the top]
+    F[Reader scrolls the page] --> G{Does the browser support scroll-driven animation?}
+    G -- yes --> H[Progress bar fills]
+    G -- no --> I[No bar]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,F,G,H new
+    class E,I fail
+```
+
+*Caption: green is new. Red is a quiet fallback. Explainer: [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+**Context:** A reader cannot see the outline of a long note, cannot link to a section, and cannot tell how far they have read. The site uses `HashRouter`. It keeps the route after the `#`. A plain `#section` link would be read as a route and would show the Not found page.
+
+**Options for section links:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Plain `#id` anchors | Standard HTML | Breaks under `HashRouter` |
+| B. Route plus `?section=id` | Works under `HashRouter`. A pasted link loads and scrolls. | The address is longer. A link preview cannot name the section. |
+| C. Replace `HashRouter` with path routing | Clean addresses, `/writing/x#id` | Needs a `404.html` fallback on GitHub Pages. A separate, larger decision. |
+
+**Choice:** Option B. The contents list and each heading anchor link to `#/<route>?section=<id>`. After the body renders, `Article` scrolls to the matching heading. The contents list is sticky at 1100 px and wider (`position: sticky` keeps it in view while the page scrolls). Below that, it is a closed `<details>` list. The list shows only when a page has 3 or more `h2` headings. The progress bar is a thin fixed bar. A CSS scroll-driven animation fills it, with no JavaScript. It is hidden when the reader prefers reduced motion.
+
+**Why:** B fixes the real problem today and does not decide the routing question. A CSS-only bar adds no script and no scroll listener. A native `<details>` needs no script.
+
+**Given up:**
+
+1. Section links do not give a good link preview, because the section is in a query value.
+2. The bar does not show in browsers without scroll-driven animation. I believe Firefox is one, and I will check.
+3. The list does not highlight the section you are in. That needs an `IntersectionObserver`. I left it out until you ask for it.
+4. The `<details>` list on a phone hides its entries from find-in-page until opened. I will test Chrome and Safari and record the result here.
+
+**Explainer ladder:** Covered by the shared explainer. No video.
+
+## ADR-044: Each note ends with a next note or two more notes
+
+**Status:** Accepted by Saketh (2026-11-17). Built 2026-11-18. Not committed.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Note ends] --> B{Does it belong to a series?}
+    B -- yes --> C[Show next chapter, or previous if last]
+    B -- no --> D[Take 2 newest notes of the same kind]
+    D --> E{Fewer than 2?}
+    E -- yes --> F[Fill from newest notes of any kind]
+    E -- no --> G[Show them]
+    C --> H{Any other published note?}
+    F --> H
+    G --> H
+    H -- no --> I[Show nothing]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,F,G,H new
+    class I fail
+```
+
+*Caption: green is new. Red is the empty case. Explainer: [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+**Context:** The last line of a note is a dead end. The site has 25 published notes. One series, the GEO agent benchmark, has an order in the project's `notes` list.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Link by shared tags | True topic links | Needs a new `tags` field on 25 records. That is new data work. |
+| B. Series order, else same kind, newest first | No new data. Easy to explain. | "Same kind" is a weak link. Two notes of one kind may not share a topic. |
+| C. Hand-picked links per note | Best quality | 25 manual entries to keep up to date |
+
+**Choice:** Option B. The label is "Next in this series" or "More notes". It never says "Related", because the rule does not know about topics. `endLinks(slug)` in `portfolio.ts` holds the rule.
+
+**Why:** It needs no new data and it removes the dead end today. If topic links matter later, a `tags` field can replace the fallback rule in one function.
+
+**Given up:**
+
+1. Fallback links may point to a note on a different topic.
+2. Case studies and experience pages get no end links in this change.
+3. The newest-first rule favors recent notes over better-matching older ones.
+
+**Explainer ladder:** Covered by the shared explainer. No video.
+
+## ADR-045: On a phone, fold the technical focus line, shrink the title, and fade the table edge
+
+**Status:** Accepted by Saketh (2026-11-17). Built 2026-11-18. Not committed.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Note opens on a phone] --> B[Title at 2.1 rem, not 2.8 rem]
+    B --> C[Plain sentence stays open]
+    C --> D[Technical focus sits in a closed details element]
+    D --> E{Does a table overflow?}
+    E -- yes --> F[Right edge fades until the end is reached]
+    E -- no --> G[No fade]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E,F new
+    class G fail
+```
+
+*Caption: green is new. Red is the no-overflow case, where nothing shows. Explainer: [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+**Context:** At 375 px, the title (45 px), the plain sentence and the technical focus line fill the first screen. The body starts below it. Tables scroll sideways with no sign that more is hidden.
+
+**Options for the header:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep | Complete header | The body is off the first screen |
+| B. Smaller title and a closed `<details>` for the technical focus line, on phones only | Body starts higher | Engineers must tap to read the focus line |
+| C. Remove the focus line on phones | Shortest header | Deletes content from phones |
+
+**Choice:** Option B. The `<details>` element starts open on wide screens and closed at 560 px and narrower. The `useIsMobile` hook sets this. Tables get a right-edge fade in CSS, using a gradient that scrolls with the content and shows only while more content is hidden. I will check the result in a screenshot before I ship.
+
+**Why:** Project copy rule 1 puts the plain sentence first for a skimming reader. The technical focus line is the engineer's detail "one step lower". Folding it follows that rule. The title size drop is from 45 px to about 34 px.
+
+**Given up:**
+
+1. An engineer on a phone needs one tap to see the technical focus line.
+2. Find-in-page may not search inside a closed `<details>`. I will test this.
+3. If the page is resized across 560 px, the open state set at load may be wrong until reload. This is a small cost.
+4. The fade is a hint. A reader can still miss a table that scrolls.
+
+**Explainer ladder:** Covered by the shared explainer. No video.
+
+## ADR-046: Draw diagrams by hand as SVG files, and add them to notes one by one
+
+**Status:** Accepted by Saketh (2026-11-17). Built 2026-11-18. Not committed.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Pick a note with a flow or a decision] --> B[Read the note in full]
+    B --> C[Draw the SVG from the note's own steps and numbers]
+    C --> D[Place a figure with alt text and caption]
+    D --> E{Does every number appear in the note text?}
+    E -- yes --> F[Run the content test]
+    E -- no --> G[Fix the diagram or the note]
+    F --> H{Files exist and alt text set?}
+    H -- yes --> I[Ship]
+    H -- no --> G
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,F,H,I new
+    class G fail
+```
+
+*Caption: green is new. Red is the fix loop. Explainer: [adr-042-046-article-reading-aids.html](docs/visuals/adr-042-046-article-reading-aids.html).*
+
+**Context:** The site has four hand-drawn diagrams, all for the GEO benchmark. They sit in `public/diagrams/` and open in a new tab. The other 21 notes have none. A diagram helps when the text describes a flow, a loop or a decision. It does not help when it only decorates.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Mermaid in the browser | Diagrams as text in the Markdown | Adds a large dependency to the page. Needs theme setup. Renders after load. |
+| B. Mermaid turned into SVG at build time | No runtime cost | Adds a headless-browser tool to the build |
+| C. Hand-drawn SVG files | No dependency. Full control. Matches the four existing ones. | Slow to make. Each edit is manual. |
+
+**Choice:** Option C, with a figure rule (see `api.md`): fixed `width` and `height`, an `alt` that states the reading, a one-sentence caption, and every number also present in the text. A content test checks that files exist and `alt` is set. Diagrams go in one note at a time.
+
+**First batch (proposed, chosen from titles only, to confirm):**
+
+| Note | Diagram idea |
+|---|---|
+| Ollama or MLX | Measurement setup: one model, two runtimes, the counters read, the quality check |
+| Calibrate the judge before you trust the score | The loop: human labels, judge scores, agreement check, fix or stop |
+| Evaluating retrieval failures separately from generation failures | A decision tree: was the right passage found, was it used, was the answer faithful |
+
+Other candidates: stop a model call on silence (two timers on one timeline), rerank before you generate (retrieve many, rerank, pass few), and the System 1 guard (fast check, route, big model). I will read each note in full before I draw it. If the note does not state a step, the diagram does not show it.
+
+**Why:** It adds no dependency. It keeps one visual style across the site. A person reading can trust that a diagram says what the text says.
+
+**Given up:**
+
+1. Each diagram costs real drawing time.
+2. A diagram and its note can drift apart. The number check only catches numbers, not steps.
+3. No interactive diagrams. A reader cannot hover or zoom beyond opening the image.
+4. SVG text is not searchable by find-in-page when loaded as an `<img>`.
+
+**Explainer ladder:** Covered by the shared explainer. No video.
+
+**Build result (2026-11-18, ADR-042 to 046).** All nine new tests pass, and the full suite of 19 passes. Lint and build pass. The `Article` chunk grew from 57.9 kB to 60.3 kB raw (18.8 kB gzipped). The entry script grew from 365.3 kB to 365.9 kB raw. Checked in the browser pane at 1440 px and 375 px: heading ids, sticky contents list, `?section=` scroll, progress bar, folded focus line, end links, table edge fade, and the three figures. Not checked: Safari, Firefox, and find-in-page inside a closed `<details>`. The table fade is partly hidden behind header cells, so header cells are now 55% transparent. Diagrams went into three notes: Ollama or MLX, Calibrate the judge, and Evaluating retrieval failures. I made the retrieval diagram a four-cell grid, not a decision tree, because it matches the note's own table. The four existing GEO figures gained `width` and `height` so the content test could cover them.
