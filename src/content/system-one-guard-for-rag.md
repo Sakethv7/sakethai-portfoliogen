@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-11-17, updated 2026-11-18 · from RAG Mini, my small document question-answering app*
 
-> **In one paragraph.** RAG Mini answers questions from uploaded documents with Gemini. I added a small, fast model in front of Gemini. It reads each question first and picks a label: safe, off topic, or an injection attempt. Bad questions are refused before Gemini runs. I tested three models for that step on 60 hard questions that I wrote before I saw any answers. Gemini and Jev, a non-generative model from TypeSafe, labeled 0 wrong. A prompted Qwen3-8B on my Mac labeled 2 wrong. Jev was the fastest and the steadiest. The step did not make the app safer in my test, and I say why below.
+> **In one paragraph.** RAG Mini answers questions from uploaded documents with Gemini. I added a small, fast model in front of Gemini. It reads each question first and picks a label: safe, off topic, or an injection attempt. Bad questions are refused before Gemini runs. I tested three models for that step on 60 hard questions that I wrote before I saw any answers. Gemini and Jev, a non-generative model from TypeSafe, labeled 0 wrong. A prompted Qwen3-8B on my Mac labeled 2 wrong. Jev was the fastest and the steadiest. The step did not make the app safer in my test, and I say why below. I then ran the guard and router on Jev in the live app. Attacks were refused without a Gemini call, even while Gemini was failing.
 
 ## What the app does
 
@@ -98,8 +98,8 @@ One result is worth saying plainly. While the Gemini quota was failing, the Jev 
 
 ## What I would do next
 
-Test Jev on a yes or no question that RAG Mini already asks Gemini: whether two answers contradict each other. That fits a System 1 model well. After that, collect real user questions and re-run the hard test on them.
+Keep the live app running on Jev and watch the guard log for false refusals on real questions. Then test Jev on a yes or no question that RAG Mini already asks Gemini: whether two answers contradict each other. That fits a System 1 model well. After that, collect real user questions and re-run the hard test on them.
 
 ## For engineers
 
-The guard, router and reranker are backends set by environment variables (`GUARD_BACKEND`, `ROUTE_BACKEND`, `RERANK_BACKEND`), each one of `llm`, `local`, `jev` or `off`. The guard fails closed with a 503. The router falls back to LOOKUP. Every decision is appended to a JSONL log. Jev is called with one Choice question through its `/v1/systemone` endpoint. Qwen3-8B runs through Ollama's OpenAI-compatible endpoint with reasoning turned off. Reranking with Qwen scored worse than plain cosine order in an earlier test (MRR 0.751 against 0.844) and took 17 seconds per question, so reranking stays off. The scripts, the raw results and the screenshots are in the RAG Mini repository under `tests/` and `docs/evidence/`.
+The guard, router and reranker are backends set by environment variables (`GUARD_BACKEND`, `ROUTE_BACKEND`, `RERANK_BACKEND`), each one of `llm`, `local`, `jev` or `off`. Since the live deployment, the guard and router default to `jev` whenever a Jev key is set. The guard fails closed with a 503. The router falls back to LOOKUP. Every decision is appended to a JSONL log. Jev is called with one Choice question through its `/v1/systemone` endpoint. Qwen3-8B runs through Ollama's OpenAI-compatible endpoint with reasoning turned off. Reranking with Qwen scored worse than plain cosine order in an earlier test (MRR 0.751 against 0.844) and took 17 seconds per question, so reranking stays off. The scripts, the raw results and the screenshots are in the RAG Mini repository under `tests/` and `docs/evidence/`.
