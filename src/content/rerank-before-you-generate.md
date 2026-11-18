@@ -30,6 +30,11 @@ The evidence supports the step. It does not support the shortcut I first assumed
 
 Three of the four sources point the same way. Reranking after a wide retrieval reduces missed answers, and the gain shows up even after other retrieval improvements. Two of them say a general LLM is the wrong first tool. A dedicated cross-encoder reranker is cheaper, faster, and in Voyage's tests more accurate. Spotify's result says an LLM reranker earns its keep on the hard queries and can lose on average. So the order to try is: a cross-encoder first, an LLM only where the cross-encoder still fails.
 
+<figure class="diagram">
+<a href="diagrams/rerank-pipeline-and-triage.svg" target="_blank" rel="noopener"><img src="diagrams/rerank-pipeline-and-triage.svg" width="900" height="610" alt="A pipeline and a triage list. Retrieve a wide set, rerank it with a model that reads the question and each chunk together, keep the best five, then generate. Log both lists and the scores. When an answer is wrong, find where the right chunk was. Dropped after reranking points to the reranker or its cutoff. Low before reranking points to retrieval ordering. Never in the wide list points to retrieval or content."></a>
+<figcaption>The two logged lists split one retrieval failure into three owners. This is my own reasoning, not a claim from the sources.</figcaption>
+</figure>
+
 ## How reranking helps observability
 
 This is the part I care about most, and it is my own reasoning, not a claim from those sources.

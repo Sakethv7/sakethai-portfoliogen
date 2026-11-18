@@ -4,6 +4,11 @@ Agentic retrieval flips the order. The model gets tools, such as keyword search,
 
 Coding agents are the clearest example. They don't embed a repository and fetch the nearest chunks. They grep for a function name, open the file, follow an import, and grep again. For code, that works better than similarity search, and the reasons carry over to other kinds of data.
 
+<figure class="diagram">
+<a href="diagrams/agentic-retrieval-loop.svg" target="_blank" rel="noopener"><img src="diagrams/agentic-retrieval-loop.svg" width="900" height="690" alt="Classic RAG retrieves once and answers. Agentic retrieval is a loop: the model decides what to look for, runs a tool, reads the results and decides whether it has enough, and repeats if not. Four failure points are marked: did not search, searched badly, found it but did not open it, and stopped early."></a>
+<figcaption>Left, one retrieval decision. Right, the decision repeats after each step, and each step can fail in its own way.</figcaption>
+</figure>
+
 ## Why a loop can beat top-k
 
 **Exact identifiers.** Embeddings are good at meaning and bad at exact strings. An error code, a product SKU, a policy number, or a function name often retrieves poorly by similarity. A keyword search finds it on the first try.

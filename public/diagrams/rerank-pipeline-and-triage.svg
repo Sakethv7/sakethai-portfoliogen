@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 610" role="img" aria-label="Rerank pipeline and trace triage. Retrieve a wide set, rerank it with a model that reads the question and each chunk together, keep the best five, generate. Log both lists and the scores. When an answer is wrong, find where the right chunk was: dropped after reranking points to the reranker or its cutoff, low before reranking points to retrieval ordering, and never in the wide list points to retrieval or content." font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="610" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">Rerank before you generate, and log both lists</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">The trace holds two lists, so one retrieval failure bucket splits into three owners.</text>
+<text x="30" y="96" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Pipeline</text>
+<text x="470" y="96" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Triage from the trace</text>
+<rect x="30" y="110" width="360" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="210.0" y="130.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">A question arrives</text>
+<rect x="30" y="180" width="360" height="62" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="210.0" y="203.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Retrieve wide</text>
+<text x="210.0" y="219.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Fast and rough: the top 30 to 50 chunks by similarity</text>
+<rect x="30" y="272" width="360" height="62" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="210.0" y="295.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Rerank</text>
+<text x="210.0" y="311.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">A model reads the question and each chunk together and scores it</text>
+<rect x="30" y="364" width="360" height="44" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="210.0" y="386.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Keep the best few (five in my test)</text>
+<rect x="30" y="438" width="360" height="44" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="210.0" y="460.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Generate from a short, ordered list</text>
+<path d="M210 150 V180" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M210 242 V272" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M210 334 V364" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M210 408 V438" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="30" y="520" width="360" height="66" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="210.0" y="545.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Log both lists and the scores</text>
+<text x="210.0" y="561.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Without them the reranker is a step you cannot see into</text>
+<path d="M30 211 H12 V553 H30" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M30 303 H12" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<rect x="470" y="110" width="410" height="44" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="675.0" y="132.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">The answer is wrong. Where was the right chunk?</text>
+<path d="M470 132 H452 V200" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M452 200 V420" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<rect x="470" y="170" width="410" height="60" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="675.0" y="192.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">In the wide list, dropped or low after reranking</text>
+<text x="675.0" y="208.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Owner: the reranker or its cutoff</text>
+<path d="M452 200 H470" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="470" y="270" width="410" height="60" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="675.0" y="292.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">In the wide list, ranked low before reranking</text>
+<text x="675.0" y="308.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Owner: retrieval ordering. The reranker is the fix that worked.</text>
+<path d="M452 300 H470" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="470" y="370" width="410" height="60" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="675.0" y="392.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Never in the wide list</text>
+<text x="675.0" y="408.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Owner: retrieval or content. No reranker can help.</text>
+<path d="M452 400 H470" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="470" y="480" width="410" height="80" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="675.0" y="504.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Measure the step itself</text>
+<text x="675.0" y="520.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Rank of the answer-bearing chunk before and after.</text>
+<text x="675.0" y="536.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">If it does not improve, the reranker is not earning its cost.</text>
+</svg>

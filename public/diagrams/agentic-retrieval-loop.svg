@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 690" role="img" aria-label="Classic RAG retrieves once and answers. Agentic retrieval is a loop: the model decides what to look for, runs a tool, reads the results and decides if it has enough, and repeats if not. Four failure points are marked: did not search, searched badly, found it but did not open it, and stopped early." font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="690" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">One-shot retrieval and the agent loop</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">Classic RAG makes one retrieval decision. An agent makes it again after each step.</text>
+<text x="30" y="96" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Classic RAG</text>
+<text x="340" y="96" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Agentic retrieval: a loop the model drives</text>
+<rect x="30" y="110" width="270" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="165.0" y="130.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">A question arrives</text>
+<rect x="30" y="180" width="270" height="56" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="165.0" y="200.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Embed the question</text>
+<text x="165.0" y="216.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Take the top few chunks</text>
+<rect x="30" y="266" width="270" height="56" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="165.0" y="286.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">The model answers</text>
+<text x="165.0" y="302.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">From whatever came back</text>
+<path d="M165 150 V180" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M165 236 V266" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="30" y="360" width="270" height="76" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="165.0" y="382.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">The weakness</text>
+<text x="165.0" y="398.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">If the right chunk ranked sixth,</text>
+<text x="165.0" y="414.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">the answer is built without it.</text>
+<rect x="390" y="110" width="300" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="540.0" y="130.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">A question arrives</text>
+<rect x="390" y="180" width="300" height="56" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="540.0" y="200.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">The model decides what to look for</text>
+<text x="540.0" y="216.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Keyword, file, link, SQL or vector search</text>
+<rect x="390" y="266" width="300" height="56" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="540.0" y="294.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Run the tool, read what it finds</text>
+<polygon points="540,354 680,400 540,446 400,400" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="540" y="400.0" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">Enough to answer?</text>
+<rect x="390" y="490" width="300" height="44" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="540.0" y="512.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Answer</text>
+<path d="M540 150 V180" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M540 236 V266" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M540 322 V354" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M540 446 V490" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="556" y="472" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">yes</text>
+<path d="M680 400 H706 V208 H690" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="693" y="392" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">no</text>
+<text x="730" y="142" fill="#9aa4b8" font-size="11" font-weight="600" text-anchor="start">New ways to fail</text>
+<rect x="730" y="152" width="150" height="46" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="805.0" y="167.5" fill="#e8ebf2" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">Didn&#x27;t search</text>
+<text x="805.0" y="182.5" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">Answered from memory</text>
+<rect x="730" y="206" width="150" height="56" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="805.0" y="219.0" fill="#e8ebf2" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">Searched badly</text>
+<text x="805.0" y="234.0" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">Wrong tool, or a query</text>
+<text x="805.0" y="249.0" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">that could not match</text>
+<rect x="730" y="272" width="150" height="56" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="805.0" y="285.0" fill="#e8ebf2" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">Found it, didn&#x27;t open it</text>
+<text x="805.0" y="300.0" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">Moved past the right</text>
+<text x="805.0" y="315.0" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">document</text>
+<rect x="730" y="372" width="150" height="56" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="805.0" y="385.0" fill="#e8ebf2" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">Stopped early</text>
+<text x="805.0" y="400.0" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">Took part of the answer</text>
+<text x="805.0" y="415.0" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">as the whole</text>
+<rect x="340" y="560" width="540" height="100" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="610.0" y="586.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Cost and limits</text>
+<text x="610.0" y="602.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Each step is a model call: one retrieval and one generation can become six calls.</text>
+<text x="610.0" y="618.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">The loop needs a step budget and a clear rule for what enough looks like.</text>
+<text x="610.0" y="634.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Vector search can stay as one tool among several.</text>
+</svg>
