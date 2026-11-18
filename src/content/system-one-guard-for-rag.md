@@ -16,6 +16,11 @@ I use the two terms in a narrow way. System 2 is the slow, general model that wr
 
 The added step has two decisions. A guard labels the question SAFE, OFF_TOPIC or INJECTION. A router labels it LOOKUP, SUMMARY or CHAT. A refused question never reaches Gemini. A greeting skips document retrieval.
 
+<figure class="diagram">
+<a href="diagrams/system-one-guard-flow.svg" target="_blank" rel="noopener"><img src="diagrams/system-one-guard-flow.svg" width="900" height="690" alt="A question passes a fast guard and router before Gemini. The guard labels it SAFE, OFF_TOPIC or INJECTION, and the last two are refused without calling Gemini. The router labels it LOOKUP, SUMMARY or CHAT, and CHAT skips document retrieval. Gemini writes the answer."></a>
+<figcaption>Two small decisions come before the large model. A refused question never reaches it.</figcaption>
+</figure>
+
 ## Three ways to run the first step
 
 1. **Gemini itself.** One more chat call per question.

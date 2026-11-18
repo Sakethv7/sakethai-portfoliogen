@@ -17,6 +17,11 @@ One webhook server, one orchestrator, and four agents. GitLab sends an event, th
 
 Every other event is ignored with a clear response. The webhook checks GitLab's secret token before it does anything. The whole thing is about 760 lines of Python. Most of that is the GitLab, Slack, and Anthropic clients.
 
+<figure class="diagram">
+<a href="diagrams/sdlc-agent-routing.svg" target="_blank" rel="noopener"><img src="diagrams/sdlc-agent-routing.svg" width="900" height="650" alt="One webhook and one orchestrator route GitLab events to four agents. Merge request opened runs Security then Compliance. Reviewer assigned runs Compliance. Pipeline failed runs Insight. A weekly schedule or manual call runs Digest. Any other event is ignored with a clear response."></a>
+<figcaption>The table above, drawn as a route. One crashing agent does not stop the others.</figcaption>
+</figure>
+
 ## Three decisions worth writing down
 
 **The orchestrator is a plain function.** It is an if/else on the event name that calls agent objects from a dictionary. There is no agent framework. With four agents and fixed triggers, a framework would add more machinery than it removes. The cost is that adding a fifth agent means editing the function.

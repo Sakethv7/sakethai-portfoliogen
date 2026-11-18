@@ -64,6 +64,11 @@ It is two processes because the capture code is Swift. It has to run inside an a
 6. The server generates notes from the transcript and my scratch notes, writes them, and updates the mirror.
 7. The page polls a status endpoint through recording, transcribing, generating, and ready, then opens the finished notes.
 
+<figure class="diagram">
+<a href="diagrams/lekhni-recording-path.svg" target="_blank" rel="noopener"><img src="diagrams/lekhni-recording-path.svg" width="900" height="740" alt="The path of one recording in Lekhni. The Swift app creates a session folder, records, transcribes and makes one HTTP call. The Python server generates the notes. The page polls the status and opens them. If transcription or the HTTP call fails, the work stays in the folder and a server scan recovers it."></a>
+<figcaption>Left is the Swift app, right is the Python server. Red boxes show what a failure leaves behind.</figcaption>
+</figure>
+
 ## What happens when things fail
 
 | Failure | What happens |

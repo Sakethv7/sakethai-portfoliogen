@@ -75,6 +75,11 @@ The speeds of 80 and 10 tokens per second are deliberately slow. They sit 25 to 
 
 The merge ceiling comes out close to the old 900 seconds. That is a useful check: the one limit that never failed is the one the formula reproduces. And when someone raises an output cap, the limit now rises with it, with no second edit.
 
+<figure class="diagram">
+<a href="diagrams/model-call-timeout-limits.svg" target="_blank" rel="noopener"><img src="diagrams/model-call-timeout-limits.svg" width="900" height="440" alt="A timeline of a worst-case chunk call: about 27 seconds reading the prompt and about 103 seconds writing, ending near 130 seconds. The old 120 second limit cuts it off before the end. The new design stops only after 91 seconds of silence and keeps a 271 second ceiling."></a>
+<figcaption>The old limit sits left of where a worst-case call ends. The new limits are sized from the work.</figcaption>
+</figure>
+
 ### 3. Retry a chunk once, then skip it and say so
 
 A chunk attempt is the extraction call plus its repair. If it fails, it runs once more. If it fails again, Lekhni skips that chunk and adds one line under the note's summary:

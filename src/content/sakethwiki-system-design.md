@@ -85,6 +85,11 @@ Search and indexing are not the limit. The health check is. It sends the start o
 
 **Query path.** Question arrives, the index returns candidate chunks, an optional rerank runs if embeddings are on, and a model answers from them. If the index returns nothing, one keyword scan runs as a fallback. Chat answers can also be marked as a correction, contradiction, example, or nuance. Those marks go into the trace log as evidence. They never edit a page by themselves.
 
+<figure class="diagram">
+<a href="diagrams/sakethwiki-two-paths.svg" target="_blank" rel="noopener"><img src="diagrams/sakethwiki-two-paths.svg" width="900" height="650" alt="Two paths through SakethWiki. Capture: source, parse, proposal, queue, review, classify against the existing page, write, update that page index entry, append a trace. Query: question, index candidates, optional rerank, model answer, with a keyword scan if the index returns nothing. Chat marks go to the trace log and never edit a page."></a>
+<figcaption>Review sits in the middle of the capture path. Chat marks on the query path are evidence only.</figcaption>
+</figure>
+
 ## What happens when things fail
 
 | Failure | What happens |

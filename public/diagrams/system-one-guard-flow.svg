@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 690" role="img" aria-label="A question passes a fast guard and router before Gemini. The guard labels it SAFE, OFF_TOPIC or INJECTION; the last two are refused without calling Gemini. The router labels it LOOKUP, SUMMARY or CHAT; CHAT skips document retrieval. Gemini writes the answer." font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="690" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">A fast first check in front of the big model</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">System 1 picks a label from a closed list. System 2, Gemini, writes the answer.</text>
+<rect x="350" y="84" width="200" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="450.0" y="104.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">A question arrives</text>
+<polygon points="450,154 640,200 450,246 260,200" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="450" y="191.5" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">Guard: which label?</text>
+<text x="450" y="208.5" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">SAFE, OFF_TOPIC or INJECTION</text>
+<path d="M450 124 V154" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="700" y="170" width="180" height="60" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="790.0" y="192.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Refuse with one short message</text>
+<text x="790.0" y="208.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Gemini is never called</text>
+<path d="M640 200 H700" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="670" y="192" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">not safe</text>
+<polygon points="450,284 640,330 450,376 260,330" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="450" y="321.5" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">Router: which label?</text>
+<text x="450" y="338.5" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">LOOKUP, SUMMARY or CHAT</text>
+<path d="M450 246 V284" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="466" y="270" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">SAFE</text>
+<rect x="30" y="304" width="200" height="52" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="130.0" y="322.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Skip document retrieval</text>
+<text x="130.0" y="338.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">A greeting needs none</text>
+<path d="M260 330 H230" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="245" y="322" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">CHAT</text>
+<rect x="350" y="410" width="200" height="44" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="450.0" y="432.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Retrieve from the documents</text>
+<path d="M450 376 V410" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="466" y="398" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">LOOKUP or SUMMARY</text>
+<rect x="310" y="500" width="280" height="50" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="450.0" y="516.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Gemini writes the answer</text>
+<text x="450.0" y="533.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">System 2</text>
+<path d="M450 454 V500" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M130 356 V525 H310" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="596" width="780" height="70" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="450.0" y="623.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Every decision is logged with the model&#x27;s confidence</text>
+<text x="450.0" y="639.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">In a test of 13 questions, Gemini calls fell from 13 to 6. All 7 attack and off-topic questions were refused without Gemini.</text>
+</svg>

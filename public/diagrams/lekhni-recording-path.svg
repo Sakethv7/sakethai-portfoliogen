@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 740" role="img" aria-label="The path of one recording in Lekhni: the Swift app creates a session folder, records, transcribes and makes one HTTP call; the Python server generates notes; the page polls status and opens the notes. Failures leave the transcript in the folder, and the server scan recovers." font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="740" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">The path of one recording</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">Two processes share a session folder and one HTTP call. Failures leave the work on disk.</text>
+<text x="60" y="94" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Swift app</text>
+<text x="540" y="94" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Python server</text>
+<rect x="60" y="110" width="340" height="50" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="126.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">1. Click New note</text>
+<text x="230.0" y="143.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Create the session folder, start both audio tracks</text>
+<rect x="60" y="180" width="340" height="50" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="196.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">2. Type scratch notes</text>
+<text x="230.0" y="213.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Saved about a second after I stop typing</text>
+<rect x="60" y="250" width="340" height="50" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="266.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">3. Click Stop</text>
+<text x="230.0" y="283.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Write metadata, queue transcription</text>
+<rect x="60" y="320" width="340" height="50" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="336.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">4. Parakeet transcribes both tracks</text>
+<text x="230.0" y="353.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Swift writes the transcript</text>
+<rect x="60" y="390" width="340" height="50" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="406.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">5. One HTTP call</text>
+<text x="230.0" y="423.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Says the transcript is ready</text>
+<path d="M230 160 V180" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M230 230 V250" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M230 300 V320" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M230 370 V390" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="540" y="390" width="300" height="50" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="690.0" y="406.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">6. Generate the notes</text>
+<text x="690.0" y="423.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Write them, update the mirror</text>
+<path d="M400 415 H540" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="540" y="320" width="300" height="50" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="690.0" y="336.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">If transcription fails</text>
+<text x="690.0" y="353.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">A marker file records it. Audio stays.</text>
+<path d="M400 345 H540" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="540" y="470" width="300" height="66" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="690.0" y="486.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">If the HTTP call fails</text>
+<text x="690.0" y="503.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">The transcript is already in the folder.</text>
+<text x="690.0" y="520.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">The next server scan finds it.</text>
+<path d="M230 440 V503 H540" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="250" y="497" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">call fails</text>
+<rect x="60" y="570" width="340" height="50" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="230.0" y="586.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">7. The page polls the status</text>
+<text x="230.0" y="603.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Recording, transcribing, generating, ready</text>
+<path d="M840 415 H872 V595 H400" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="660" width="780" height="56" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="450.0" y="679.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Session folder on disk: the source of truth</text>
+<text x="450.0" y="696.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Audio, transcript, scratch notes, generated notes. The SQLite database is a rebuildable mirror.</text>
+</svg>

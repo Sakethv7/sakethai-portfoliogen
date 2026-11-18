@@ -43,6 +43,11 @@ I keep the layers narrow on purpose. Durable memory holds what stays true. Recen
 
 The same question with the same files gives the same context. When an answer is wrong, I open the file that fed it and fix it.
 
+<figure class="diagram">
+<a href="diagrams/assistant-context-layers.svg" target="_blank" rel="noopener"><img src="diagrams/assistant-context-layers.svg" width="900" height="700" alt="The assistant builds one fresh block of context on every call from five layers in a fixed order: identity, durable memory, goals, retrieved notes and recent activity. The last two are optional. It makes one model call and prints a short plain-text answer. No conversation is saved."></a>
+<figcaption>Three layers are always in. Two are added only when a query or a command asks for them.</figcaption>
+</figure>
+
 ## Two boundaries that matter
 
 **Orchestration versus capability.** One file only routes commands. One module only builds context. One module only talks to models. A workflow module calls into those, and it never opens a model connection itself.
