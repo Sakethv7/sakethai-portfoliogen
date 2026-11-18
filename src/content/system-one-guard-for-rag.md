@@ -92,10 +92,10 @@ Getting there broke six times, in this order.
 
 1. Render still had retired Gemini model names. Every chat call failed, and the guard failed closed with a 503.
 2. Gemini then returned 429 with "prepayment credits are depleted" until I set up billing.
-3. The API key on Render belonged to a different Google account and project from the one I had billed. That was my mistake. I had checked the billing and not the key.
+3. The API key on Render belonged to a different Google account and project from the one I had billed. That was my mistake. The billing and the key sat in different projects, and I did not check that they matched.
 4. The free Qdrant Cloud cluster stopped accepting connections. The connection was reset during TLS. I created a new cluster.
 5. A bug in my Qdrant store made the app forget the collection size after every restart. Search returned nothing until the next upload. I fixed it and merged the fix.
-6. The guard and router now default to Jev whenever a Jev key is set. Before that I had to switch it on by hand.
+6. The guard and router now default to Jev whenever a Jev key is set.
 
 <figure class="diagram">
 <a href="diagrams/live-deployment-fault-path.svg" target="_blank" rel="noopener"><img src="diagrams/live-deployment-fault-path.svg" width="900" height="640" alt="The live request path. Unsafe questions are refused at the Jev guard with no call to Gemini or Qdrant. Safe questions go to the Jev router, then to Qdrant retrieval and Gemini. Six numbered faults are marked where they happened."></a>
@@ -124,7 +124,7 @@ I will replay the same 60 hard questions against the live app, so the result com
 
 I will count attacks let through, valid questions refused, and total request time for each route. A pass is 0 attacks let through and 0 valid questions refused, the same bar as the hard test. I will not set a time target before I see the Render times.
 
-I will also add a check that runs one Gemini call, one Qdrant search and one guard decision after every deploy and restart. Each of the first five faults above would have shown up there. I will save a screenshot of each response and the guard log line for each decision, and attach them to the note.
+I will also add a check that runs one Gemini call, one Qdrant search and one guard decision after every deploy and restart. I expect each of the first five faults above to show up there. I will save a screenshot of each response and the guard log line for each decision, and attach them to the note.
 
 ## For engineers
 
