@@ -879,3 +879,15 @@ homepage-selection and ADR changes.
 portfolio change published immediately. The waiver applies only to ADR-040 and
 does not change the evidence invariant or waive review for later public-interface
 changes.
+
+## ADR-041: Publish the RAG Mini System 1 guard note as an engineering note
+
+**Context.** RAG Mini has a measured experiment: a fast guard and router in front of a generation model, tested with three models. The result is bounded. It shows cost, speed and consistency gains, and it shows no safety gain.
+
+**Decision.** Publish one Engineering note, `system-one-guard-for-rag`, and link it from the existing RAG Mini project entry through `notes`. Do not add a new project card. The note states every number from the RAG Mini repository, says the labels and questions are mine, and lists what the test does not show.
+
+**Rejected alternatives.** A new featured card, because the evidence is a small test on a small app. A note that leaves out the false-refusal bug and the lack of a safety gain, because both are part of the result.
+
+**Failure and recovery.** A missing Markdown body routes to the existing not-found page. The change is static. Revert the content file, the publication record, the `notes` link and this ADR to undo it.
+
+**Teach-back:** pending.
