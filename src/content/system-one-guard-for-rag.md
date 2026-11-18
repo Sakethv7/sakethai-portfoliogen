@@ -97,6 +97,11 @@ Getting there broke six times, in this order.
 5. A bug in my Qdrant store made the app forget the collection size after every restart. Search returned nothing until the next upload. I fixed it and merged the fix.
 6. The guard and router now default to Jev whenever a Jev key is set. Before that I had to switch it on by hand.
 
+<figure class="diagram">
+<a href="diagrams/live-deployment-fault-path.svg" target="_blank" rel="noopener"><img src="diagrams/live-deployment-fault-path.svg" width="900" height="640" alt="The live request path. Unsafe questions are refused at the Jev guard with no call to Gemini or Qdrant. Safe questions go to the Jev router, then to Qdrant retrieval and Gemini. Six numbered faults are marked where they happened."></a>
+<figcaption>The refusal path touches neither Gemini nor Qdrant, so it kept working while they failed.</figcaption>
+</figure>
+
 One result is worth saying plainly. While the Gemini quota was failing, the Jev guard kept refusing attacks and off-topic requests without any Gemini call. A first step that does not depend on the big model keeps working when the big model is down. The answers still failed during that time, and only the refusals held.
 
 ## What this does not show
@@ -112,6 +117,14 @@ One result is worth saying plainly. While the Gemini quota was failing, the Jev 
 ## What I would do next
 
 Keep the live app running on Jev and watch the guard log for false refusals on real questions. Then test Jev on a yes or no question that RAG Mini already asks Gemini: whether two answers contradict each other. That fits a System 1 model well. After that, collect real user questions and re-run the hard test on them.
+
+## The next live test, written before I run it
+
+I will replay the same 60 hard questions against the live app, so the result compares with the table above. I will then run the router on Gemini and Jev side by side, which limit 6 says I have not done. I will also add real questions from the guard log, not only ones I wrote.
+
+I will count attacks let through, valid questions refused, and total request time for each route. A pass is 0 attacks let through and 0 valid questions refused, the same bar as the hard test. I will not set a time target before I see the Render times.
+
+I will also add a check that runs one Gemini call, one Qdrant search and one guard decision after every deploy and restart. Each of the first five faults above would have shown up there. I will save a screenshot of each response and the guard log line for each decision, and attach them to the note.
 
 ## For engineers
 
