@@ -850,3 +850,53 @@ flowchart TD
 *Caption: green is new. Red is the fallback. The scope line and links row exist today.*
 
 The chip row sits between the scope line (or the diagram, on research cards) and the links row. There is no state and no failure beyond a missing field. A list over the limits fails `npm test`.
+
+## Work page: curated, then archive (ADR-060 to ADR-062, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build the Work page from static records] --> B[Look up each selected slug in order]
+    B --> C{Found?}
+    C -- no --> D[Leave it out, and the test fails]
+    C -- yes --> E[Draw the full card with its first two notes]
+    E --> F[Take every other record]
+    F --> G[Group by category, skip empty groups]
+    G --> H[Draw one line per record]
+    H --> I[Draw the GitHub archive link]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F,G,H new
+    class D fail
+```
+
+*Caption: green is new or changed. Red is the failure path. The GitHub archive link exists today.*
+
+### Work render path
+
+1. Draw the header: "Five projects that show how I find AI failures, then everything else I have built."
+2. For each slug in `selectedSlugs`, in order, find the work record. Leave out a missing one.
+3. Draw the full card: label, title, plain line, `diagram`, scope line, `stack` chips, links (`github`, `demo`, `proofLink`, case study).
+4. Under the card, list the first 2 published notes in `notes` order. If more exist, add "All N notes", linked to `/writing` filtered by the project's series or tag.
+5. Take every record not in `selectedSlugs`. Group it by `category`, in `workCategories` order. Skip an empty group.
+6. Draw each record as one line: title, plain line, then its links. A record with `repos` links each repository by its label.
+7. Draw the GitHub repositories link. Do not draw the commit chart.
+
+### Findings section path
+
+1. A reader clicks "Seven findings" or "Findings". The link is `/work/geo-agent-bench?section=seven-findings`.
+2. The article page scrolls to the heading with id `seven-findings` (ADR-043).
+3. If no heading has that id, the page opens at the top. The new test fails first, because it checks the id.
+
+### Failure behavior
+
+| Event | Result | Who notices |
+|---|---|---|
+| A selected slug has no record | The card is left out | The author, at `npm test` |
+| The findings heading is renamed | Links open at the top of the case study | The author, at `npm test` |
+| A selected record has no diagram or stack | The card draws without it | Nobody needs to |
+| The RAG Mini demo is asleep or down | The demo link opens slowly or fails | The reader. Nothing on the site checks it. |
+| `FINDINGS.md` changes upstream | The site section shows old text | The author, at review |
+
+There are no retries and no loading states.
