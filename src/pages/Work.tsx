@@ -2,12 +2,14 @@ import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CommitChart } from '@/components/CommitChart';
 import { PortfolioShell } from '@/components/PortfolioShell';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { publications, work, workCategories } from '@/data/portfolio';
 
 // These groups are real work but not the first thing to read, so they start folded (ADR-037).
 const folded = ['Experiments & learning', 'Creative builds'];
 
 export default function Work() {
+  usePageTitle('Work archive');
   return <PortfolioShell>
     <header className="page-header editorial-section"><p className="eyebrow">Work archive</p><h1>Systems, tools, and experiments</h1><p>Production-facing systems, developer tools and experiments. Each entry says whether it is deployed work, a prototype or learning work. The notes on a project are listed with it.</p></header>
     {workCategories.map((category) => {

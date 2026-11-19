@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { ArrowLeft, Download, Github } from 'lucide-react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { ArticleContents } from '@/components/ArticleContents';
+import { TagPills } from '@/components/TagPills';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { endLinks, publications, work } from '@/data/portfolio';
 import { prepareArticle } from '@/lib/article';
 import { experiences } from '@/data/experience';
@@ -33,14 +35,27 @@ function findRecord(collection: 'work' | 'writing' | 'experience', slug: string)
 export default function Article({ collection }: { collection: 'work' | 'writing' | 'experience' }) {
   const { slug = '' } = useParams();
   const record = findRecord(collection, slug);
+  usePageTitle(record?.title ?? "Page not found");
   const body = record?.body;
   const [markdown, setMarkdown] = useState<string | null>(null);
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const section = params.get('section');
   // The technical focus line starts folded on a phone, so the body starts higher (ADR-045).
   const [phone] = useState(() => window.matchMedia('(max-width: 560px)').matches);
   const basePath = `/${collection}/${slug}`;
-  const prepared = useMemo(() => markdown === null ? null : prepareArticle(markdown, basePath), [markdown, basePath]);
+  // Same-site links in the note body go through the router, so there is no full reload (ADR-047).
+  const routeSiteLinks = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const anchor = (event.target as HTMLElement).closest('a');
+    if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
+    const url = new URL(anchor.href);
+    const base = import.meta.env.BASE_URL;
+    if (url.origin !== window.location.origin || !url.pathname.startsWith(base)) return;
+    event.preventDefault();
+    navigate(`/${url.pathname.slice(base.length)}${url.search}${url.hash}`);
+  };
+  const prepared = useMemo(() => markdown === null ? null : prepareArticle(markdown, basePath, import.meta.env.BASE_URL), [markdown, basePath]);
   const [missing, setMissing] = useState(false);
 
   useEffect(() => {
@@ -79,7 +94,7 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         <Link className="article-back" to={record.back[0]}><ArrowLeft /> {record.back[1]}</Link>
         <p className="eyebrow">{record.eyebrow}{prepared && ` · about ${prepared.minutes} min read`}</p>
         <h1>{record.title}</h1>
-        {'tags' in record && record.tags && <ul className="tag-row" aria-label="Topics">{record.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}
+        {'tags' in record && record.tags && <TagPills tags={record.tags} />}
         <p className="plain-line">{record.plain}</p>
         {record.evidenceStatus && <p className="evidence-status">{record.evidenceStatus}</p>}
         <details className="for-engineers focus-fold" open={!phone}><summary>Technical focus</summary>{record.summary}</details>
@@ -87,7 +102,7 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
       </header>
       <div className="editorial-section article-layout">
         {prepared && <ArticleContents headings={prepared.headings} basePath={basePath} />}
-        <div className="article-body" dangerouslySetInnerHTML={{ __html: prepared?.html ?? '' }} />
+        <div className="article-body" onClick={routeSiteLinks} dangerouslySetInnerHTML={{ __html: prepared?.html ?? '' }} />
       </div>
       {ends && <nav className="editorial-section end-links" aria-label={ends.label}>
         <p className="eyebrow">{ends.label}</p>

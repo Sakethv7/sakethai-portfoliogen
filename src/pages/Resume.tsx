@@ -1,7 +1,9 @@
 import { Download, ExternalLink } from 'lucide-react';
 import { PortfolioShell } from '@/components/PortfolioShell';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function Resume() {
+  usePageTitle('Résumé');
   const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;
   // Android Chrome cannot render inline PDFs and iOS is unreliable, so narrow viewports get links only.
   const canEmbed = window.matchMedia('(min-width: 768px)').matches;

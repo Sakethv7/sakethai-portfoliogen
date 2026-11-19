@@ -2,11 +2,13 @@ import { ArrowDown, ArrowUpRight, Download, Linkedin, MapPin } from 'lucide-reac
 import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { experiences, resumeExperiences } from '@/data/experience';
 
 const linkedinExperienceUrl = 'https://www.linkedin.com/in/sakethvelidimalla/details/experience/';
 
 export default function Experience() {
+  usePageTitle('Experience');
   const resumeUrl = `${import.meta.env.BASE_URL}Saketh_Velidimalla_Resume.pdf`;
   return <PortfolioShell>
     <header className="page-header editorial-section experience-header">

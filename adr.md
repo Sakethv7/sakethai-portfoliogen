@@ -62,7 +62,7 @@
 
 ## ADR-007: Hash routing remains for the first redesign
 
-**Status:** Superseded by ADR-047 (proposed, 2026-11-19). Stays Accepted until ADR-047 is approved.
+**Status:** Superseded by ADR-047 (2026-11-19).
 
 **Decision:** Keep the existing `HashRouter` during the first implementation unless the deployment target is changed and configured for SPA rewrites.
 
@@ -1151,7 +1151,7 @@ Explainer for all four: [adr-047-050-paths-metadata-writing.html](docs/visuals/a
 
 ## ADR-047: Use real page addresses and write one HTML file per route, with its own head tags
 
-**Status:** Proposed. Replaces ADR-007 and answers the "separate, larger decision" in ADR-043.
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged. Replaces ADR-007 and answers the "separate, larger decision" in ADR-043.
 
 ### Visual Level
 
@@ -1200,7 +1200,7 @@ flowchart TD
 
 ## ADR-048: Give each page its own title, description, canonical address and share tags, and publish a sitemap
 
-**Status:** Proposed.
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
 
 ### Visual Level
 
@@ -1245,7 +1245,7 @@ flowchart TD
 
 ## ADR-049: Writing page: tags on series rows, tag filter and a "Start here" row
 
-**Status:** Proposed. Builds on ADR-034 and the tags merged in PR #4.
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged. Builds on ADR-034 and the tags merged in PR #4.
 
 ### Visual Level
 
@@ -1292,7 +1292,7 @@ flowchart TD
 
 ## ADR-050: The plain sentence of a pinned note states its result
 
-**Status:** Proposed. Saketh approves each sentence before it ships.
+**Status:** Accepted as a rule (2026-11-19). **Not built:** no plain sentence has changed. Saketh must approve each new sentence first. The System 1 draft in this ADR is still to confirm.
 
 ### Visual Level
 
@@ -1339,3 +1339,5 @@ flowchart TD
 See `architecture.md`, open questions 1 to 7. In short: a Vite plugin or a `tsx` script, manual sitemap submission, the trailing-slash redirect, which three notes to pin, read time on cards, light theme, a per-note share image, and fixing `architecture.md` line 410 after the change ships.
 
 Also: the System 1 draft sentence above says the small check "ran faster than the big model". The note's table shows Jev (204 ms median) against Gemini (587 ms). Saketh must confirm that the sentence names the right comparison.
+
+**Build result (2026-11-19, ADR-047 to 049).** `npm test` passes (33 tests, 15 new). Lint passes with no errors. Type check shows only the `toSorted` errors that existed before. `vite build` writes 43 route files, `sitemap.xml` (42 addresses) and `404.html`, and warns about 5 descriptions between 164 and 184 characters. Checked in the browser pane against a small server that copies GitHub Pages rules (files per path, `404.html` with status 404, a 301 for a missing trailing slash): an old `#/writing/x?section=y` link became `/writing/x/?section=y` and scrolled to the section; `/research/` answered 200; an unknown path answered 404 with `noindex`; a pill click filtered the list and replaced the series card with its notes; an in-note link moved to another note without a reload; the Start here row shows at 375 px with no sideways scroll. **Changes beyond the drafts:** (1) The review missed that notes use relative paths such as `diagrams/x.svg`. They broke on `/writing/<slug>/`, so the renderer now points every relative `src` and `href` at the site base, with a test. (2) A page does not reload on a client-side move, so the tab title stayed stale. A small `usePageTitle` hook now sets it on each page. **Not checked:** the real GitHub Pages host (404 status, the redirect from a path without a slash, the `Sitemap:` line), Safari and Firefox, and a full-repo lint run (only the changed code was linted). **Not done:** the manual sitemap submission, and the plain sentences of ADR-050.

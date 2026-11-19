@@ -407,7 +407,7 @@ These are recorded rather than resolved, because resolving them is a larger task
 
 **Three unused providers are mounted in `App.tsx`** — `QueryClientProvider` with no queries, plus `Toaster`, `Sonner`, and `TooltipProvider` with no consumers. Deferred to the same pass.
 
-**Per-article link previews won't work under HashRouter (new, 2026-09-22).** When LinkedIn builds a preview card it fetches the URL without running JavaScript and without the part after `#`. Every article link therefore previews as the homepage's title and image. Fixing it needs either real paths (`BrowserRouter` plus a GitHub Pages 404 redirect trick) or pre-rendered HTML per article. Both are larger changes. For now the LinkedIn post text has to carry the pitch itself.
+**Per-article link previews won't work under HashRouter (new, 2026-09-22). Resolved by ADR-047 and ADR-048 (2026-11-19, not yet merged): real paths and one HTML file per route with its own tags. The text below is the old state.** When LinkedIn builds a preview card it fetches the URL without running JavaScript and without the part after `#`. Every article link therefore previews as the homepage's title and image. Fixing it needs either real paths (`BrowserRouter` plus a GitHub Pages 404 redirect trick) or pre-rendered HTML per article. Both are larger changes. For now the LinkedIn post text has to carry the pitch itself.
 
 **Back doesn't restore scroll position (new, 2026-09-23).** Since every route change resets to the top, Back lands at the top of the previous page. Restoring it would mean saving the position per history entry and reapplying it after lazy pages finish rendering. That's worth doing only if readers start moving back and forth between long pages.
 

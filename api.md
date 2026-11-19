@@ -893,6 +893,8 @@ prerender: route count <r> does not match file count <f>
 5. `prepareArticle` rewrites a Markdown link `#/<path>` to `<base><path>/`, and builds heading links as `<path>?section=<id>`. A test checks that no `#/` remains in rendered note HTML.
 6. A click handler on `.article-body` sends same-site links to `navigate()`. It ignores clicks with a modifier key and links with a different origin.
 7. The `HashRouter` comments in `App.tsx` and `src/lib/article.ts` are updated.
+8. `prepareArticle(markdown, basePath, siteBase)` also rewrites every relative `src` and `href` in the rendered note (such as `diagrams/x.svg`) to `<siteBase>` plus the path. Reason: a note page is `/writing/<slug>/`, so a relative path no longer reaches the site root. A test checks that none remain.
+9. `usePageTitle(page)` sets `document.title` to `<page> | Saketh Velidimalla`, or the home title when `page` is empty. Each page calls it. Reason: a client-side move does not load a new static file.
 
 ## Unchanged
 

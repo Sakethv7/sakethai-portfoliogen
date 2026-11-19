@@ -6,6 +6,18 @@
     <title>Saketh Velidimalla — Applied AI Systems Engineer</title>
     <meta name="description" content="Applied AI systems engineer. I build evaluation, tracing and data pipelines for production RAG systems, and work with teams to turn failures into fixes and KPIs." />
     <meta name="author" content="Saketh Velidimalla" />
+    <link rel="canonical" href="https://sakethv7.github.io/sakethai-portfoliogen/" />
+
+    <!-- Old links look like /#/writing/x?section=y. Rewrite them to /writing/x/?section=y before React starts (ADR-047). -->
+    <script>
+      (function () {
+        var h = location.hash;
+        if (h.indexOf('#/') !== 0) return;
+        var rest = h.slice(2), q = rest.indexOf('?');
+        var path = (q < 0 ? rest : rest.slice(0, q)).replace(/\/+$/, '');
+        history.replaceState(null, '', '%BASE_URL%' + (path ? path + '/' : '') + (q < 0 ? '' : rest.slice(q)));
+      })();
+    </script>
 
     <!-- Vite rewrites this against the deployed base path; a bare /favicon.ico would escape the project subpath. -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
