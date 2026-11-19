@@ -78,3 +78,22 @@ test('the old title is gone from the home head and the title hook', async () => 
   assert.doesNotMatch(`${head}\n${hook}`, /Applied AI Systems Engineer/);
   assert.match(head, /AI Evaluation &amp; Data Engineer/);
 });
+
+test('each stack list has 1 to 6 entries of 40 characters or fewer, with no duplicates (ADR-059)', async () => {
+  const portfolio = await read('src/data/portfolio.ts');
+  const lists = [...portfolio.matchAll(/stack: \[([^\]]*)\]/g)].map(([, body]) => [...body.matchAll(/'((?:[^'\\]|\\.)*)'|"([^"]*)"/g)].map((match) => match[1] ?? match[2]));
+
+  assert.equal(lists.length, 6);
+  for (const list of lists) {
+    assert.ok(list.length >= 1 && list.length <= 6, list.join(', '));
+    assert.equal(new Set(list).size, list.length, list.join(', '));
+    for (const name of list) assert.ok(name.length <= 40, name);
+  }
+});
+
+test('home cards draw the stack row on featured and research cards', async () => {
+  const homepage = await read('src/pages/Index.tsx');
+
+  assert.match(homepage, /<StackRow stack=\{item\.stack\} \/>/);
+  assert.match(homepage, /<StackRow stack=\{item!\.stack\} \/>/);
+});

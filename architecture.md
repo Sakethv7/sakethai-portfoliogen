@@ -1080,3 +1080,26 @@ See the open questions at the end of the ADR-053 to ADR-058 block in `adr.md`. T
 4. The Lekhni link label.
 5. The superseded parts of ADR-035 and ADR-039.
 6. The test updates.
+
+## Stack chips on home cards (ADR-059, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Note or repo names a tool] --> B[Author adds it to the stack list]
+    B --> C[Home card draws the chips]
+    C --> D{Does the list break the 6 or 40 limit?}
+    D -- yes --> E[Test fails before the build ships]
+    D -- no --> F[Ship]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,F new
+    class E fail
+```
+
+*Caption: green is new. Red is the failure path. The notes exist today.*
+
+**Complexity tier: single script (a static site).** One optional field on two record types and one row of chips. No new step at build or run time.
+
+**Parts touched.** `src/data/portfolio.ts` (field and six lists), `src/pages/Index.tsx` (chip row on featured and research cards), `src/index.css` (chip style), `tests/home-thread.test.mjs` (limits). The `/work` and `/writing` pages do not change.

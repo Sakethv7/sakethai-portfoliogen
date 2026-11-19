@@ -1825,10 +1825,74 @@ The block title is "From FINDINGS.md", and it links there.
 4. **The link label "Read the case study" on featured cards is now "Case study",** to fit one links row.
 5. **The GEO `summary` keeps "Qwen and Claude agent runs; observed Anthropic and OpenAI crawler traffic".** `tests/geo-positioning.test.mjs` guards that wording (ADR-038). The `plain`, `summary` and `featured` fields are shared, so the Work page shows the new SakethWiki, Lekhni and GEO copy too.
 
-**Found, not changed:**
+**Found at build, fixed after merge (2026-11-19, asked by Saketh):**
 
-1. The research cards show the ADR-052 plain sentences, not the result sentences that ADR-050 approved. ADR-050 says "Built", but the records do not match it.
-2. `scripts/routes.ts` line 38 still calls Saketh "an applied AI systems engineer" in the résumé page description.
-3. The `activity` entry of 2026-09-22 still calls `lekhni-app` "a public version of the notes layer".
+1. The three pinned notes now carry the result sentences that ADR-050 approved. Before, they carried the ADR-052 wording.
+2. The résumé page description in `scripts/routes.ts` now says "an AI evaluation and data engineer".
+3. The `activity` entry of 2026-09-22 now says `lekhni-app` is a separate public tool: a local LLM that turns meeting transcripts into summary notes.
 
 **Not checked:** the real GitHub Pages host, Safari and Firefox, and the tablet width.
+
+## ADR-059: Home cards show the real tools and methods behind each project
+
+**Status:** Accepted by Saketh (2026-11-19), with the six lists as proposed. Built 2026-11-19, not merged. Asked for by Saketh: "write the tags like System 1 Jev (TypeSafe AI API was used for the decision model), Render was used for RAG Mini, any complex algorithm".
+
+### Visual Level
+
+Explainer (level 3): skipped. The change has one decision and no new path: a card draws a list if the record has one. The chart below shows every step and the one fallback.
+
+```mermaid
+flowchart TD
+    A[Read a featured project or research note record] --> B{Does it have a stack list?}
+    B -- no --> C[Draw the card without a tool row]
+    B -- yes --> D[Draw up to 6 tool chips under the scope line]
+    D --> E{Is each tool named in the note or repo?}
+    E -- yes --> F[Ship]
+    E -- no --> G[Remove that tool before merge]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,D,E,F new
+    class C,G fail
+```
+
+*Caption: green is new. Red is the fallback for a record with no list, and the check for a tool that no note names. Today the home cards show no tools.*
+
+**Context:** ADR-056 removed the tag row from home cards. Those tags were broad topics, such as "RAG" and "Evaluation". They repeated the scope line. Saketh now wants the specific tools and methods on the card: the services, models and algorithms a technical reader would ask about. Examples: Jev from TypeSafe AI made the System 1 decision, and RAG Mini runs on Render.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Bring back the old `tags` | No new field | Broad topics, and `tags` also drives the filter on `/writing` (ADR-049). Specific tool names would flood the filter. |
+| B. Write the tools into the scope line | No new field | The scope line gets long again, and tools are hard to scan in prose |
+| C. A new `stack` list, shown as small chips on home cards | Specific, scannable, apart from the filter | A third list per record to keep true |
+
+**Choice:** Option C. A new optional field `stack?: string[]` on `WorkItem` and `PublicationItem`. At most 6 entries. Each one names a tool, service, model or method that the note or repository names. Home cards draw it as a row of chips under the scope line. The `/work` and `/writing` pages do not show it yet.
+
+**Proposed lists.** Each entry comes from the note named in the right column. Saketh confirms each list.
+
+| Card | Stack | Source |
+|---|---|---|
+| System 1 guard (RAG Mini) | Jev decision model (TypeSafe AI) · Gemini · Qwen3-8B on Ollama · Qdrant Cloud · Render · Fail-closed guard | `system-one-guard-for-rag` |
+| Calibrate the judge | True positive and true negative rates · Cohen's kappa · Held-out split · Binary pass or fail labels | `calibrate-your-llm-judge` |
+| Retrieval and generation failures | Two-by-two failure grid · Separate retrieval and answer scores · Knowledge-gap label · Suspicious-pass check | `retrieval-vs-generation-failures` |
+| SakethWiki | FastAPI · React · SQLite index · Embeddings with rerank · Review queue · JSONL trace log | `sakethwiki-system-design` |
+| GEO agent benchmark | Web Bot Auth signed requests · OAuth · MCP tools · llms.txt · Cloudflare DNS and Caddy · Exact-answer scoring | `geo-agent-bench-overview`, `-setup`, `-signatures` |
+| Lekhni | Swift with Core Audio process tap · Parakeet transcription · Python FastAPI · Ollama and MLX · SQLite · Traces and evals | `lekhni-system-design` |
+
+**Why:** A technical reader decides in seconds whether the work is real. "Jev decision model, Qdrant Cloud, Render" says more than "RAG".
+
+**Given up:**
+
+1. **A third list to keep true.** `tags`, `summary` and `stack` can drift apart. Nothing checks `stack` against the notes automatically.
+2. **The cards get taller.** Six chips take one or two more lines in a narrow card.
+3. **Copy rule 2 bends.** Tool names sit on the card, one line below the plain sentence. They stay out of the plain sentence itself.
+4. **The method notes have thin lists.** The two method notes name methods, not tools. Their chips describe the method, which is less striking than a product name.
+
+### Open questions (ADR-059)
+
+1. Are the six lists right? Add or remove any tool. Saketh's office tools (Glue, DynamoDB, Power BI) are already in the production proof card, so they are not repeated here.
+2. Should `/work` and `/writing` show `stack` too? Proposal: not in this change.
+3. The calibration note mentions Llama once. I did not read whether it is a tool you used or an example from a source, so I left it out.
+
+**Build result (2026-11-19, ADR-059).** `npm test` gives 67 pass, 0 fail, 1 skipped. Two new tests check the list limits and that both card types draw the row. Lint passes on the changed files. The type check shows no new errors. `vite build` writes 43 route files. In the dev server, all 6 cards show their chips (6, 6, 6, 6, 4, 4) at 1280 px light. At 375 px dark, nothing scrolls sideways. **Change beyond the ADR:** the slug `geo-agent-bench` names both a work record and a publication. The list goes on the work record. **Not checked:** Safari and Firefox, and the tablet width.

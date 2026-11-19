@@ -35,7 +35,7 @@ export function buildRoutes({ work, publications, experiences }: SiteData): Rout
       description: 'From marketplace machine learning to hardware telemetry and production enterprise AI quality systems.' },
     { path: '/writing/', title: titleOf('Writing'), description: writingText, type: 'website', sitemap: true },
     { path: '/resume/', title: titleOf('Résumé'), type: 'website', sitemap: true,
-      description: 'One page, current résumé of Saketh Velidimalla, an applied AI systems engineer.' },
+      description: 'One page, current résumé of Saketh Velidimalla, an AI evaluation and data engineer.' },
     // /research redirects in React. It gets a file so the host answers 200 (ADR-047).
     { path: '/research/', title: titleOf('Writing'), description: writingText, type: 'website', sitemap: false, canonicalPath: '/writing/' },
   ];

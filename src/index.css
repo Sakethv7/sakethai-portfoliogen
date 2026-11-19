@@ -400,6 +400,8 @@ a.rung-work:hover, a.rung-work:focus-visible { color: hsl(var(--primary)); }
 .results-block dt { opacity: .7; }
 .results-block dd { margin: 0; }
 .featured-card .card-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: auto; padding-top: 20px; }
+.stack-row { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.stack-row li { border: 1px solid hsl(var(--border)); border-radius: 4px; padding: 2px 8px; color: hsl(var(--muted-foreground)); font-family: ui-monospace, monospace; font-size: .68rem; line-height: 1.5; }
 @media (max-width: 560px) {
   .stack-ladder li { grid-template-columns: 70px 1fr; }
   .rung-mark { grid-column: 2; }

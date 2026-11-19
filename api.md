@@ -1095,3 +1095,27 @@ Keys: `system-one-guard-for-rag` → `system-one-guard-flow.svg` (900 × 690), `
 ### Open contract questions
 
 1. Should `results` move into the GEO repository as a JSON file the site reads at build time? That removes the second copy (ADR-058, given up item 1). It also adds a build-time network fetch. Proposal: not now.
+
+## Stack list on home cards (ADR-059, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[WorkItem or PublicationItem] --> B{Has stack?}
+    B -- yes --> C[Up to 6 chips on the home card]
+    B -- no --> D[Card without chips]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C new
+    class D fail
+```
+
+*Caption: green is new. Red is the fallback when the field is absent.*
+
+```ts
+// Added to both WorkItem and PublicationItem in src/data/portfolio.ts
+stack?: string[]; // 1 to 6 entries, each 40 characters or fewer, each named in the note or repository
+```
+
+**Invariants:** at most 6 entries, each 40 characters or fewer, no duplicates in one list. `tests/home-thread.test.mjs` checks the count and length. Nothing checks that a note names each tool. The author checks that at review. `stack` does not feed the `/writing` tag filter.
