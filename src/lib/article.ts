@@ -1,18 +1,11 @@
 import { Marked } from 'marked';
+import { countMinutes } from './readingTime.ts';
 
 export interface Heading { id: string; text: string; level: 2 | 3 }
 export interface PreparedArticle { html: string; headings: Heading[]; minutes: number }
 
-// Assumed reading speed. No source; the page label says "about" (ADR-042).
-const WORDS_PER_MINUTE = 230;
-
 const plainText = (markdown: string) => markdown.replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[`*_~]/g, '').replace(/<[^>]+>/g, '').trim();
 const slugify = (text: string) => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '') || 'section';
-
-function countMinutes(markdown: string): number {
-  const words = markdown.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
-}
 
 // One parse gives the HTML, the heading list and the word count, so the three cannot disagree.
 // Section links are real paths with ?section=<id> (ADR-043, ADR-047). Old `#/path` links in the

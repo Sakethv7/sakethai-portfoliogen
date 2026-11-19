@@ -3,6 +3,7 @@ import { PortfolioShell } from '@/components/PortfolioShell';
 import { TagPills } from '@/components/TagPills';
 import { writingHref } from '@/lib/writingHref';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import minutesBySlug from 'virtual:reading-times';
 import { publications, work } from '@/data/portfolio';
 import type { PublicationItem } from '@/data/portfolio';
 
@@ -37,6 +38,10 @@ function toEntries(notes: PublicationItem[]): Entry[] {
   return [...loose, ...groups];
 }
 
+// "about N min read" comes from the build (ADR-049). A note with no Markdown file has no label.
+const readLabel = (minutes: number | undefined) => minutes ? `about ${minutes} min read` : null;
+const entryMinutes = (entry: Entry) => entry.kind === 'note' ? minutesBySlug[entry.item.slug] : entry.chapters.reduce((sum, chapter) => sum + (minutesBySlug[chapter.slug] ?? 0), 0);
+
 const entryDate = (entry: Entry) => entry.kind === 'note' ? entry.item.date! : entry.chapters[entry.chapters.length - 1].date!;
 
 export default function Collection() {
@@ -61,15 +66,15 @@ export default function Collection() {
       {tag && <p className="active-tag">Notes tagged <strong>{tag}</strong> · <Link to={writingHref(active, '')}>Clear</Link></p>}
     </header>
     {pinned.length > 0 && <section className="editorial-section start-here" aria-label="Start here"><p className="eyebrow">Start here</p>
-      <ol>{pinned.map((item) => <li key={item.slug}><Link to={`/writing/${item.slug}`}>{item.title}</Link><p>{item.plain}</p></li>)}</ol></section>}
+      <ol>{pinned.map((item) => <li key={item.slug}>{readLabel(minutesBySlug[item.slug]) && <div className="meta-line"><span>{readLabel(minutesBySlug[item.slug])}</span></div>}<Link to={`/writing/${item.slug}`}>{item.title}</Link><p>{item.plain}</p></li>)}</ol></section>}
     <section className="editorial-section collection-list">{items.length ? items.map((entry) => entry.kind === 'series' ? <article className="series-card" key={entry.name}>
-      <div className="meta-line"><span>Project series · {entry.chapters.length} notes</span><span>{entryDate(entry)}</span></div>
+      <div className="meta-line"><span>Project series · {entry.chapters.length} notes</span><span>{entryDate(entry)}</span>{readLabel(entryMinutes(entry)) && <span>{readLabel(entryMinutes(entry))}</span>}</div>
       <h2><Link to={seriesInfo[entry.name].to}>{entry.name}</Link></h2>
       <p className="plain-line">{seriesInfo[entry.name].plain}</p>
       <ol className="series-chapters">{entry.chapters.map((chapter) => <li key={chapter.slug}><time>{chapter.date}</time><Link to={`/writing/${chapter.slug}`}>{chapter.title}</Link>{chapter.tags && <TagPills tags={chapter.tags} kind={active} className="tag-row-inline" />}</li>)}</ol>
       <p className="series-link"><Link to={seriesInfo[entry.name].to}>Read the project overview</Link></p>
     </article> : <article key={entry.item.title}>
-      <div className="meta-line"><span>{entry.item.kind}</span><span>{entry.item.status === 'Published' ? entry.item.date : entry.item.status}</span></div><h2>{entry.item.status === 'Published' ? <Link to={`/writing/${entry.item.slug}`}>{entry.item.title}</Link> : entry.item.title}</h2>{entry.item.tags && <TagPills tags={entry.item.tags} kind={active} active={tag} />}<p className="plain-line">{entry.item.plain}</p><p className="for-engineers"><span>Technical focus</span>{entry.item.summary}</p>
+      <div className="meta-line"><span>{entry.item.kind}</span><span>{entry.item.status === 'Published' ? entry.item.date : entry.item.status}</span>{readLabel(entryMinutes(entry)) && <span>{readLabel(entryMinutes(entry))}</span>}</div><h2>{entry.item.status === 'Published' ? <Link to={`/writing/${entry.item.slug}`}>{entry.item.title}</Link> : entry.item.title}</h2>{entry.item.tags && <TagPills tags={entry.item.tags} kind={active} active={tag} />}<p className="plain-line">{entry.item.plain}</p><p className="for-engineers"><span>Technical focus</span>{entry.item.summary}</p>
     </article>) : tag ? <div className="honest-empty"><p className="eyebrow">No match</p><h2>No note has both this kind and this tag.</h2><p><Link to={writingHref(active, '')}>Clear the tag</Link></p></div> : <div className="honest-empty"><p className="eyebrow">Nothing published yet</p><h2>This shelf starts empty on purpose.</h2><p>New notes will appear here only when there is a real, dated artifact to read.</p></div>}</section>
   </PortfolioShell>;
 }

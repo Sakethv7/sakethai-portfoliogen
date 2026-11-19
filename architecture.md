@@ -941,7 +941,7 @@ The first draft also put the rendered note text inside `<div id="root">`. The re
 2. **Sitemap discovery.** Crawlers read `robots.txt` only at the host root, `https://sakethv7.github.io/robots.txt`. That file belongs to a different repo (the user site). The `Sitemap:` line in this site's `robots.txt` may be ignored. So send `sitemap.xml` to Google Search Console and Bing Webmaster Tools by hand. Saketh must do this.
 3. **Trailing slash.** GitHub Pages normally sends a 301 from `/writing/<slug>` to `/writing/<slug>/` and keeps the query. Internal `<Link>` values have no trailing slash, and the canonical address has one. Both work. I have not tested the redirect on this host.
 3. **Which three notes to pin.** Proposal: the System 1 guard note, "Calibrate the judge before you trust the score", and "Evaluating retrieval failures separately from generation failures". Saketh decides.
-4. **Read time on list cards.** The cards would need the word count of every note at list time. That needs either a pre-build step or loading all notes into the list page. This draft leaves it out. Say so if you want it.
+4. **Read time on list cards.** Resolved 2026-11-19: see the amendment to ADR-049.
 5. **Light theme.** Not in this change. It needs new color tokens and a check of every page, so it needs its own ADR. Say so if you want it next.
 6. **Share image.** One `og-image.png` (1200 by 630) serves every page. A per-note image is a separate change. I have not yet looked at whether the current image is a good preview.
 7. **Code against docs.** `architecture.md` line 410 says per-article previews need real paths or pre-rendered HTML. This change does both. After it ships, that paragraph must change.
