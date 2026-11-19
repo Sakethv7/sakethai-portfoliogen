@@ -842,42 +842,40 @@ Article.tsx --> header (minutes, folded focus line on phone)
 
 # Change 2026-11-19: real page addresses, search metadata, and a better Writing page (ADR-047 to ADR-050)
 
-Status: draft for Saketh's review. No code is written yet.
+Status: revision 2, after an independent review (see "Review 1" at the end of this section). Draft for Saketh's review. No code is written yet.
 
 ## Visual Level
 
 ```mermaid
 flowchart TD
-    A[Vite builds the app] --> B[Script lists every route from the data files]
-    B --> C[Script writes head tags for each route]
-    C --> D{Route is a published note?}
-    D -- yes --> E[Put the note text inside the root element]
-    D -- no --> F[Leave the root element empty]
-    E --> G[Write one HTML file per route]
-    F --> G
-    G --> H[Write sitemap.xml, robots.txt line and 404.html]
-    H --> I{Does every route have a file?}
-    I -- yes --> J[Upload to GitHub Pages]
-    I -- no --> K[Fail the build, keep the old site]
+    A[Vite builds the app] --> B[Plugin lists every route from the data files]
+    B --> C{Every route has its Markdown file and a short description?}
+    C -- no --> K[Fail the build, keep the old site]
+    C -- yes --> D[Write head tags for each route]
+    D --> E[Write one HTML file per route]
+    E --> F[Write sitemap.xml and 404.html with noindex]
+    F --> G{Does every route have a file?}
+    G -- no --> K
+    G -- yes --> J[Upload to GitHub Pages]
     classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
     classDef old fill:#e9ecef,stroke:#6c757d,color:#111
     classDef fail fill:#f8d7da,stroke:#842029,color:#111
-    class B,C,D,E,F,G,H,I new
+    class B,C,D,E,F,G new
     class A,J old
     class K fail
 ```
 
-*Caption: grey exists today, green is new, red is the failure path. Today the build stops at step A and every route shares one HTML file. Explainer: [adr-047-050-paths-metadata-writing.html](docs/visuals/adr-047-050-paths-metadata-writing.html).*
+*Caption: grey exists today, green is new, red is the failure path. Today the build stops at step A and every route shares one HTML file. This revision writes head tags only. The note text stays out of the static files (ADR-047, option C). Explainer: [adr-047-050-paths-metadata-writing.html](docs/visuals/adr-047-050-paths-metadata-writing.html).*
 
 ## Complexity tier
 
-**Single-process tool.** The site stays a static React app. One new Node script runs once after `vite build`. It reads the data files and the Markdown notes. It writes files into `dist/`. It has no server, no queue and no database.
+**Single-process tool.** The site stays a static React app. One small Vite plugin runs once at the end of `vite build`. It reads the data files and checks the Markdown notes. It writes files into `dist/`. It has no server, no queue and no database.
 
-A higher tier exists: a full server-side rendering framework such as Next.js or `vite-react-ssg`. The problem does not need it. The site has 54 data records and no per-user content. A script that writes static files gives the same search result with far less change. This draft proposes the smaller tier.
+A higher tier exists: a full server-side rendering framework such as Next.js or `vite-react-ssg`. The problem does not need it. The site has 54 data records and no per-user content. A plugin that writes static head tags is far less work. Google runs JavaScript, so it can still read the page body. This draft proposes the smaller tier.
 
 ## Why this change
 
-A search engine drops everything after `#` in an address. The site uses `HashRouter`. So every note has the same address to a crawler: the home page. The 32 notes cannot show up in search. A link preview on LinkedIn also shows the home page card for every note (see the open question already recorded above on per-article previews). `https://sakethv7.github.io/sakethai-portfoliogen/sitemap.xml` returns 404 today. Every page has the same `<title>`.
+A search engine drops everything after `#` in an address. The site uses `HashRouter`. So every note has the same address to a crawler: the home page. Search cannot list the 32 notes as separate pages. A link preview on LinkedIn also shows the home page card for every note (see the open question already recorded above on per-article previews). `https://sakethv7.github.io/sakethai-portfoliogen/sitemap.xml` returns 404 today. Every page has the same `<title>`.
 
 ADR-007 kept `HashRouter` "unless the deployment target is changed and configured for SPA rewrites". ADR-043 listed path routing as "a separate, larger decision". This change is that decision.
 
@@ -897,24 +895,28 @@ GitHub Pages serves a file for `/writing/<slug>/` when `writing/<slug>/index.htm
 ## Data flow
 
 1. `vite build` writes `dist/index.html` and the JavaScript and CSS files, as today.
-2. `scripts/prerender.ts` imports the data files and builds the route list: `/`, `/work/`, `/experience/`, `/writing/`, `/resume/`, and one route per work item with a case study, per experience study, and per published note.
+2. The plugin loads `src/data/portfolio.ts` and `src/data/experience.ts` through Vite's own module loader. It does not load `src/data/proof.ts`, which reads `import.meta.env.DEV`. It builds the route list: `/`, `/work/`, `/experience/`, `/writing/`, `/resume/`, `/research/`, one route per work item with a `caseStudy`, one per experience study, and one per record with `status: 'Published'`. Planned and in-progress records get no route.
 3. For each route it copies `dist/index.html` and replaces the head tags (title, description, canonical, `og:*`, `twitter:*`).
-4. For a published note it also renders the Markdown with the same `marked` setup as `src/lib/article.ts` and puts the HTML inside `<div id="root">`. The client uses `createRoot`, so React replaces this content when it starts.
-5. It writes `sitemap.xml`, adds a `Sitemap:` line to `robots.txt`, and copies `index.html` to `404.html`.
-6. It checks that every route has a file. If one is missing, it exits with code 1.
+4. It checks that each route that has a Markdown body (notes, case studies, experience studies) has its file in `src/content/`. A missing file is an error.
+5. It writes `sitemap.xml`, adds a `Sitemap:` line to `robots.txt`, and writes `404.html` as a copy of `index.html` with `<meta name="robots" content="noindex">`.
+6. It checks that every route has a file. If one is missing, it fails the build.
+
+The static files hold head tags only. The body of a note still comes from React. This was a review change: see ADR-047, option C, and "Deferred" below.
 
 ## Boundaries
 
-The script reads only files in the repo. It never calls the network. It never touches `src/` at run time. The React app does not know the script exists. The one contract between them is the data files (`api.md`).
+The plugin reads only files in the repo. It never calls the network. The React app does not know the plugin exists. The one contract between them is the data files (`api.md`). The plugin takes the base path from the Vite config, so `vite build` and `vite build --mode development` both give correct paths.
 
 ## Old links
 
-People have shared `/#/writing/<slug>` links. A small inline script in `index.html` runs before React. If the address has a hash that starts with `#/`, it calls `history.replaceState` to the matching real path. The old links keep working. A search engine never sees them, because it ignores the hash.
+People have shared `/#/writing/<slug>` links. A small inline script in `index.html` runs before React. If the address has a hash that starts with `#/`, it calls `history.replaceState` to the matching real path. The old links keep working in a browser. A search engine never sees them, because it ignores the hash.
+
+**Links inside notes.** 28 note files contain links such as `](#/writing/<slug>)`. The heading links built by `src/lib/article.ts` also start with `#`. Under `BrowserRouter` such a link only changes the hash and does not change the page. The inline script runs once at load, not on a click. So two changes are part of this work: the Markdown renderer rewrites `#/<path>` to `<base><path>/`, and a click handler on the note body sends same-site links to the router (`navigate()`), so there is no full page reload. A test checks that no `#/` remains in rendered note HTML. The stale `HashRouter` comments in `App.tsx` and `article.ts` are updated in the same change.
 
 ## The Writing page (ADR-049)
 
 - Series chapters keep their own tags, and the chapter rows show them.
-- A tag becomes a link to `/writing/?tag=<name>`. The list filters to notes with that tag. This sits beside the existing `?kind=` filter. The two filters combine.
+- A tag becomes a link to `/writing/?tag=<name>`, with the name URL-encoded (`encodeURIComponent`), because tags such as "CI/CD" and "Web Bot Auth" hold slashes and spaces. The list filters to notes with that tag. This sits beside the existing `?kind=` filter. The two filters combine. While a tag filter is active, series cards are not shown. Each matching note, including a series chapter, shows as its own card.
 - A "Start here" row shows up to three pinned notes above the list. A note is pinned when its record has a `pin` number.
 
 ## Copy (ADR-050)
@@ -923,18 +925,43 @@ For the pinned notes, the `plain` sentence states the result. Saketh approves ea
 
 ## Deployment shape
 
-The GitHub Actions workflow already runs `npm run build`. The `build` script changes to `vite build && tsx scripts/prerender.ts`. This adds one dev dependency, `tsx`. The upload step is unchanged. If the script fails, the workflow stops before upload, and the old site stays live.
+The GitHub Actions workflow already runs `npm run build`. The plugin runs inside that build, so the workflow file does not change. No new dependency is added. If the plugin fails, the workflow stops before upload, and the old site stays live.
 
 ## Unchanged
 
 Visual design, the tag pills, the reading aids (ADR-042 to ADR-046), the `?section=` links, and the dark-only theme.
 
+## Deferred: static note text
+
+The first draft also put the rendered note text inside `<div id="root">`. The review found three problems. The note title and plain sentence come from React, so the static text had no H1. The static markup had no wrapper classes, so it showed unstyled. And `createRoot` clears `#root` while two lazy chunks load, so a reader would see a blank or half page, not only a short flash. The text helps only crawlers that do not run JavaScript, and Google runs it. So this revision leaves the note text out. If search data later shows a need, it becomes a new ADR with the exact markup and a no-flash plan.
+
 ## Open questions
 
-1. **`tsx` or Node 22.** The workflow uses Node 20, which cannot run TypeScript directly. Choice: add the `tsx` dev dependency, or raise the workflow to Node 22. This draft assumes `tsx`.
-2. **Flash on load.** `createRoot` replaces the static note text. A reader may see the plain text for a moment before the styled page appears. The alternative is `hydrateRoot`, which needs identical markup and logs warnings on any difference. This draft assumes `createRoot`.
+1. **Vite plugin or a separate script.** This revision uses a Vite plugin (the `closeBundle` hook). That avoids a new dependency and a Node 22 upgrade. Risk: loading `portfolio.ts` through Vite's loader during the build needs a test on the first build. If it fails, fall back to a `tsx` script.
+2. **Sitemap discovery.** Crawlers read `robots.txt` only at the host root, `https://sakethv7.github.io/robots.txt`. That file belongs to a different repo (the user site). The `Sitemap:` line in this site's `robots.txt` may be ignored. So send `sitemap.xml` to Google Search Console and Bing Webmaster Tools by hand. Saketh must do this.
+3. **Trailing slash.** GitHub Pages normally sends a 301 from `/writing/<slug>` to `/writing/<slug>/` and keeps the query. Internal `<Link>` values have no trailing slash, and the canonical address has one. Both work. I have not tested the redirect on this host.
 3. **Which three notes to pin.** Proposal: the System 1 guard note, "Calibrate the judge before you trust the score", and "Evaluating retrieval failures separately from generation failures". Saketh decides.
 4. **Read time on list cards.** The cards would need the word count of every note at list time. That needs either a pre-build step or loading all notes into the list page. This draft leaves it out. Say so if you want it.
 5. **Light theme.** Not in this change. It needs new color tokens and a check of every page, so it needs its own ADR. Say so if you want it next.
 6. **Share image.** One `og-image.png` (1200 by 630) serves every page. A per-note image is a separate change. I have not yet looked at whether the current image is a good preview.
 7. **Code against docs.** `architecture.md` line 410 says per-article previews need real paths or pre-rendered HTML. This change does both. After it ships, that paragraph must change.
+
+## Review 1 (2026-11-19)
+
+An independent reviewer read the first draft against the code. Findings and what changed:
+
+| # | Finding | Change |
+|---|---|---|
+| 1 | In-note `#/` links and heading links break under `BrowserRouter` | Link rewrite, click handler and a test added (see "Old links") |
+| 2 | Static note body had no H1 and no styles | Static body removed (see "Deferred") |
+| 3 | The load flash is worse than a moment | Same removal |
+| 4 | `/research` has no file, so it returns 404 before the redirect | `/research/` added to the route table |
+| 5 | The `Sitemap:` line may be ignored | Open question 2, manual submit |
+| 6 | Trailing slash behavior untested | Open question 3 |
+| 7 | Route table did not match code (`caseStudy`, Markdown checks, 404 `noindex`, base path, `proof.ts`, Planned items) | Route table, plugin loading and checks fixed |
+| 8 | Tag edge cases: encoding, series cards, pinned chapters, counts | Fixed in ADR-049 and Path 5. Counts are now 97 pills on 32 notes, 47 different tags. |
+| 9 | Rules: explainer missing paths, ADR-007 still Accepted, word count | Explainer text fixed. ADR-007 marked superseded. ADR-050 sentence is 24 words. |
+| 10 | A simpler path exists: head-only files, no `tsx` | Adopted |
+| 11 | Prose too dense in places | Several sentences split |
+
+Not checked by the reviewer, and not checked by me: GitHub Pages redirect and 404 behavior on this exact host. Both must be tested after the first deploy.

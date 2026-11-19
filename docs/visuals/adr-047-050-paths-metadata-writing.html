@@ -43,7 +43,7 @@
 <body>
 <main>
   <h1>ADR-047 to 050: real addresses and search tags</h1>
-  <p>Read from the top. A push builds the site. A script now writes one HTML file per page. Then a reader or a crawler asks for an address. Blue steps are new. Red steps are failures.</p>
+  <p>Read from the top. A push builds the site. A plugin now writes one HTML file per page, with its own title and preview tags. Then a reader or a crawler asks for an address. Blue steps are new. Red steps are failures.</p>
   <div class="key">
     <span class="k-grey"><i></i>Exists today</span>
     <span class="k-blue"><i></i>New or changed</span>
@@ -58,15 +58,15 @@
     <rect class="box grey" x="150" y="20" width="300" height="44" rx="8"/><text x="300" y="47">Push to the main branch</text>
     <rect class="box grey" x="150" y="100" width="300" height="44" rx="8"/><text x="300" y="127">Workflow runs npm ci and npm run build</text>
     <rect class="box grey" x="150" y="180" width="300" height="44" rx="8"/><text x="300" y="207">Vite builds the app into dist</text>
-    <rect class="box blue" x="150" y="260" width="300" height="44" rx="8"/><text x="300" y="287">Script lists every route from the data</text>
-    <polygon class="box blue" points="300,340 450,375 300,410 150,375"/><text x="300" y="380">Notes and tags valid?</text>
+    <rect class="box blue" x="150" y="260" width="300" height="44" rx="8"/><text x="300" y="287">Plugin lists every route from the data</text>
+    <polygon class="box blue" points="300,340 450,375 300,410 150,375"/><text x="300" y="380">Data and notes valid?</text>
     <rect class="box blue" x="150" y="446" width="300" height="44" rx="8"/><text x="300" y="473">Write one HTML file per route</text>
     <rect class="box blue" x="150" y="526" width="300" height="44" rx="8"/><text x="300" y="553">Write sitemap, robots line, 404.html</text>
     <rect class="box grey" x="150" y="606" width="300" height="44" rx="8"/><text x="300" y="633">Upload dist to GitHub Pages</text>
     <rect class="box grey" x="150" y="686" width="300" height="44" rx="8"/><text x="300" y="713">Reader or crawler asks for an address</text>
     <polygon class="box blue" points="300,766 450,801 300,836 150,801"/><text x="300" y="806">File for this path?</text>
     <rect class="box blue" x="150" y="872" width="300" height="44" rx="8"/><text x="300" y="899">Send that file, status 200</text>
-    <rect class="box blue" x="150" y="952" width="300" height="44" rx="8"/><text x="300" y="979">React starts over the note text</text>
+    <rect class="box blue" x="150" y="952" width="300" height="44" rx="8"/><text x="300" y="979">React renders the page</text>
 
     <!-- failure column, cx=620 -->
     <rect class="box red" x="490" y="353" width="260" height="44" rx="8"/><text x="620" y="380">Exit 1, workflow stops</text>
@@ -93,7 +93,7 @@
     <line class="edge" x1="450" y1="801" x2="488" y2="801" marker-end="url(#a)"/><text class="lbl" x="469" y="793">no</text>
     <line class="edge" x1="620" y1="823" x2="620" y2="857" marker-end="url(#a)"/>
   </svg>
-  <p>Two things level 2 leaves out. First, the build already ends in an upload today, and a failed check now stops the workflow before it, so a bad data file never reaches the live site. Second, a failed script and an unknown address are different failures. The first keeps the old site. The second serves the 404 page with a true 404 status, so search engines drop it.</p>
+  <p>Three things level 2 leaves out. First, the build already ends in an upload today, and a failed check now stops the workflow before it, so a bad data file never reaches the live site. Second, a failed script and an unknown address are different failures. The first keeps the old site. The second serves the 404 page with a true 404 status and a noindex tag, so search engines drop it. Third, an old address with a hash is rewritten in the browser only. A crawler never runs that step, so it still sees the home page for old links.</p>
 </main>
 </body>
 </html>
