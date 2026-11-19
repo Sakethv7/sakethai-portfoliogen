@@ -828,3 +828,25 @@ There are no retries and no loading states. The data is static.
 ### State transitions
 
 None. The home page has no state beyond the theme (ADR-051).
+
+## Stack chips on home cards (ADR-059, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Draw a home card] --> B[Draw the scope line or plain line]
+    B --> C{Does the record have stack?}
+    C -- yes --> D[Draw one chip per entry]
+    C -- no --> E[Skip the chip row]
+    D --> F[Draw the links row]
+    E --> F
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class C,D new
+    class E fail
+```
+
+*Caption: green is new. Red is the fallback. The scope line and links row exist today.*
+
+The chip row sits between the scope line (or the diagram, on research cards) and the links row. There is no state and no failure beyond a missing field. A list over the limits fails `npm test`.

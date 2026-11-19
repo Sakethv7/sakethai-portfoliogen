@@ -17,6 +17,12 @@ const noteDiagrams: Record<string, NonNullable<WorkItem['diagram']>> = {
   'retrieval-vs-generation-failures': { src: 'diagrams/retrieval-vs-generation.svg', alt: 'Four outcomes from two questions: was the context good, and was the answer good. Each bad pair points to retrieval or generation', width: 900, height: 700 },
 };
 
+// Tools, services and methods named in the note or repository (ADR-059).
+function StackRow({ stack }: { stack?: string[] }) {
+  if (!stack?.length) return null;
+  return <ul className="stack-row" aria-label="Tools and methods">{stack.map((name) => <li key={name}>{name}</li>)}</ul>;
+}
+
 function Thumb({ diagram }: { diagram: NonNullable<WorkItem['diagram']> }) {
   return <img className="card-diagram" src={`${base}${diagram.src}`} alt={diagram.alt} width={diagram.width} height={diagram.height} loading="lazy" />;
 }
@@ -86,6 +92,7 @@ const Index = () => {
           {item.evidenceStatus && <p className="evidence-status">{item.evidenceStatus}</p>}<h3>{item.title}</h3><p className="plain-line">{item.plain}</p>
           {item.diagram && <Thumb diagram={item.diagram} />}
           <p className="for-engineers"><span>Technical scope</span>{item.summary}</p>
+          <StackRow stack={item.stack} />
           {item.results && item.proofLink?.href && <figure className="results-block">
             <figcaption><a href={item.proofLink.href} target="_blank" rel="noreferrer">From FINDINGS.md <ExternalLink /></a></figcaption>
             {/* Each line is "label   values". The label gets its own column so the values can wrap in a narrow card. */}
@@ -113,6 +120,7 @@ const Index = () => {
         {research.map((item) => <article className="featured-card" key={item!.slug}>
           <p className="evidence-status">{item!.kind} · {item!.date}</p><h3>{item!.title}</h3><p className="plain-line">{item!.plain}</p>
           {noteDiagrams[item!.slug] && <Thumb diagram={noteDiagrams[item!.slug]} />}
+          <StackRow stack={item!.stack} />
           <div className="card-links"><Link to={`/writing/${item!.slug}`}><ArrowRight /> Read the note</Link></div>
         </article>)}
       </div>
