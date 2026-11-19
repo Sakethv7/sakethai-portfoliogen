@@ -905,3 +905,193 @@ The `?section=` value, the reading aids, and the tag pill look (ADR-042 to ADR-0
 1. The home page `#contact` link logic (api.md, "Get in touch") stopped being needed once routing leaves the hash. Leave it as is, or remove it. This draft leaves it.
 2. The `plain` sentence for the four GEO records is over 160 characters. Warn, or shorten them in this change.
 3. `Collection.tsx` shows Planned items when `import.meta.env.DEV` is true. The plugin ignores them, so a Planned item has a card in dev and no page in production.
+
+## Theme contract (ADR-051, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Storage key theme] --> B[Inline script]
+    A --> C[ThemeProvider]
+    B --> D[Class on html]
+    C --> D
+    D --> E{Class is dark?}
+    E -- yes --> F[dark token block applies]
+    E -- no --> G[root token block applies]
+    H[ThemeToggle] --> C
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class A,B,C,D,E,F,G,H new
+```
+
+*Caption: green is new. The contract has one shared key and one shared class. Every other piece reads one of them.*
+
+### Shared state
+
+| Name | Type | Values | Owner |
+|---|---|---|---|
+| `localStorage["theme"]` | string | `"light"`, `"dark"`. Any other value or no value means "no choice". | Written by `next-themes`. Read by the script and the provider. |
+| `html` class | string | `"light"` or `"dark"`. | Set by the script first, then by `next-themes`. |
+
+Invariant: after the script runs, the `html` class is always one of the two values. The `dark` class selects the `.dark` token block. Any other class selects the `:root` block.
+
+### Provider
+
+```tsx
+<ThemeProvider attribute="class" defaultTheme="system" storageKey="theme" enableSystem disableTransitionOnChange>
+```
+
+`defaultTheme` follows open question 1 in `architecture.md`. `disableTransitionOnChange` stops a half-second color fade on every element during a swap.
+
+### Component
+
+```ts
+// src/components/ThemeToggle.tsx
+export default function ThemeToggle(): JSX.Element
+```
+
+Takes no props. Renders one `<button type="button">`. Its `aria-label` names the action: "Switch to light theme" when dark, "Switch to dark theme" when light. Before `next-themes` knows the theme (first client render), it renders a button of the same size with no icon, so the header does not shift.
+
+### Tokens
+
+Same names as today. Dark values do not change. Light values below are targets, checked by the contrast test.
+
+| Token | Dark (today) | Light (proposed) |
+|---|---|---|
+| `--background` | `222 33% 5%` | `40 25% 97%` |
+| `--foreground` | `42 20% 92%` | `222 33% 10%` |
+| `--card`, `--popover` | `222 25% 8%` | `0 0% 100%` |
+| `--card-foreground`, `--popover-foreground` | `42 20% 92%` | `222 33% 10%` |
+| `--primary`, `--ring` | `263 74% 70%` | `263 60% 45%` |
+| `--primary-foreground` | `222 33% 5%` | `0 0% 100%` |
+| `--secondary`, `--muted` | `222 18% 13%` | `40 15% 92%` |
+| `--secondary-foreground` | `42 20% 92%` | `222 33% 10%` |
+| `--muted-foreground` | `218 12% 65%` | `220 10% 38%` |
+| `--accent` | `186 55% 55%` | `186 70% 28%` |
+| `--accent-foreground` | `222 33% 5%` | `0 0% 100%` |
+| `--destructive` | `0 70% 50%` | `0 72% 45%` |
+| `--destructive-foreground` | `42 20% 92%` | `0 0% 100%` |
+| `--border`, `--input` | `220 14% 18%` | `40 10% 84%` |
+
+New in each block: `color-scheme: light` (in `:root`) and `color-scheme: dark` (in `.dark`). This makes scrollbars and form controls match.
+
+### Contrast test
+
+File: `tests/themeContrast.test.ts`. It reads both token blocks from `src/index.css`.
+
+| Check | Minimum ratio |
+|---|---|
+| `foreground` on `background`, `card`, `secondary` | 4.5 |
+| `muted-foreground` on `background`, `card`, `secondary` | 4.5 |
+| `primary` on `background` and `card` (used as link and label text) | 4.5 |
+| `primary-foreground` on `primary` | 4.5 |
+| `accent-foreground` on `accent` | 4.5 |
+| `destructive-foreground` on `destructive` | 4.5 |
+
+Error shape: the test names the theme, the token pair and the measured ratio.
+
+### Unchanged
+
+Route addresses, head tags, the sitemap, the page-title hook, and every content API.
+
+### Open contract questions
+
+1. Whether `--code-bg` and `--code-fg` become new tokens (architecture open question 3).
+2. Whether the pair `primary` on `secondary` also needs a check. Some tags use that pair.
+
+## Home page thread contracts (ADR-053 to ADR-058, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[WorkItem record] --> B{Has diagram?}
+    B -- yes --> C[Thumbnail on the home card]
+    B -- no --> D[Card without thumbnail]
+    A --> E{Has proofLink?}
+    E -- yes --> F[Extra link in the links row]
+    A --> G{Has results?}
+    G -- yes --> H[Monospace results block]
+    I[StackRung record] --> J{Has to?}
+    J -- yes --> K[Linked rung, checked by test]
+    J -- no --> L[Text rung marked learning]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F,G,H,I,J,K,L new
+    class D fail
+```
+
+*Caption: green is new. Red is the fallback when a field is absent, and the card still draws. `WorkItem` exists today. The three fields and `StackRung` are new.*
+
+### Type changes in `src/data/portfolio.ts`
+
+```ts
+export interface WorkItem {
+  // ...existing fields unchanged
+  diagram?: { src: string; alt: string; width: number; height: number }; // src is relative to BASE_URL, e.g. 'diagrams/system-overview.svg'
+  proofLink?: { label: string; to?: string; href?: string };            // exactly one of to or href
+  results?: string[];                                                    // 1 to 4 lines, each 80 characters or fewer
+}
+```
+
+`width` and `height` come from the SVG `viewBox`, so the browser reserves space and the page does not shift.
+
+### Record changes
+
+| Record | Field | Value |
+|---|---|---|
+| `geo-agent-bench` | `diagram` | `diagrams/system-overview.svg`, 1000 × 660 |
+| `geo-agent-bench` | `proofLink` | `{ label: 'Findings', href: 'https://github.com/Sakethv7/geo-agent-bench/blob/master/FINDINGS.md' }` |
+| `geo-agent-bench` | `results` | The four lines in ADR-058 |
+| `geo-agent-bench` | `summary` | The scope line in ADR-056 |
+| `sakethwiki` | `diagram` | `diagrams/sakethwiki-two-paths.svg`, 900 × 650 |
+| `sakethwiki` | `proofLink` | `{ label: 'System design', to: '/writing/sakethwiki-system-design' }` |
+| `sakethwiki` | `plain` | The plain line in ADR-056 |
+| `lekhni` | `featured` | `true` |
+| `lekhni` | `github` | `https://github.com/Sakethv7/lekhni-app` |
+| `lekhni` | `diagram` | `diagrams/lekhni-recording-path.svg`, 900 × 740 |
+| `lekhni` | `plain` | The plain line in ADR-056 |
+| `sdlc-intelligence-agent` | `featured` | removed |
+
+Lekhni keeps `private: true`, because its main repository is private. Its `github` link goes to `lekhni-app`, a local LLM meeting-notes taker, and the label stays "Repository". The card link code needs no change for this.
+
+### New records in `src/data/proof.ts`
+
+```ts
+export interface StackRung {
+  layer: 'Product' | 'Agents' | 'Models' | 'Runtimes' | 'Network' | 'Hardware';
+  work: string;               // 8 words or fewer
+  to?: string;                // an internal route; absent means nothing is published yet
+  mark?: 'depth today' | 'learning';
+}
+export const stackLadder: StackRung[]; // the six rows in ADR-054, top to bottom
+export const homeRoleLine: string;     // the J&J row sentence in ADR-055
+```
+
+The proof card text in `productionCard`, `researchCard` and `appCard` changes to the copy in ADR-055. Their shape (`ProofCard`) does not change.
+
+### Note diagrams for the research block
+
+```ts
+// src/pages/Index.tsx, local to the home page
+const noteDiagrams: Record<string, WorkItem['diagram']>; // keyed by publication slug
+```
+
+Keys: `system-one-guard-for-rag` → `system-one-guard-flow.svg` (900 × 690), `calibrate-your-llm-judge` → `judge-calibration-loop.svg` (900 × 960), `retrieval-vs-generation-failures` → `retrieval-vs-generation.svg` (900 × 700). It is local because only the home page uses it. If a second page needs it, it moves to `PublicationItem`.
+
+### Invariants
+
+1. Every `StackRung.to` resolves to a published publication, a work record or an experience case study. A test checks this.
+2. Exactly one rung has `mark: 'depth today'`, and it is the first. The last rung has `mark: 'learning'` and no `to`.
+3. Every `diagram.src` names a file that exists in `public/`. A test checks this.
+4. Each `results` line is 80 characters or fewer. A test checks this.
+5. At most three work records have `featured: true`.
+6. No home copy names an internal system or team (copy rule 5).
+
+### Unchanged
+
+`ProofCard`, `PublicationItem`, `ActivityItem`, the routes, and the head tags of every page except home.
+
+### Open contract questions
+
+1. Should `results` move into the GEO repository as a JSON file the site reads at build time? That removes the second copy (ADR-058, given up item 1). It also adds a build-time network fetch. Proposal: not now.

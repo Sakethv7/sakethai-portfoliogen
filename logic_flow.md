@@ -703,3 +703,128 @@ Failure behavior: a link that no route matches shows the Not found page. A test 
 ## State transitions
 
 The only state is the address. There is no stored state, so there is nothing to migrate.
+
+## Theme: first paint and toggle (ADR-051, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Browser loads the page] --> B{Is JavaScript on?}
+    B -- no --> C[Show light tokens]
+    B -- yes --> D[Script reads saved choice]
+    D --> E{Value is light or dark?}
+    E -- yes --> G[Set class on html]
+    E -- no or storage error --> F[Read system setting]
+    F --> G
+    G --> H[Page paints]
+    H --> I[Reader clicks toggle]
+    I --> J[Swap class and try to save]
+    J --> K{Save worked?}
+    K -- yes --> L[Choice kept for next visit]
+    K -- no --> M[Choice lasts this visit only]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class D,E,F,G,I,J,K,L new
+    class C,M fail
+```
+
+*Caption: green is new, red is where the feature degrades. Today none of these steps exist. The page always shows dark.*
+
+### Path A: first paint
+
+1. The browser reads `index.html`. The inline script runs in `<head>`, before the body.
+2. The script reads `localStorage.theme` inside a `try` block.
+3. If the value is exactly `light` or `dark`, the script uses it.
+4. Otherwise the script calls `matchMedia("(prefers-color-scheme: dark)")`. A match gives `dark`. No match gives `light`.
+5. The script sets `document.documentElement.className` to the result.
+6. The body paints with the tokens of that class.
+7. React starts. `ThemeProvider` reads the same class and storage key. It makes no visible change.
+
+### Path B: the reader clicks the toggle
+
+1. `ThemeToggle` calls `setTheme` with the opposite theme.
+2. `next-themes` swaps the class on `<html>` and writes `theme` to `localStorage`.
+3. The browser repaints. Every token user changes color at once.
+4. The Sonner toast theme follows, because it reads the same value.
+
+### Failure paths
+
+| Failure | What happens | End state |
+|---|---|---|
+| `localStorage` throws (private mode, blocked data) | The script catches it and uses the system setting. A click still swaps the class. The write fails quietly. | Works for this visit. Choice is lost on reload. |
+| Saved value is not `light` or `dark` | The script ignores it. | System setting applies. |
+| JavaScript off | No class is set. | Light tokens show. Text stays readable. The toggle does not render. |
+| Inline script has a syntax error | The class stays unset. React starts and `next-themes` sets it. | A flash of the wrong theme. Pages still work. |
+| System setting changes while the page is open | No change. The page does not listen after first paint. | The reader's next visit follows the new setting, unless a choice is saved. |
+
+### State transitions
+
+| From | Event | To |
+|---|---|---|
+| no choice, system dark | page load | dark (not saved) |
+| no choice, system light | page load | light (not saved) |
+| any | click toggle | opposite theme (saved if storage works) |
+| saved choice | page load | saved choice, whatever the system says |
+
+No choice is ever cleared by the site. The reader clears it by clearing site data.
+
+## Home page thread (ADR-053 to ADR-058, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build the home page from static records] --> B[Draw hero copy and the stack ladder]
+    B --> C[Make each proof card from its source record]
+    C --> D{Is the source record there?}
+    D -- no --> E[Drop that card and warn in dev]
+    D -- yes --> F[Draw the card]
+    F --> G[Draw featured cards with optional diagram, links and results]
+    G --> H[Draw the published evaluation notes]
+    H --> I[Draw contact]
+    J[npm test] --> K{Do ladder links and card fields resolve?}
+    K -- no --> L[Test fails, the build does not ship]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,G,H,J,K new
+    class E,L fail
+```
+
+*Caption: green is new or changed. Red is a failure path. The drop-if-missing rule for proof cards exists today (ADR-032) and does not change.*
+
+### Home render path (replaces the ADR-035 version above after approval)
+
+1. Draw the eyebrow "AI Evaluation & Data Engineer", the role line and the two hero paragraphs.
+2. Draw `stackLadder` as an ordered list, top layer first. A rung with `to` renders a link. A rung without `to` renders text and its "learning" label.
+3. Make each proof card from its source record: production, research, app. Drop a card whose record is missing, and warn in dev (no change).
+4. Draw the first three résumé experiences. The current role shows the fixed home sentence, not `caseStudy.plain`.
+5. Take `work` records with `featured: true`, at most three, in data order.
+6. For each card, draw the status label, the title, the plain line, then `diagram` if present, then the scope line.
+7. If `results` is present, draw the monospace block with the title "From FINDINGS.md", linked to `proofLink.href`.
+8. Draw the links row in this order: `github`, `proofLink`, case study. Leave out each missing one.
+9. Draw the research block (next section), then contact. Do not draw the shipped list.
+
+### Home Research selection (replaces the ADR-035 version above after approval)
+
+1. Look up `system-one-guard-for-rag`, `calibrate-your-llm-judge` and `retrieval-vs-generation-failures` in `publications`, in that order.
+2. Keep each one whose status is `Published`. Leave out the others.
+3. Draw each card from its record: kind, date, title, plain line. Draw its diagram from the `noteDiagrams` map (`api.md`).
+4. Link the section to `/writing?kind=research`.
+
+### Failure behavior
+
+| Event | Result | Who notices |
+|---|---|---|
+| A ladder `to` points to a missing or unpublished record | The new test fails | The author, at `npm test` |
+| A featured record has no `diagram` | The card draws without a thumbnail | Nobody needs to |
+| A diagram file is missing from `public/diagrams/` | The browser shows a broken image | The author, in the browser check. The new test also checks the file exists. |
+| `FINDINGS.md` changes upstream | The home block shows old numbers | The author, at review. Nothing checks this automatically. |
+| A selected evaluation note is unpublished | Its card is left out | Nobody needs to |
+| More than three records have `featured: true` | Only the first three draw | The author, at review |
+
+There are no retries and no loading states. The data is static.
+
+### State transitions
+
+None. The home page has no state beyond the theme (ADR-051).

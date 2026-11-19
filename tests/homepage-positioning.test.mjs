@@ -8,27 +8,28 @@ async function read(path) {
   return readFile(new URL(path, root), 'utf8');
 }
 
-test('homepage names the target role and recruiter stack without replacing the AI systems headline', async () => {
+test('homepage names the role applied for and keeps the recruiter stack line (ADR-053)', async () => {
   const homepage = await read('src/pages/Index.tsx');
 
-  assert.match(homepage, /Applied AI Systems Engineer/);
+  assert.match(homepage, /AI Evaluation & Data Engineer/);
+  assert.doesNotMatch(homepage, /Applied AI Systems Engineer/);
   assert.match(homepage, /Data scientist building production AI evaluation and data systems/);
   assert.match(homepage, /Python, SQL, PySpark, AWS/);
 });
 
-test('homepage reuses the current experience case-study evidence instead of duplicating a metric', async () => {
+test('the 140,000 figure shows in the hero only, and the current role uses its home sentence (ADR-055)', async () => {
   const homepage = await read('src/pages/Index.tsx');
+  const proof = await read('src/data/proof.ts');
 
-  assert.match(homepage, /item\.current && item\.caseStudy/);
-  assert.match(homepage, /item\.caseStudy\.plain/);
-  assert.doesNotMatch(homepage, /140,000 internal users · thousands of queries/);
+  assert.equal(homepage.match(/140,000/g)?.length, 1);
+  assert.doesNotMatch(proof, /claim: '[^']*140,000|evidence: '[^']*140,000/);
+  assert.match(homepage, /item\.current && <p className="experience-preview-evidence">\{homeRoleLine\}/);
+  assert.doesNotMatch(homepage, /item\.caseStudy\.plain/);
 });
 
-test('non-GEO activity is labelled as work outside the research section', async () => {
+test('the shipped list is gone from home (ADR-057)', async () => {
   const homepage = await read('src/pages/Index.tsx');
 
-  assert.match(homepage, /item\.series !== 'GEO agent benchmark'/);
-  assert.match(homepage, /Outside this research/);
-  assert.match(homepage, /Other work shipped/);
-  assert.doesNotMatch(homepage, />Recent activity</);
+  assert.doesNotMatch(homepage, /Other work shipped/);
+  assert.doesNotMatch(homepage, /activity-list/);
 });

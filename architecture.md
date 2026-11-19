@@ -965,3 +965,118 @@ An independent reviewer read the first draft against the code. Findings and what
 | 11 | Prose too dense in places | Several sentences split |
 
 Not checked by the reviewer, and not checked by me: GitHub Pages redirect and 404 behavior on this exact host. Both must be tested after the first deploy.
+
+## Light and dark theme (ADR-051, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[index.html with inline script] --> B[Script sets theme class on html]
+    B --> C[CSS tokens in root or dark block]
+    C --> D[Components read tokens]
+    E[ThemeProvider reads same class] --> F[Header toggle]
+    F --> G{Can storage save the choice?}
+    G -- yes --> H[Save choice and swap class]
+    G -- no --> I[Swap class for this visit only]
+    H --> C
+    I --> C
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,E,F,G,H new
+    class I fail
+```
+
+*Caption: green is new or changed, red is the failure path. The pages, the tokens and the components exist today. The script, the provider, the toggle and the light token values are new.*
+
+**Complexity tier: single script (a static site).** The theme is a client-side display state. It needs no service, no server and no build step beyond today's. A higher tier would add nothing, so I did not propose one.
+
+**What a token is.** A token is a named CSS variable such as `--background`. Each component says "use `--background`" and does not say which color. The page can then swap every color by changing the variable values. This site already works this way. Almost every color in `src/index.css` is a token. That is why the change is small.
+
+**How the switch works.** The page root (`<html>`) holds a class. No class, or `light`, means the light values in `:root` apply. The class `dark` means the values in the `.dark` block apply. The browser repaints every token user at once. The inline script sets the class before the first paint. `next-themes` then takes over the class when React starts. Both use the storage key `theme`, so they agree.
+
+**Why the inline script is needed.** React starts after the browser has already painted the HTML. Without the script, a dark-mode reader would see a light page for a moment, then a dark page. This is a flash of the wrong theme. The script runs first, so the first paint is correct.
+
+**Parts touched.**
+
+| Part | Change |
+|---|---|
+| `src/index.css` | Move current values to `.dark`. Add light values to `:root`. Add `color-scheme` to each. |
+| `index.html` | Add the inline script. All 43 route files copy it (ADR-047). |
+| `src/App.tsx` | Wrap the app in `ThemeProvider`. |
+| `src/components/ThemeToggle.tsx` | New. One button. |
+| `src/components/Navigation.tsx` | Render the toggle in the header. |
+| `src/components/ui/sonner.tsx` | No change. It already reads the `next-themes` value. |
+| `tests/` | New contrast test over both token sets. |
+
+**Parts not touched, and why.** `public/diagrams/*.svg` (17 files) keep their own dark fills. They load as images, so page CSS cannot reach them. `public/og-image.png` stays dark. A share preview cannot follow a reader's theme. `ParticleBackground.tsx` has three fixed colors, but no file imports it, so it does not run.
+
+**Code against docs.** `architecture.md` line 945 (open question 5 of ADR-047 to 050) says light theme needs its own ADR. This section and ADR-051 answer it. After the change ships, update that line.
+
+### Open questions (ADR-051)
+
+1. **Default theme.** Resolved 2026-11-19: follow the system. A reader on a light computer sees light.
+2. **Diagrams on a light page.** Proposal: leave all 17 dark. Alternative: redraw them with a media query inside each SVG (follows the system only, not the toggle) or inline them so tokens apply (large change, its own ADR). Saketh decides.
+3. **Code blocks.** `.article-body pre` uses `--secondary` as its background. In the light theme that turns light. Proposal: add fixed `--code-*` tokens so code blocks stay dark in both themes. I have not checked whether notes use syntax colors.
+4. **Light palette.** The values in `api.md` are my proposal. They are targets for the contrast test, not a finished design. Saketh should look at them in the browser before approval of the build.
+5. **`theme-color` meta and the share image.** Not in this change. Both stay as they are.
+6. **Pre-render check.** I have not confirmed that the route-file plugin copies the inline script into every file. The build test must check one route file.
+7. **Mobile header.** At 375 px the header is a three-column grid. I have not checked whether a toggle fits without a sideways scroll.
+
+## Home page thread (ADR-053 to ADR-058, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Hero: role, now, next] --> B[Stack ladder: six layers]
+    A --> C[Three proof cards: data, security finding, app]
+    C --> D[Experience row: role scope]
+    D --> E[Featured: GEO, SakethWiki, Lekhni with diagrams]
+    E --> F[GEO results block from FINDINGS.md]
+    F --> G[Research: three evaluation notes]
+    G --> H[Contact]
+    I[Shipped list] --> J{Still on home?}
+    J -- no --> K[Removed from home, data kept]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,F,G new
+    class K fail
+```
+
+*Caption: green is new or changed. Red is the section that leaves the home page. Contact exists today and does not change. The full page with today's steps and each failure path is in [adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html).*
+
+**Complexity tier: single script (a static site).** This is a copy and layout change on one page. All content comes from static TypeScript records at build time. It needs no server, no fetch and no new build step. A higher tier would add nothing.
+
+**Why this change.** The home page lists true facts but no thread. Saketh set the thread on 2026-11-19. Now, he finds why AI fails, as a data engineer and data scientist. Next, he goes down the stack. He applies for AI evaluation and data roles, so "now" leads. The ADRs in `adr.md` hold each decision and what it gives up.
+
+**What "one fact, one place" means.** Each fact on the page has one section that owns it. Other sections show a different fact. Today "140,000 employees" shows in the hero, a proof card and the experience row. After the change it shows in the hero only. The table in ADR-055 lists the owner of each fact.
+
+**What the stack ladder is.** It is an ordered list of six layers, from the product a user sees down to hardware. Each layer names Saketh's work at that layer and links to its proof. The top layer is marked "depth today". The bottom layer is marked "learning" and has no link. It replaces the eight topic pills. It is HTML, not an image, so the links work by keyboard and the colors follow the theme.
+
+**Parts touched.**
+
+| Part | Change |
+|---|---|
+| `src/pages/Index.tsx` | New hero copy. Ladder in place of pills. Experience row sentence. Card layout. Research selection. Shipped list removed. |
+| `src/data/proof.ts` | New proof card copy. New `stackLadder` records. |
+| `src/data/portfolio.ts` | `featured` moves from SDLC to Lekhni. New optional `diagram`, `proofLink` and `results` fields on three work records. Lekhni gains the public repository link. New SakethWiki and Lekhni plain lines. GEO scope line. |
+| `src/components/PortfolioShell.tsx` | Footer line. |
+| `src/hooks/usePageTitle.ts`, `index.html` | Home title and share tags (open question 1, resolved yes). |
+| `src/index.css` | Ladder, thumbnail and results block styles. Tag row and index styles leave the home cards. |
+| `tests/` | Three files change to assert the new copy. One new test checks ladder links and featured card fields. |
+
+**Parts not touched.** The Work, Experience and Writing pages. The `activity` data. The diagrams in `public/diagrams/`, which load as images at their current size. The contact section.
+
+**Code against docs.** ADR-039 sets the "Applied AI Systems Engineer" eyebrow, and `logic_flow.md` "Home render path" step 1 describes it. ADR-035 (amended) and `logic_flow.md` "Home Research selection" name e-means and two GEO chapters. After approval, mark those parts superseded in place.
+
+### Open questions (ADR-053 to ADR-058)
+
+See the open questions at the end of the ADR-053 to ADR-058 block in `adr.md`. They cover six items:
+
+1. The page title.
+2. Dark thumbnails on a light page.
+3. The Models rung link.
+4. The Lekhni link label.
+5. The superseded parts of ADR-035 and ADR-039.
+6. The test updates.

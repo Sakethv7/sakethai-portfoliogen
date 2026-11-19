@@ -36,9 +36,10 @@ test('Phase E copy states the 24 plus 8 run structure without reversing the init
   assert.doesNotMatch(`${portfolio}\n${phaseE}`, /failed 0 of 8|32 runs, one per task and version/);
 });
 
-test('homepage evidence calls GEO an experimental harness instead of a general benchmark', async () => {
+test('homepage GEO proof card states a finding, not a general benchmark (ADR-055)', async () => {
   const proof = await read('src/data/proof.ts');
 
-  assert.match(proof, /An experimental harness/);
+  assert.match(proof, /A spoofed agent with a valid sign-in token still read a protected page/);
   assert.doesNotMatch(proof, /A benchmark of how AI agents behave/);
+  assert.doesNotMatch(proof, /The tests show when alternate formats save tokens/);
 });
