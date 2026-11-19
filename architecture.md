@@ -837,3 +837,104 @@ Article.tsx --> header (minutes, folded focus line on phone)
 5. **Diagrams.** Which notes get the first figures? I chose three from titles only. I have not yet read those notes in full.
 6. **Progress bar support.** It uses a CSS scroll-driven animation. I believe Chromium and recent Safari support it and Firefox may not by default. I will check before shipping. Where it is absent, the bar is simply missing.
 7. **Path routing.** Replacing `HashRouter` is a separate decision. This change works within it.
+
+---
+
+# Change 2026-11-19: real page addresses, search metadata, and a better Writing page (ADR-047 to ADR-050)
+
+Status: draft for Saketh's review. No code is written yet.
+
+## Visual Level
+
+```mermaid
+flowchart TD
+    A[Vite builds the app] --> B[Script lists every route from the data files]
+    B --> C[Script writes head tags for each route]
+    C --> D{Route is a published note?}
+    D -- yes --> E[Put the note text inside the root element]
+    D -- no --> F[Leave the root element empty]
+    E --> G[Write one HTML file per route]
+    F --> G
+    G --> H[Write sitemap.xml, robots.txt line and 404.html]
+    H --> I{Does every route have a file?}
+    I -- yes --> J[Upload to GitHub Pages]
+    I -- no --> K[Fail the build, keep the old site]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef old fill:#e9ecef,stroke:#6c757d,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E,F,G,H,I new
+    class A,J old
+    class K fail
+```
+
+*Caption: grey exists today, green is new, red is the failure path. Today the build stops at step A and every route shares one HTML file. Explainer: [adr-047-050-paths-metadata-writing.html](docs/visuals/adr-047-050-paths-metadata-writing.html).*
+
+## Complexity tier
+
+**Single-process tool.** The site stays a static React app. One new Node script runs once after `vite build`. It reads the data files and the Markdown notes. It writes files into `dist/`. It has no server, no queue and no database.
+
+A higher tier exists: a full server-side rendering framework such as Next.js or `vite-react-ssg`. The problem does not need it. The site has 54 data records and no per-user content. A script that writes static files gives the same search result with far less change. This draft proposes the smaller tier.
+
+## Why this change
+
+A search engine drops everything after `#` in an address. The site uses `HashRouter`. So every note has the same address to a crawler: the home page. The 32 notes cannot show up in search. A link preview on LinkedIn also shows the home page card for every note (see the open question already recorded above on per-article previews). `https://sakethv7.github.io/sakethai-portfoliogen/sitemap.xml` returns 404 today. Every page has the same `<title>`.
+
+ADR-007 kept `HashRouter` "unless the deployment target is changed and configured for SPA rewrites". ADR-043 listed path routing as "a separate, larger decision". This change is that decision.
+
+## Today and target
+
+| | Today | Target |
+|---|---|---|
+| Address of a note | `/#/writing/<slug>` | `/writing/<slug>/` |
+| HTML files in `dist/` | 1 (`index.html`) | 1 per route, plus `404.html` |
+| `<title>` and description | Same on every page | Per page, from the data files |
+| Crawler sees note text | No | Yes, inside the root element |
+| Sitemap | None | `sitemap.xml`, listed in `robots.txt` |
+| Router | `HashRouter` | `BrowserRouter` with `basename` set to the Vite base path |
+
+GitHub Pages serves a file for `/writing/<slug>/` when `writing/<slug>/index.html` exists. For an unknown path it serves `404.html` with HTTP status 404. We set `404.html` to a copy of `index.html`. React then shows the existing Not found page, and the status code is correct. No redirect trick is needed, because every known route has its own file.
+
+## Data flow
+
+1. `vite build` writes `dist/index.html` and the JavaScript and CSS files, as today.
+2. `scripts/prerender.ts` imports the data files and builds the route list: `/`, `/work/`, `/experience/`, `/writing/`, `/resume/`, and one route per work item with a case study, per experience study, and per published note.
+3. For each route it copies `dist/index.html` and replaces the head tags (title, description, canonical, `og:*`, `twitter:*`).
+4. For a published note it also renders the Markdown with the same `marked` setup as `src/lib/article.ts` and puts the HTML inside `<div id="root">`. The client uses `createRoot`, so React replaces this content when it starts.
+5. It writes `sitemap.xml`, adds a `Sitemap:` line to `robots.txt`, and copies `index.html` to `404.html`.
+6. It checks that every route has a file. If one is missing, it exits with code 1.
+
+## Boundaries
+
+The script reads only files in the repo. It never calls the network. It never touches `src/` at run time. The React app does not know the script exists. The one contract between them is the data files (`api.md`).
+
+## Old links
+
+People have shared `/#/writing/<slug>` links. A small inline script in `index.html` runs before React. If the address has a hash that starts with `#/`, it calls `history.replaceState` to the matching real path. The old links keep working. A search engine never sees them, because it ignores the hash.
+
+## The Writing page (ADR-049)
+
+- Series chapters keep their own tags, and the chapter rows show them.
+- A tag becomes a link to `/writing/?tag=<name>`. The list filters to notes with that tag. This sits beside the existing `?kind=` filter. The two filters combine.
+- A "Start here" row shows up to three pinned notes above the list. A note is pinned when its record has a `pin` number.
+
+## Copy (ADR-050)
+
+For the pinned notes, the `plain` sentence states the result. Saketh approves each sentence. CLAUDE.md copy rule 3 applies: a number appears only if Saketh confirmed it.
+
+## Deployment shape
+
+The GitHub Actions workflow already runs `npm run build`. The `build` script changes to `vite build && tsx scripts/prerender.ts`. This adds one dev dependency, `tsx`. The upload step is unchanged. If the script fails, the workflow stops before upload, and the old site stays live.
+
+## Unchanged
+
+Visual design, the tag pills, the reading aids (ADR-042 to ADR-046), the `?section=` links, and the dark-only theme.
+
+## Open questions
+
+1. **`tsx` or Node 22.** The workflow uses Node 20, which cannot run TypeScript directly. Choice: add the `tsx` dev dependency, or raise the workflow to Node 22. This draft assumes `tsx`.
+2. **Flash on load.** `createRoot` replaces the static note text. A reader may see the plain text for a moment before the styled page appears. The alternative is `hydrateRoot`, which needs identical markup and logs warnings on any difference. This draft assumes `createRoot`.
+3. **Which three notes to pin.** Proposal: the System 1 guard note, "Calibrate the judge before you trust the score", and "Evaluating retrieval failures separately from generation failures". Saketh decides.
+4. **Read time on list cards.** The cards would need the word count of every note at list time. That needs either a pre-build step or loading all notes into the list page. This draft leaves it out. Say so if you want it.
+5. **Light theme.** Not in this change. It needs new color tokens and a check of every page, so it needs its own ADR. Say so if you want it next.
+6. **Share image.** One `og-image.png` (1200 by 630) serves every page. A per-note image is a separate change. I have not yet looked at whether the current image is a good preview.
+7. **Code against docs.** `architecture.md` line 410 says per-article previews need real paths or pre-rendered HTML. This change does both. After it ships, that paragraph must change.

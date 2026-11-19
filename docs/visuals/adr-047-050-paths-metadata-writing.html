@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR-047 to 050 explainer: real addresses, page tags and the Writing page</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111418; --muted: #5b6470; --line: #6b7280;
+    --grey-fill: #eceff3; --grey-stroke: #8b94a1;
+    --blue-fill: #dbeafe; --blue-stroke: #1d4ed8;
+    --red-fill: #fde2e4; --red-stroke: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1218; --fg: #e8ebf0; --muted: #9aa4b2; --line: #8b94a1;
+      --grey-fill: #1f2530; --grey-stroke: #6b7686;
+      --blue-fill: #12294f; --blue-stroke: #6ea8fe;
+      --red-fill: #4a1a1f; --red-stroke: #f1857f;
+    }
+  }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 0 0 12px; color: var(--muted); }
+  .key { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 12px; font-size: 14px; }
+  .key span { display: inline-flex; align-items: center; gap: 6px; }
+  .key i { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; display: inline-block; }
+  .k-grey i { background: var(--grey-fill); border-color: var(--grey-stroke); }
+  .k-blue i { background: var(--blue-fill); border-color: var(--blue-stroke); }
+  .k-red i { background: var(--red-fill); border-color: var(--red-stroke); }
+  svg { width: 100%; height: auto; display: block; }
+  .box { stroke-width: 2; }
+  .grey { fill: var(--grey-fill); stroke: var(--grey-stroke); }
+  .blue { fill: var(--blue-fill); stroke: var(--blue-stroke); }
+  .red { fill: var(--red-fill); stroke: var(--red-stroke); }
+  text { fill: var(--fg); font: 14px system-ui, sans-serif; text-anchor: middle; }
+  .lbl { fill: var(--muted); font-size: 13px; }
+  .edge { stroke: var(--line); stroke-width: 2; fill: none; }
+  .head { fill: var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <h1>ADR-047 to 050: real addresses and search tags</h1>
+  <p>Read from the top. A push builds the site. A script now writes one HTML file per page. Then a reader or a crawler asks for an address. Blue steps are new. Red steps are failures.</p>
+  <div class="key">
+    <span class="k-grey"><i></i>Exists today</span>
+    <span class="k-blue"><i></i>New or changed</span>
+    <span class="k-red"><i></i>Failure path</span>
+  </div>
+  <svg viewBox="0 0 800 1030" role="img" aria-label="Flowchart: a push runs the build, a new script checks the data and writes one HTML file per page, a failed check keeps the old site, and a reader gets either the page file or the 404 page">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="head" d="M0 0L10 5L0 10z"/></marker>
+    </defs>
+
+    <!-- main column, cx=300 -->
+    <rect class="box grey" x="150" y="20" width="300" height="44" rx="8"/><text x="300" y="47">Push to the main branch</text>
+    <rect class="box grey" x="150" y="100" width="300" height="44" rx="8"/><text x="300" y="127">Workflow runs npm ci and npm run build</text>
+    <rect class="box grey" x="150" y="180" width="300" height="44" rx="8"/><text x="300" y="207">Vite builds the app into dist</text>
+    <rect class="box blue" x="150" y="260" width="300" height="44" rx="8"/><text x="300" y="287">Script lists every route from the data</text>
+    <polygon class="box blue" points="300,340 450,375 300,410 150,375"/><text x="300" y="380">Notes and tags valid?</text>
+    <rect class="box blue" x="150" y="446" width="300" height="44" rx="8"/><text x="300" y="473">Write one HTML file per route</text>
+    <rect class="box blue" x="150" y="526" width="300" height="44" rx="8"/><text x="300" y="553">Write sitemap, robots line, 404.html</text>
+    <rect class="box grey" x="150" y="606" width="300" height="44" rx="8"/><text x="300" y="633">Upload dist to GitHub Pages</text>
+    <rect class="box grey" x="150" y="686" width="300" height="44" rx="8"/><text x="300" y="713">Reader or crawler asks for an address</text>
+    <polygon class="box blue" points="300,766 450,801 300,836 150,801"/><text x="300" y="806">File for this path?</text>
+    <rect class="box blue" x="150" y="872" width="300" height="44" rx="8"/><text x="300" y="899">Send that file, status 200</text>
+    <rect class="box blue" x="150" y="952" width="300" height="44" rx="8"/><text x="300" y="979">React starts over the note text</text>
+
+    <!-- failure column, cx=620 -->
+    <rect class="box red" x="490" y="353" width="260" height="44" rx="8"/><text x="620" y="380">Exit 1, workflow stops</text>
+    <rect class="box red" x="490" y="433" width="260" height="44" rx="8"/><text x="620" y="460">Site keeps last good deploy</text>
+    <rect class="box red" x="490" y="779" width="260" height="44" rx="8"/><text x="620" y="806">Send 404.html, status 404</text>
+    <rect class="box red" x="490" y="859" width="260" height="44" rx="8"/><text x="620" y="886">React shows Not found page</text>
+
+    <!-- main column edges -->
+    <line class="edge" x1="300" y1="64" x2="300" y2="98" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="144" x2="300" y2="178" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="224" x2="300" y2="258" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="304" x2="300" y2="338" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="410" x2="300" y2="444" marker-end="url(#a)"/><text class="lbl" x="318" y="430" style="text-anchor:start">yes</text>
+    <line class="edge" x1="300" y1="490" x2="300" y2="524" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="570" x2="300" y2="604" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="650" x2="300" y2="684" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="730" x2="300" y2="764" marker-end="url(#a)"/>
+    <line class="edge" x1="300" y1="836" x2="300" y2="870" marker-end="url(#a)"/><text class="lbl" x="318" y="858" style="text-anchor:start">yes</text>
+    <line class="edge" x1="300" y1="916" x2="300" y2="950" marker-end="url(#a)"/>
+
+    <!-- failure edges -->
+    <line class="edge" x1="450" y1="375" x2="488" y2="375" marker-end="url(#a)"/><text class="lbl" x="469" y="367">no</text>
+    <line class="edge" x1="620" y1="397" x2="620" y2="431" marker-end="url(#a)"/>
+    <line class="edge" x1="450" y1="801" x2="488" y2="801" marker-end="url(#a)"/><text class="lbl" x="469" y="793">no</text>
+    <line class="edge" x1="620" y1="823" x2="620" y2="857" marker-end="url(#a)"/>
+  </svg>
+  <p>Two things level 2 leaves out. First, the build already ends in an upload today, and a failed check now stops the workflow before it, so a bad data file never reaches the live site. Second, a failed script and an unknown address are different failures. The first keeps the old site. The second serves the 404 page with a true 404 status, so search engines drop it.</p>
+</main>
+</body>
+</html>

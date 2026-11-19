@@ -771,3 +771,131 @@ Invariants:
 - No new dependency. No new route. No change to any existing type.
 - `Article` chunk growth stays small. I will report the gzipped size before and after.
 - A content test fails if a figure file is missing or an `alt` is empty.
+
+---
+
+# Change 2026-11-19: contracts for ADR-047 to ADR-050 (draft)
+
+## Visual Level
+
+```mermaid
+flowchart TD
+    A[Data files: portfolio.ts, experience.ts, content/*.md] --> B[Script reads records and notes]
+    B --> C[Route list]
+    C --> D[Head tags per route]
+    C --> E[Note HTML inside root]
+    D --> F[dist/route/index.html]
+    E --> F
+    C --> G[dist/sitemap.xml]
+    F --> H{Contract checks pass?}
+    G --> H
+    H -- yes --> I[dist is ready to upload]
+    H -- no --> J[Exit code 1 with one error line]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef old fill:#e9ecef,stroke:#6c757d,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A old
+    class B,C,D,E,F,G,H,I new
+    class J fail
+```
+
+*Caption: grey exists today, green is new, red is the failed-check path. The data files are the only input. The `dist/` files are the only output.*
+
+## Route table
+
+Base path: `/sakethai-portfoliogen/`. Every route ends with `/`.
+
+| Route | Source | File written |
+|---|---|---|
+| `/` | home | `index.html` (head tags replaced) |
+| `/work/` | page | `work/index.html` |
+| `/work/<slug>/` | `work` records with `caseStudy` | `work/<slug>/index.html` |
+| `/experience/` | page | `experience/index.html` |
+| `/experience/<slug>/` | `experiences` | `experience/<slug>/index.html` |
+| `/writing/` | page | `writing/index.html` |
+| `/writing/<slug>/` | `publications` with `status: 'Published'` | `writing/<slug>/index.html` |
+| `/resume/` | page | `resume/index.html` |
+| any other | none | `404.html`, status 404 |
+
+The `?kind=`, `?tag=` and `?section=` values are never routes. They do not get files.
+
+Old to new: `/#/<path>` maps to `/<path>/`. The query string and nothing else carries over. The existing redirect `/research` to `/writing?kind=research` stays as a React redirect.
+
+## Data contract
+
+`PublicationItem` gains one optional field. `tags` was added in PR #4.
+
+```ts
+interface PublicationItem {
+  // existing fields unchanged
+  tags?: string[];   // 2 to 4 labels, each written one way (exact case)
+  pin?: number;      // 1, 2 or 3. At most three records have a pin. Unique values.
+}
+```
+
+Invariants, checked by tests:
+
+1. Each `tags` entry matches a name in one shared tag list, with the same case.
+2. At most three records have `pin`. The values are unique and between 1 and 3.
+3. A pinned record has `status: 'Published'`.
+4. Every published record has `src/content/<slug>.md`.
+
+## Head tags per route
+
+| Tag | Value | Limit |
+|---|---|---|
+| `<title>` | `<record title> \| Saketh Velidimalla`. Home keeps its current title. | none |
+| `meta description` and `og:description` | The `plain` sentence. Home keeps its current text. | Warn above 160 characters. Error above 200. |
+| `link rel=canonical` and `og:url` | `https://sakethv7.github.io/sakethai-portfoliogen<route>` | Absolute, with trailing `/` |
+| `og:title`, `twitter:title` | Same as `<title>` | none |
+| `og:image`, `twitter:image` | `/og-image.png` (shared) | 1200 by 630 |
+| `og:type` | `article` for a note. `website` for others. | none |
+
+The script replaces existing tags. It never adds a second tag of the same name.
+
+## sitemap.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://sakethv7.github.io/sakethai-portfoliogen/writing/<slug>/</loc><lastmod>YYYY-MM-DD</lastmod></url>
+</urlset>
+```
+
+`lastmod` appears only when the record has a `date` or `updated` value. The list has exactly one `<url>` for each route in the route table, and none for `404.html`.
+
+`robots.txt` gains one line: `Sitemap: https://sakethv7.github.io/sakethai-portfoliogen/sitemap.xml`. The existing rules stay.
+
+## Script contract
+
+| | |
+|---|---|
+| Command | `tsx scripts/prerender.ts`, run by `npm run build` after `vite build` |
+| Reads | `src/data/*.ts`, `src/content/*.md`, `dist/index.html`, `dist/robots.txt` |
+| Writes | files under `dist/` only |
+| Network | none |
+| Exit code | 0 on success, 1 on any error |
+
+Error shapes: one line each, no stack trace.
+
+```
+prerender: missing note file for slug "<slug>"
+prerender: description too long (<n> characters) for "<slug>"
+prerender: route count <r> does not match file count <f>
+```
+
+## Client contract
+
+1. `BrowserRouter` takes `basename` from `import.meta.env.BASE_URL`.
+2. `index.html` has one inline script in `<head>`. It runs only if `location.hash` starts with `#/`. It calls `history.replaceState(null, '', base + hash.slice(2))` where the path ends with `/`.
+3. `main.tsx` keeps `createRoot`.
+4. `Writing` reads `?tag=`. A value that matches no tag is ignored. A pill is a link to `?tag=<name>`, with `kind` kept.
+
+## Unchanged
+
+The `?section=` value, the reading aids, and the tag pill look (ADR-042 to ADR-046 and PR #4).
+
+## Open contract questions
+
+1. The home page `#contact` link logic (api.md, "Get in touch") stopped being needed once routing leaves the hash. Leave it as is, or remove it. This draft leaves it.
+2. The `plain` sentence for the four GEO records is over 160 characters. Warn, or shorten them in this change.
