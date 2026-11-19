@@ -24,11 +24,3 @@ test('e-means evidence plots are shipped with the site', async () => {
   await access(new URL('public/e-means/quality-by-time.png', root));
   await access(new URL('public/e-means/quality-by-epoch.png', root));
 });
-
-test('homepage research selection includes e-means without relabeling it as GEO research', async () => {
-  const homepage = await read('src/pages/Index.tsx');
-
-  assert.match(homepage, /\['e-means-reproduction-lab', 'geo-agent-bench-phase-e'/);
-  assert.match(homepage, /Experiments with measured limits/);
-  assert.match(homepage, /clustering algorithms and AI-agent behavior/);
-});

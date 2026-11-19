@@ -768,3 +768,63 @@ flowchart TD
 | saved choice | page load | saved choice, whatever the system says |
 
 No choice is ever cleared by the site. The reader clears it by clearing site data.
+
+## Home page thread (ADR-053 to ADR-058, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build the home page from static records] --> B[Draw hero copy and the stack ladder]
+    B --> C[Make each proof card from its source record]
+    C --> D{Is the source record there?}
+    D -- no --> E[Drop that card and warn in dev]
+    D -- yes --> F[Draw the card]
+    F --> G[Draw featured cards with optional diagram, links and results]
+    G --> H[Draw the published evaluation notes]
+    H --> I[Draw contact]
+    J[npm test] --> K{Do ladder links and card fields resolve?}
+    K -- no --> L[Test fails, the build does not ship]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,G,H,J,K new
+    class E,L fail
+```
+
+*Caption: green is new or changed. Red is a failure path. The drop-if-missing rule for proof cards exists today (ADR-032) and does not change.*
+
+### Home render path (replaces the ADR-035 version above after approval)
+
+1. Draw the eyebrow "AI Evaluation & Data Engineer", the role line and the two hero paragraphs.
+2. Draw `stackLadder` as an ordered list, top layer first. A rung with `to` renders a link. A rung without `to` renders text and its "learning" label.
+3. Make each proof card from its source record: production, research, app. Drop a card whose record is missing, and warn in dev (no change).
+4. Draw the first three résumé experiences. The current role shows the fixed home sentence, not `caseStudy.plain`.
+5. Take `work` records with `featured: true`, at most three, in data order.
+6. For each card, draw the status label, the title, the plain line, then `diagram` if present, then the scope line.
+7. If `results` is present, draw the monospace block with the title "From FINDINGS.md", linked to `proofLink.href`.
+8. Draw the links row in this order: `github`, `proofLink`, case study. Leave out each missing one.
+9. Draw the research block (next section), then contact. Do not draw the shipped list.
+
+### Home Research selection (replaces the ADR-035 version above after approval)
+
+1. Look up `system-one-guard-for-rag`, `calibrate-your-llm-judge` and `retrieval-vs-generation-failures` in `publications`, in that order.
+2. Keep each one whose status is `Published`. Leave out the others.
+3. Draw each card from its record: kind, date, title, plain line. Draw its diagram from the `noteDiagrams` map (`api.md`).
+4. Link the section to `/writing?kind=research`.
+
+### Failure behavior
+
+| Event | Result | Who notices |
+|---|---|---|
+| A ladder `to` points to a missing or unpublished record | The new test fails | The author, at `npm test` |
+| A featured record has no `diagram` | The card draws without a thumbnail | Nobody needs to |
+| A diagram file is missing from `public/diagrams/` | The browser shows a broken image | The author, in the browser check. The new test also checks the file exists. |
+| `FINDINGS.md` changes upstream | The home block shows old numbers | The author, at review. Nothing checks this automatically. |
+| A selected evaluation note is unpublished | Its card is left out | Nobody needs to |
+| More than three records have `featured: true` | Only the first three draw | The author, at review |
+
+There are no retries and no loading states. The data is static.
+
+### State transitions
+
+None. The home page has no state beyond the theme (ADR-051).

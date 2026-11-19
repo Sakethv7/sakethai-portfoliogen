@@ -998,3 +998,100 @@ Route addresses, head tags, the sitemap, the page-title hook, and every content 
 
 1. Whether `--code-bg` and `--code-fg` become new tokens (architecture open question 3).
 2. Whether the pair `primary` on `secondary` also needs a check. Some tags use that pair.
+
+## Home page thread contracts (ADR-053 to ADR-058, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[WorkItem record] --> B{Has diagram?}
+    B -- yes --> C[Thumbnail on the home card]
+    B -- no --> D[Card without thumbnail]
+    A --> E{Has proofLink?}
+    E -- yes --> F[Extra link in the links row]
+    A --> G{Has results?}
+    G -- yes --> H[Monospace results block]
+    I[StackRung record] --> J{Has to?}
+    J -- yes --> K[Linked rung, checked by test]
+    J -- no --> L[Text rung marked learning]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,E,F,G,H,I,J,K,L new
+    class D fail
+```
+
+*Caption: green is new. Red is the fallback when a field is absent, and the card still draws. `WorkItem` exists today. The three fields and `StackRung` are new.*
+
+### Type changes in `src/data/portfolio.ts`
+
+```ts
+export interface WorkItem {
+  // ...existing fields unchanged
+  diagram?: { src: string; alt: string; width: number; height: number }; // src is relative to BASE_URL, e.g. 'diagrams/system-overview.svg'
+  proofLink?: { label: string; to?: string; href?: string };            // exactly one of to or href
+  results?: string[];                                                    // 1 to 4 lines, each 80 characters or fewer
+}
+```
+
+`width` and `height` come from the SVG `viewBox`, so the browser reserves space and the page does not shift.
+
+### Record changes
+
+| Record | Field | Value |
+|---|---|---|
+| `geo-agent-bench` | `diagram` | `diagrams/system-overview.svg`, 1000 × 660 |
+| `geo-agent-bench` | `proofLink` | `{ label: 'Findings', href: 'https://github.com/Sakethv7/geo-agent-bench/blob/master/FINDINGS.md' }` |
+| `geo-agent-bench` | `results` | The four lines in ADR-058 |
+| `geo-agent-bench` | `summary` | The scope line in ADR-056 |
+| `sakethwiki` | `diagram` | `diagrams/sakethwiki-two-paths.svg`, 900 × 650 |
+| `sakethwiki` | `proofLink` | `{ label: 'System design', to: '/writing/sakethwiki-system-design' }` |
+| `sakethwiki` | `plain` | The plain line in ADR-056 |
+| `lekhni` | `featured` | `true` |
+| `lekhni` | `github` | `https://github.com/Sakethv7/lekhni-app` |
+| `lekhni` | `diagram` | `diagrams/lekhni-recording-path.svg`, 900 × 740 |
+| `lekhni` | `plain` | The plain line in ADR-056 |
+| `sdlc-intelligence-agent` | `featured` | removed |
+
+Lekhni keeps `private: true`, because its main repository is private. Its `github` link goes to `lekhni-app`, a local LLM meeting-notes taker, and the label stays "Repository". The card link code needs no change for this.
+
+### New records in `src/data/proof.ts`
+
+```ts
+export interface StackRung {
+  layer: 'Product' | 'Agents' | 'Models' | 'Runtimes' | 'Network' | 'Hardware';
+  work: string;               // 8 words or fewer
+  to?: string;                // an internal route; absent means nothing is published yet
+  mark?: 'depth today' | 'learning';
+}
+export const stackLadder: StackRung[]; // the six rows in ADR-054, top to bottom
+export const homeRoleLine: string;     // the J&J row sentence in ADR-055
+```
+
+The proof card text in `productionCard`, `researchCard` and `appCard` changes to the copy in ADR-055. Their shape (`ProofCard`) does not change.
+
+### Note diagrams for the research block
+
+```ts
+// src/pages/Index.tsx, local to the home page
+const noteDiagrams: Record<string, WorkItem['diagram']>; // keyed by publication slug
+```
+
+Keys: `system-one-guard-for-rag` → `system-one-guard-flow.svg` (900 × 690), `calibrate-your-llm-judge` → `judge-calibration-loop.svg` (900 × 960), `retrieval-vs-generation-failures` → `retrieval-vs-generation.svg` (900 × 700). It is local because only the home page uses it. If a second page needs it, it moves to `PublicationItem`.
+
+### Invariants
+
+1. Every `StackRung.to` resolves to a published publication, a work record or an experience case study. A test checks this.
+2. Exactly one rung has `mark: 'depth today'`, and it is the first. The last rung has `mark: 'learning'` and no `to`.
+3. Every `diagram.src` names a file that exists in `public/`. A test checks this.
+4. Each `results` line is 80 characters or fewer. A test checks this.
+5. At most three work records have `featured: true`.
+6. No home copy names an internal system or team (copy rule 5).
+
+### Unchanged
+
+`ProofCard`, `PublicationItem`, `ActivityItem`, the routes, and the head tags of every page except home.
+
+### Open contract questions
+
+1. Should `results` move into the GEO repository as a JSON file the site reads at build time? That removes the second copy (ADR-058, given up item 1). It also adds a build-time network fetch. Proposal: not now.

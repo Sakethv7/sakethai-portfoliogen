@@ -22,7 +22,7 @@ export function PortfolioShell({ children }: { children: ReactNode }) {
     </header>
     <main>{children}</main>
     <footer className="site-footer">
-      <p>Building reliable AI systems, from production LLM quality to machine intelligence.</p>
+      <p>I find why AI systems fail, and I am learning the layers underneath.</p>
       <div className="social-links">
         <a href={resumeUrl} download="Saketh_Velidimalla_Resume.pdf">Résumé</a>
         <a href="https://github.com/Sakethv7" target="_blank" rel="noreferrer" aria-label="GitHub"><Github /></a>

@@ -1456,3 +1456,379 @@ flowchart TD
 5. **The first impression may change for recruiters.** A recruiter on a light-mode computer now sees a light site, not the dark one Saketh chose.
 
 **Build result (2026-11-19, ADR-051).** `npm test` passes (60 pass, 1 skipped). Lint passes on the changed files. The type check shows no new errors. `vite build` writes 43 route files, and the theme script is in the ones I checked. Checked in the browser pane: with no saved choice and a light system, the page is light. A click gives dark, saves `theme=dark`, and the choice holds across a page move. At 375 px the header fits with no sideways scroll, and code blocks stay dark on a light page. **Skipped test:** `destructive-foreground` on `destructive` in the dark theme is 4.19 to 1. The dark values are the old look, so I left them. **Not checked:** the dark-system first paint (this pane cannot emulate it for local pages), the flash on a slow connection, Safari and Firefox, the 17 diagrams on a light page, and a screenshot of every page in light. **Not done:** the explainer in dark mode.
+
+# Change 2026-11-19: the home page carries one thread (ADR-053 to ADR-058, proposed)
+
+All six ADRs share one level 3 explainer: [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html). It shows the home page from top to bottom. It marks each section that stays, changes or goes, and what happens when a data record is missing.
+
+**Where this came from.** A review on 2026-11-19 found three problems. The home page lists true facts but no thread. The same facts repeat: "140,000 employees" shows 3 times and GEO shows 4 times. The best proof is hidden. 16 diagrams exist, and none is on the home page. The confirmed 10 percentage point result is only on the Experience page. Saketh then set the thread and the audience:
+
+1. **The thread.** Now: he finds why AI fails, as a data engineer and data scientist on a production RAG platform. Next: he goes down the stack toward systems engineering.
+2. **The audience.** He applies for AI evaluation and data roles in the next 3 to 6 months. The "next" part supports the claim. It is not the headline.
+3. **Featured projects.** GEO agent benchmark, SakethWiki and Lekhni. SDLC Intelligence Agent leaves the home page.
+4. **Office work needs no evidence.** His description of his job duties is the source (2026-11-19). Copy rule 3 still limits numbers to the ones he confirmed.
+
+## ADR-053: The hero states one thread: find why AI fails now, go down the stack next
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html)
+
+```mermaid
+flowchart TD
+    A[Reader opens the home page] --> B[Read the eyebrow: the role applied for]
+    B --> C[Read paragraph 1: what I do now, with one result]
+    C --> D[Read paragraph 2: the same question, one layer lower]
+    D --> E[See the stack ladder]
+    E --> F{Does the reader want proof?}
+    F -- yes --> G[Open a proof card or a ladder rung]
+    F -- no --> H[Reader leaves with one sentence to remember]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E new
+    class H fail
+```
+
+*Caption: green is new or changed copy. Red is the reader who leaves early. Today that reader leaves with a list of topics, and after this change they leave with one sentence.*
+
+**Context:** The eyebrow says "Applied AI Systems Engineer". That is the title Saketh wants next, not the one he applies for. Paragraph 1 has two keyword lists and no result. Paragraph 2 lists four things that do not connect. The footer says "from production LLM quality to machine intelligence", which says nothing.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep the copy and trim the lists | Smaller change | Still no thread |
+| B. Lead with the systems direction | Matches the long-term goal | Mismatches the eval and data roles he applies for now, and the résumé title |
+| C. Lead with "now", give "next" one line and the ladder | Matches the applications and keeps the direction visible | The systems direction gets less space |
+
+**Choice:** Option C. New copy:
+
+| Place | Text |
+|---|---|
+| Eyebrow | AI Evaluation & Data Engineer |
+| Role line | Data scientist building production AI evaluation and data systems · Python, SQL, PySpark, AWS (no change) |
+| Paragraph 1 | I find out why production AI gives wrong answers, and I build the data that shows it. On a RAG platform used by about 140,000 employees, I write the ETL pipelines, build the reports and KPIs with the business, and trace each failure to retrieval, ranking, generation or handoff. |
+| Paragraph 2 | Outside work, I ask the same question one layer lower: how agents read the web, and how local models behave under heat and memory limits. Next, I am learning networking and embedded hardware. |
+| Footer | I find why AI systems fail, and I am learning the layers underneath. |
+
+The role line keeps its tool list. The test in `tests/homepage-positioning.test.mjs` asks for it, and recruiters search for those words.
+
+**Why:** A Staff Engineer gives the page about 30 seconds. One sentence must survive that. The eyebrow then matches the jobs he applies for.
+
+**Given up:**
+
+1. **The eyebrow no longer claims the systems title.** A systems-role reader sees "evaluation and data" first.
+2. **"Applied AI Systems Engineer" leaves the page title and share tags too** (open question 1, resolved yes). Search results and old share previews change.
+3. **Paragraph 1 is longer** than one short sentence. It must name both halves of the job, data and evaluation.
+4. **A test changes.** `homepage-positioning.test.mjs` asserts the old eyebrow. ADR-039 set that eyebrow on purpose. This ADR replaces that part of ADR-039.
+
+## ADR-054: A stack ladder replaces the eight topic pills
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html)
+
+```mermaid
+flowchart TD
+    A[Read the ladder records] --> B[Take one rung per layer, top to bottom]
+    B --> C{Does the rung have a link?}
+    C -- no --> D[Draw the rung as text marked learning]
+    C -- yes --> E{Does the link target exist and is it published?}
+    E -- yes --> F[Draw the rung with its link]
+    E -- no --> G[Fail the test before the build ships]
+    F --> H[Mark the top rung as depth today]
+    D --> H
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,F,H new
+    class G fail
+```
+
+*Caption: green is new. Red is the failure path. Today eight pills link to notes, and one pill, "Hardware (learning)", links to a case study about something else.*
+
+**Context:** The eight pills are a tag cloud. They show range but not order. Saketh's thread has an order: the product layer is his depth today, and hardware is where he is going.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep the pills | No work | No order, no thread |
+| B. A drawn SVG of the stack | Looks like a diagram | Hard to keep in step with the notes, does not follow the theme, links inside an image are hard to reach by keyboard |
+| C. An ordered HTML list styled as a ladder | Real links, follows both themes, screen readers read it as a list | Looks less like a drawing |
+
+**Choice:** Option C. Six rungs, top to bottom:
+
+| Layer | Work | Link |
+|---|---|---|
+| Product | Production RAG evaluation and data | `/experience/enterprise-ai-quality` |
+| Agents | GEO agent benchmark, MCP tools | `/work/geo-agent-bench` |
+| Models | System 1 decision models | `/writing/system-one-guard-for-rag` |
+| Runtimes | Ollama against MLX, chip counters | `/writing/ollama-vs-mlx-benchmark` |
+| Network | DNS, Web Bot Auth, OAuth | `/writing/geo-agent-bench-setup` |
+| Hardware | ESP32, Arduino (learning) | none |
+
+The top rung carries the label "depth today". The bottom rung carries "learning". A test checks that each link points to a record that exists and is published.
+
+**Why:** The ladder is the thread drawn as one object. Each rung opens proof that already exists.
+
+**Given up:**
+
+1. **Two pill topics lose their own link.** "Small models" and "Security" fold into the Models and Network rungs.
+2. **The Hardware rung has no proof.** It says "learning" in plain words. A reader can see that nothing is published yet.
+3. **The ladder can go stale.** A new note does not add itself. Someone must edit the records.
+4. **The hero gets taller on a phone.** Six rungs take more height than two rows of pills.
+
+## ADR-055: Each fact shows in one place, and the proof cards show three kinds of proof
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html)
+
+```mermaid
+flowchart TD
+    A[List each fact on the home page] --> B{Does the fact show in more than one section?}
+    B -- no --> C[Keep it where it is]
+    B -- yes --> D[Keep it in the section that owns it]
+    D --> E[Replace the other copies with a different fact]
+    E --> F{Is each number confirmed or published?}
+    F -- yes --> G[Use the new copy]
+    F -- no --> H[Remove the number]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,D,E,F,G new
+    class H fail
+```
+
+*Caption: green is new. Red is the path for a number that nobody confirmed. Today "140,000 employees" shows 3 times and GEO shows 4 times on one page.*
+
+**Context:** The production proof card repeats paragraph 1 of the hero. The J&J experience row repeats it again. The GEO proof card says "the tests show when alternate formats save tokens and where identity checks still fail". That sentence promises a finding but does not state it. The SakethWiki card lists features ("capture, chat, review, browse") and not the idea behind them.
+
+**Who owns which fact:**
+
+| Section | Owns |
+|---|---|
+| Hero | The thread, the 140,000 user count |
+| Production proof card | The data pipelines and the 10 percentage point result |
+| Experience row (J&J) | The scope of the role |
+| GEO proof card | One security finding |
+| GEO featured card | The test design and the results block (ADR-058) |
+| Research block | The evaluation notes (ADR-057) |
+
+**Choice:** New card copy:
+
+| Card | Claim | Evidence |
+|---|---|---|
+| Production | I build the data pipelines, reports and KPIs behind a production RAG platform, and I trace why it gives wrong answers. | Glue jobs move DynamoDB data into S3 as Parquet files for Power BI. I build the reports, set KPIs with the business and own the stakeholder relationship. One round of fixes raised self-service resolution by 10 percentage points. |
+| GEO | I built test websites to see how AI agents behave when a page tries to steer them. | A spoofed agent with a valid sign-in token still read a protected page. (FINDINGS.md, finding 5) |
+| SakethWiki | My notes app suggests edits but asks before it changes a saved note. | An AI correction cannot silently overwrite the source. The screenshot stays. |
+
+The J&J experience row on home shows: "I build the pipelines, KPIs and failure triage behind a production RAG platform." It no longer reuses `caseStudy.plain`, so the 140,000 figure stops repeating. The Experience page keeps `caseStudy.plain` as it is.
+
+**Why:** A repeated fact reads as padding. Padding reads as generated text. Three different proofs say more than one proof three times.
+
+**Given up:**
+
+1. **The home row and the Experience page drift apart.** The home row gets its own sentence, so two sentences describe one role.
+2. **The tool names appear in a proof card.** Copy rule 2 keeps tools out of the plain claim. Here they sit in the evidence line, which is one step lower, but a non-engineer still reads them.
+3. **A test changes.** `homepage-positioning.test.mjs` asserts that the row reuses `item.caseStudy.plain`. ADR-039 chose that reuse to avoid a duplicate metric. This ADR solves the duplicate a different way.
+
+## ADR-056: Feature GEO, SakethWiki and Lekhni, with one card layout
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html)
+
+```mermaid
+flowchart TD
+    A[Take the three featured work records] --> B[Draw title, status label and plain line]
+    B --> C{Does the record have a diagram?}
+    C -- yes --> D[Draw the diagram thumbnail]
+    C -- no --> E[Draw the card without a thumbnail]
+    D --> F[Draw the scope line]
+    E --> F
+    F --> G[Draw the links row: repository, proof link, case study]
+    G --> H{Is a link field missing?}
+    H -- yes --> I[Leave that link out]
+    H -- no --> J[Show all links]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,C,D,G,H new
+    class E,I fail
+```
+
+*Caption: green is new or changed. Red is the path when a record lacks a field, and the card still draws. Today each card shows an index number, a tag row and no diagram.*
+
+**Context:** SDLC Intelligence Agent is the weakest fit for "I find why AI fails". Lekhni fits: it has model traces, failure checks and evals, and it led to the Ollama against MLX benchmark. Three existing links are missing from cards:
+
+1. GEO: `FINDINGS.md` is not on the card.
+2. SakethWiki: the published note `sakethwiki-system-design` has a diagram, but the card has no link to it.
+3. Lekhni: the card says "Private", but the public repository `lekhni-app` exists. Only the activity list links to it.
+
+**Options for the card layout:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep the layout, change the copy | Small change | Index numbers and tag rows stay as noise, and still no diagram |
+| B. Cut the index and tags, add a thumbnail and one links row | Each card shows its proof | Two new optional fields on `WorkItem` |
+| C. Make each card a full diagram panel | Strong visual | Too tall, three tall panels push the research block off the first screens |
+
+**Choice:** Option B.
+
+| Card | Plain line | Scope line | Thumbnail | Links |
+|---|---|---|---|---|
+| GEO | No change | 190 tests, exact-answer scoring, no model as judge. Covers llms.txt and markdown, MCP tools, Web Bot Auth and OAuth. | `system-overview.svg` | Repository · Findings · Case study |
+| SakethWiki | A notes app that suggests edits but asks before it changes a saved note. | No change | `sakethwiki-two-paths.svg` | Repository · System design |
+| Lekhni | A meeting-to-notes tool that keeps recordings on my Mac. Every note it writes carries a trace I can review. | No change | `lekhni-recording-path.svg` | Repository · Case study |
+
+Set `featured: false` on `sdlc-intelligence-agent` and `featured: true` on `lekhni`. Its build log stays on `/writing`, and the project stays on `/work`.
+
+**Why:** A card that shows a diagram and links to real code reads as engineering, not description.
+
+**Given up:**
+
+1. **Tags leave the home cards.** A reader who scans for "RAG" or "OAuth" finds the words only in the scope line. The Work page keeps tags.
+2. **The diagrams are dark panels in the light theme.** ADR-051 open question 2 leaves all 17 diagrams dark. A thumbnail on a light page shows that compromise at a larger scale.
+3. **SDLC leaves the home page.** It is the only CI/CD and code-review project, so that range is no longer visible from home.
+4. **The Lekhni repository link shows a smaller tool.** `lekhni-app` is a local LLM that turns meeting transcripts into summary notes (Saketh, 2026-11-19). The live transcription and call detection on the card stay in the private repository.
+
+## ADR-057: The research block shows the three evaluation notes, and "Other work shipped" goes
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html)
+
+```mermaid
+flowchart TD
+    A[Look up the three pinned evaluation notes] --> B{Is each note published?}
+    B -- yes --> C[Draw the card with its diagram and result line]
+    B -- no --> D[Leave that card out]
+    C --> E[Link to all research notes]
+    D --> E
+    E --> F[Skip the shipped list]
+    F --> G[Draw the contact section]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,F new
+    class D fail
+```
+
+*Caption: green is new or changed. Red is the path for a note that is not published. Today the block shows e-means and two GEO chapters, and a shipped list follows it.*
+
+**Context:** The research block shows the e-means clustering study and two GEO chapters. Neither answers "why AI fails" for an evaluation reader. The GEO chapters repeat the featured card. The notes that fit the role best are the three pinned notes, and none of them is on the home page. The "Other work shipped" section opens with "Things I shipped beyond the research above, not commit counts." That sentence talks about the page. Two of its four rows repeat featured projects.
+
+**Options for the shipped list:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep it | No work | Repeats the featured cards, and the intro is defensive |
+| B. Shrink it to a three-line changelog | Shows the site is alive | Still a fourth list on the page |
+| C. Remove it from home | A shorter page that ends on contact | Recent activity is no longer visible from home |
+
+**Choice:** Swap in `system-one-guard-for-rag`, `calibrate-your-llm-judge` and `retrieval-vs-generation-failures`. These are the pinned notes. ADR-050 approved result sentences for them, but the records carry the ADR-052 wording today (found at build, see the build result). Each card shows the note's existing diagram. The heading becomes "How I find failures". Remove the shipped list from home (option C). The `activity` data stays. `/work` can use it later.
+
+**Why:** The notes that match the job should be the ones on the job's front page.
+
+**Given up:**
+
+1. **e-means leaves the home page.** It is the most recent research note and the only one about classic ML. It stays on `/writing`.
+2. **No sign of recent activity on home.** A reader cannot see that work shipped this month without opening another page.
+3. **The research block and the "Start here" row on `/writing` show the same three notes.** A reader who clicks through sees them again.
+4. **Two tests change.** `emeans-positioning.test.mjs` asserts the e-means slug on home. `homepage-positioning.test.mjs` asserts the "Other work shipped" heading.
+
+## ADR-058: The GEO card shows real results in a terminal-style block
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-053-058-home-thread.html](docs/visuals/adr-053-058-home-thread.html)
+
+```mermaid
+flowchart TD
+    A[Read the result lines from the GEO record] --> B{Is any line present?}
+    B -- no --> C[Draw the card without the block]
+    B -- yes --> D[Draw a monospace block titled From FINDINGS.md]
+    D --> E[Link the title to FINDINGS.md]
+    E --> F{Does each line match FINDINGS.md?}
+    F -- yes --> G[Ship]
+    F -- no --> H[Fix the line before merge]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,D,E,F,G new
+    class C,H fail
+```
+
+*Caption: green is new. Red is a missing or wrong line. Today the home page shows no output from any project.*
+
+**Context:** The review asked for one lightweight showcase of real engineering on the home page. A live demo needs a server and an API key. GEO has the strongest published numbers, in `FINDINGS.md` in its public repository.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. A live interactive demo | Most impressive | Needs a hosted backend and a key, and costs money per visit |
+| B. A fake terminal with a `$ geo-bench results` command | Looks like a real run | No such command exists. That is a fake. |
+| C. A monospace block of real result lines, titled with its source | Honest, static, cheap | Looks less like a live run |
+
+**Choice:** Option C. Four lines, each copied from `FINDINGS.md`:
+
+```
+markdown links   relative 0/8   absolute 8/8
+input tokens     html 101k · llms.txt 86k · interceptor 33k (6 tasks, 1 run)
+sign-in check    spoofer with a valid OAuth token read the protected page
+small model      Qwen3-8B   plain fetch 0/12   bounded harness 12/12
+```
+
+The block title is "From FINDINGS.md", and it links there.
+
+**Why:** Real numbers in a fixed-width block read as engineering at a glance. The source link lets a skeptical reader check them in one click.
+
+**Given up:**
+
+1. **Two copies of the numbers.** If `FINDINGS.md` changes, the home block does not change with it. A person must update both.
+2. **The limits shrink.** `FINDINGS.md` gives a limit for each finding. The block keeps only "6 tasks, 1 run". The rest live one click away.
+3. **The GEO card gets taller** than the other two cards. The grid rows can look uneven.
+4. **The lines wrap in a narrow card.** Each line renders as a label column and a value column (a `<dl>`), so values wrap and nothing scrolls sideways. The fixed-width line-up of a terminal is lost.
+
+## Open questions (ADR-053 to ADR-058)
+
+1. **Page title and meta description.** The old title is in 4 places. They are `src/hooks/usePageTitle.ts` line 5 and `index.html` lines 6, 39 and 46. `public/og-image.png` may show it too. I have not opened that image. **Resolved 2026-11-19: yes, change all of them in this change.** This touches search results and share previews (ADR-048).
+2. **The light theme and the thumbnails.** See ADR-056, given up item 2. **Resolved 2026-11-19: ship them dark, as ADR-051 does for notes.**
+3. **Ladder rung for Models.** **Resolved 2026-11-19: "System 1 decision models", linked to `system-one-guard-for-rag`.** The note uses the same term: a fast model that makes one small decision before the large model answers. The judge note stays in the research block.
+4. **Lekhni link label.** **Resolved 2026-11-19: "Repository".** `lekhni-app` is not a public version of Lekhni. It is a local LLM meeting-notes taker that turns transcripts into summaries. The `activity` entry for 2026-09-22 calls it "a public version of the notes layer". That text may need a fix, outside this change.
+5. **ADR-039 and ADR-035.** This change replaces parts of both: the eyebrow (ADR-039) and the home Research selection (ADR-035 amendment). After approval, mark those parts superseded in place.
+6. **Tests.** Three test files assert the old copy. The build updates them to assert the new copy. Their intent is to stop drift, and that intent stays.
+
+**Build result (2026-11-19, ADR-053 to ADR-058).** Built, not committed, not merged.
+
+1. **Tests:** `npm test` gives 65 pass, 0 fail, 1 skipped. The new file `tests/home-thread.test.mjs` adds 6 tests. Three old files now assert the new copy. Before this change, 3 tests failed.
+2. **Lint and types:** lint passes on the changed files. The type check shows no errors except the `toSorted` errors that existed before.
+3. **Build:** `vite build` passes and writes 43 route files. It first failed on two descriptions over the 200 limit, from commit 4b263c1: `/work/geo-agent-bench/` (203 characters) and `/writing/geo-agent-bench-phase-a/` (207). Saketh approved shorter plain sentences (2026-11-19): GEO now has 108 characters and Phase A has 165. The Phase A sentence drops the name-spoofing scanner clause. The note still covers it. The home head in `dist/index.html` carries the new title.
+5. **Production build in the browser (`vite preview`, base `/sakethai-portfoliogen/`):** the title, eyebrow, 6 rungs and 4 result rows render. All 7 home images answer 200. The console shows no errors.
+4. **Browser check (dev server):** at 1280 px dark, the hero, ladder, proof cards, featured cards and research cards render. At 375 px light, nothing scrolls sideways (page width 375). The console shows no errors.
+
+**Changes beyond the ADRs:**
+
+1. **Grid fix.** The results block stretched its grid column. `.featured-card` now has `min-width: 0`.
+2. **Results render as a label and value list,** not a `<pre>`. The 76-character lines scrolled sideways even at desktop width. The `results` strings did not change. ADR-058 given up item 4 is updated.
+3. **Alt text** for the six thumbnails comes from each SVG's own `aria-label`, shortened.
+4. **The link label "Read the case study" on featured cards is now "Case study",** to fit one links row.
+5. **The GEO `summary` keeps "Qwen and Claude agent runs; observed Anthropic and OpenAI crawler traffic".** `tests/geo-positioning.test.mjs` guards that wording (ADR-038). The `plain`, `summary` and `featured` fields are shared, so the Work page shows the new SakethWiki, Lekhni and GEO copy too.
+
+**Found, not changed:**
+
+1. The research cards show the ADR-052 plain sentences, not the result sentences that ADR-050 approved. ADR-050 says "Built", but the records do not match it.
+2. `scripts/routes.ts` line 38 still calls Saketh "an applied AI systems engineer" in the résumé page description.
+3. The `activity` entry of 2026-09-22 still calls `lekhni-app` "a public version of the notes layer".
+
+**Not checked:** the real GitHub Pages host, Safari and Firefox, and the tablet width.
