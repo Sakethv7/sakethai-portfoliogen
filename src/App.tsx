@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 
 const Work = lazy(() => import("./pages/Work"));
@@ -15,10 +15,9 @@ const Article = lazy(() => import("./pages/Article"));
 
 const queryClient = new QueryClient();
 
-// HashRouter keeps the previous page's scroll position, so every route change starts at the top.
-// This includes POP: plain <a href="#/..."> links in article Markdown arrive as POP, and the
-// browser doesn't restore scroll for hash routes anyway. Instant, because the site sets
-// scroll-behavior: smooth.
+// The router keeps the previous page's scroll position, so every route change starts at the top.
+// This includes POP (Back and Forward). Instant, because the site sets scroll-behavior: smooth.
+// The ?section= query is not part of pathname, so a section link does not trigger this reset.
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -32,7 +31,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <HashRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <ScrollToTop />
         <Suspense fallback={null}>
           <Routes>
@@ -48,7 +47,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-      </HashRouter>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

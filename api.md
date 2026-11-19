@@ -771,3 +771,137 @@ Invariants:
 - No new dependency. No new route. No change to any existing type.
 - `Article` chunk growth stays small. I will report the gzipped size before and after.
 - A content test fails if a figure file is missing or an `alt` is empty.
+
+---
+
+# Change 2026-11-19: contracts for ADR-047 to ADR-050 (revision 2)
+
+## Visual Level
+
+```mermaid
+flowchart TD
+    A[Data files: portfolio.ts, experience.ts, content/*.md] --> B[Plugin reads records and checks notes]
+    B --> C[Route list]
+    C --> D[Head tags per route]
+    D --> F[dist/route/index.html]
+    C --> G[dist/sitemap.xml]
+    F --> H{Contract checks pass?}
+    G --> H
+    H -- yes --> I[dist is ready to upload]
+    H -- no --> J[Build fails with one error line]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef old fill:#e9ecef,stroke:#6c757d,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A old
+    class B,C,D,E,F,G,H,I new
+    class J fail
+```
+
+*Caption: grey exists today, green is new, red is the failed-check path. The data files are the only input. The `dist/` files are the only output. The static files hold head tags only.*
+
+## Route table
+
+Base path: `/sakethai-portfoliogen/`. Every route ends with `/`.
+
+| Route | Source | File written |
+|---|---|---|
+| `/` | home | `index.html` (head tags replaced) |
+| `/work/` | page | `work/index.html` |
+| `/work/<slug>/` | `work` records with a `caseStudy` value. The Markdown file is `<caseStudy>.md`. | `work/<slug>/index.html` |
+| `/experience/` | page | `experience/index.html` |
+| `/experience/<slug>/` | `experiences` records whose `caseStudy.slug` is set (as `Article.tsx` matches today) | `experience/<slug>/index.html` |
+| `/writing/` | page | `writing/index.html` |
+| `/writing/<slug>/` | `publications` with `status: 'Published'`. Planned and in-progress records get no route. | `writing/<slug>/index.html` |
+| `/resume/` | page | `resume/index.html` |
+| `/research/` | React redirect to `/writing/?kind=research` | `research/index.html` (status 200, then React redirects) |
+| any other | none | `404.html`, status 404, with `noindex` |
+
+The `?kind=`, `?tag=` and `?section=` values are never routes. They do not get files.
+
+Old to new: `/#/<path>?<query>` maps to `/<path>/?<query>`. The slash goes before the `?`. Internal `<Link>` values may omit the trailing slash. GitHub Pages is expected to redirect them (untested, see `architecture.md` open question 3). The canonical address always has the slash.
+
+## Data contract
+
+`PublicationItem` gains one optional field. `tags` was added in PR #4.
+
+```ts
+interface PublicationItem {
+  // existing fields unchanged
+  tags?: string[];   // 2 to 4 labels, each written one way (exact case)
+  pin?: number;      // 1, 2 or 3. At most three records have a pin. Unique values.
+}
+```
+
+Invariants, checked by tests:
+
+1. No two tags differ only by case. No separate tag list exists. The tag set comes from the records.
+2. At most three records have `pin`. The values are unique and between 1 and 3.
+3. A pinned record has `status: 'Published'`.
+4. Every record that has a route and a Markdown body (note, case study, experience study) has its file in `src/content/`.
+
+## Head tags per route
+
+| Tag | Value | Limit |
+|---|---|---|
+| `<title>` | `<record title> \| Saketh Velidimalla`. Home keeps its current title. `404.html` keeps the home title and adds `<meta name="robots" content="noindex">`. | none |
+| `meta description` and `og:description` | The `plain` sentence. Home keeps its current text. | Warn above 160 characters. Error above 200. |
+| `link rel=canonical` and `og:url` | `https://sakethv7.github.io/sakethai-portfoliogen<route>` | Absolute, with trailing `/` |
+| `og:title`, `twitter:title` | Same as `<title>` | none |
+| `og:image`, `twitter:image` | `/og-image.png` (shared) | 1200 by 630 |
+| `og:type` | `article` for a note. `website` for others. | none |
+
+The plugin replaces existing tags. It never adds a second tag of the same name.
+
+## sitemap.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://sakethv7.github.io/sakethai-portfoliogen/writing/<slug>/</loc><lastmod>YYYY-MM-DD</lastmod></url>
+</urlset>
+```
+
+`lastmod` appears only when the record has a `date` or `updated` value. The list has exactly one `<url>` for each route in the route table, and none for `404.html`.
+
+`robots.txt` gains one line: `Sitemap: https://sakethv7.github.io/sakethai-portfoliogen/sitemap.xml`. The existing rules stay. Crawlers read `robots.txt` only at the host root (`https://sakethv7.github.io/robots.txt`), so this line may be ignored. Saketh submits `sitemap.xml` in Google Search Console and Bing Webmaster Tools.
+
+## Plugin contract
+
+| | |
+|---|---|
+| Where | A Vite plugin in `vite.config.ts`, hook `closeBundle`. No new dependency. |
+| Reads | `src/data/portfolio.ts` and `src/data/experience.ts` (not `proof.ts`, which reads `import.meta.env.DEV`), `src/content/*.md`, `dist/index.html`, `dist/robots.txt` |
+| Base path | From the Vite config, so `vite build` and `vite build --mode development` give correct paths |
+| Writes | files under `dist/` only |
+| Network | none |
+| Result | The build passes, or fails with one error line |
+
+Error shapes: one line each, no stack trace. The line starts with `prerender:`.
+
+```
+prerender: missing note file for slug "<slug>"
+prerender: description too long (<n> characters) for "<slug>"
+prerender: route count <r> does not match file count <f>
+```
+
+## Client contract
+
+1. `BrowserRouter` takes `basename` from `import.meta.env.BASE_URL`.
+2. `index.html` has one inline script in `<head>`. It runs only if `location.hash` starts with `#/`. It calls `history.replaceState(null, '', base + hash.slice(2))` where the path ends with `/`.
+3. `main.tsx` keeps `createRoot`. `#root` is empty in every static file.
+4. `Writing` reads `?tag=` and URL-decodes it. A value that matches no tag is ignored. A pill is a link to `?tag=<encoded name>`, with `kind` kept. While a tag is active, series cards are not shown.
+5. `prepareArticle` rewrites a Markdown link `#/<path>` to `<base><path>/`, and builds heading links as `<path>?section=<id>`. A test checks that no `#/` remains in rendered note HTML.
+6. A click handler on `.article-body` sends same-site links to `navigate()`. It ignores clicks with a modifier key and links with a different origin.
+7. The `HashRouter` comments in `App.tsx` and `src/lib/article.ts` are updated.
+8. `prepareArticle(markdown, basePath, siteBase)` also rewrites every relative `src` and `href` in the rendered note (such as `diagrams/x.svg`) to `<siteBase>` plus the path. Reason: a note page is `/writing/<slug>/`, so a relative path no longer reaches the site root. A test checks that none remain.
+9. `usePageTitle(page)` sets `document.title` to `<page> | Saketh Velidimalla`, or the home title when `page` is empty. Each page calls it. Reason: a client-side move does not load a new static file.
+
+## Unchanged
+
+The `?section=` value, the reading aids, and the tag pill look (ADR-042 to ADR-046 and PR #4).
+
+## Open contract questions
+
+1. The home page `#contact` link logic (api.md, "Get in touch") stopped being needed once routing leaves the hash. Leave it as is, or remove it. This draft leaves it.
+2. The `plain` sentence for the four GEO records is over 160 characters. Warn, or shorten them in this change.
+3. `Collection.tsx` shows Planned items when `import.meta.env.DEV` is true. The plugin ignores them, so a Planned item has a card in dev and no page in production.

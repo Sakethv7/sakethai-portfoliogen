@@ -1,6 +1,7 @@
 import { ArrowRight, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { ContactSection } from '@/components/ContactSection';
 import { activity, noteCounts, publications, work } from '@/data/portfolio';
 import { heroProof } from '@/data/proof';
@@ -19,6 +20,7 @@ const topics: [string, string][] = [
 ];
 
 const Index = () => {
+  usePageTitle();
   // The Research block already covers the benchmark, so its releases stay off this list (ADR-035).
   const shipped = activity.filter((item) => item.series !== 'GEO agent benchmark').slice(0, 4);
   const featured = work.filter((item) => item.featured).slice(0, 3);

@@ -1,3 +1,4 @@
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -5,6 +6,7 @@ import { PortfolioShell } from '@/components/PortfolioShell';
 
 const NotFound = () => {
   const location = useLocation();
+  usePageTitle('Page not found');
 
   useEffect(() => {
     console.error('404 Error: User attempted to access non-existent route:', location.pathname);

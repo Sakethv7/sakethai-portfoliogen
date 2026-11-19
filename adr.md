@@ -62,7 +62,7 @@
 
 ## ADR-007: Hash routing remains for the first redesign
 
-**Status:** Accepted
+**Status:** Superseded by ADR-047 (2026-11-19).
 
 **Decision:** Keep the existing `HashRouter` during the first implementation unless the deployment target is changed and configured for SPA rewrites.
 
@@ -1140,3 +1140,204 @@ Other candidates: stop a model call on silence (two timers on one timeline), rer
 **Explainer ladder:** Covered by the shared explainer. No video.
 
 **Build result (2026-11-18, ADR-042 to 046).** All nine new tests pass, and the full suite of 19 passes. Lint and build pass. The `Article` chunk grew from 57.9 kB to 60.3 kB raw (18.8 kB gzipped). The entry script grew from 365.3 kB to 365.9 kB raw. Checked in the browser pane at 1440 px and 375 px: heading ids, sticky contents list, `?section=` scroll, progress bar, folded focus line, end links, table edge fade, and the three figures. Not checked: Safari, Firefox, and find-in-page inside a closed `<details>`. The table fade is partly hidden behind header cells, so header cells are now 55% transparent. Diagrams went into three notes: Ollama or MLX, Calibrate the judge, and Evaluating retrieval failures. I made the retrieval diagram a four-cell grid, not a decision tree, because it matches the note's own table. The four existing GEO figures gained `width` and `height` so the content test could cover them.
+
+---
+
+# Change 2026-11-19: ADR-047 to ADR-050 (revision 2, not yet approved)
+
+Revision 2 follows an independent review. See "Review 1" in `architecture.md`. The biggest change: ADR-047 no longer puts note text in the static files.
+
+Explainer for all four: [adr-047-050-paths-metadata-writing.html](docs/visuals/adr-047-050-paths-metadata-writing.html).
+
+## ADR-047: Use real page addresses and write one HTML file per route, with its own head tags
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged. Replaces ADR-007 and answers the "separate, larger decision" in ADR-043.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader or crawler asks for a page address] --> B{Address has a hash that starts with #/ ?}
+    B -- yes --> C[Inline script rewrites it to the real path]
+    B -- no --> D{Does a file exist for this path?}
+    C --> D
+    D -- yes --> E[GitHub Pages sends that file]
+    D -- no --> F[GitHub Pages sends 404.html with status 404 and noindex]
+    E --> G[Browser starts React and renders the page]
+    F --> H[React shows the Not found page]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E,G new
+    class F,H fail
+```
+
+*Caption: green is new, red is the unknown-address path. Today every address gets the same `index.html`, and the crawler never reaches step D, because it drops the hash.*
+
+**Context:** A crawler ignores the part of an address after `#`. With `HashRouter`, all 54 pages look like one page to search. LinkedIn also previews every link as the home page. ADR-007 kept `HashRouter` until the host could do rewrites. GitHub Pages cannot do rewrites, but it can serve one file per path, and it serves `404.html` for unknown paths.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep `HashRouter` | No work | Notes cannot rank. Previews stay wrong. |
+| B. `BrowserRouter` plus a `404.html` that is a copy of `index.html` | Clean addresses | GitHub Pages sends status 404 for every note. Crawlers treat 404 pages as errors. |
+| C. `BrowserRouter` plus one HTML file per route with its own head tags, and no note text | Real addresses, status 200, right title and preview per page. Google runs JavaScript, so it reads the body. | A small build plugin. Crawlers that do not run JavaScript see an empty body. |
+| D. Option C plus the rendered note text inside each file | Also helps crawlers without JavaScript | Needs wrapper markup, an H1, styles and a no-flash plan. The first draft chose this and the review rejected it. |
+| E. A server-side rendering framework (`vite-react-ssg`, Next.js) | Full static pages | New dependency tree, new entry points, rewrites a working app |
+
+**Choice:** Option C. A Vite plugin at the end of `vite build` writes the files (`architecture.md`, `api.md`). Old `#/` links are rewritten in the browser by an inline script. Links inside notes are rewritten by the Markdown renderer, and a click handler sends them to the router.
+
+**Why:** It fixes the cause (one file for all routes) with the least change. It keeps the app and the host. Status codes are correct: 200 for known pages and 404 for unknown ones.
+
+**Given up:**
+
+1. **A build step that can fail.** If the plugin breaks, the deploy stops. This is on purpose, but it is a new way to be blocked.
+2. **No note text in the static files.** Link-preview bots and search engines that do not run JavaScript see tags but no body. Google does run it. Not proven for this site.
+3. **Old `#/` links work only in a browser.** A crawler and a link-preview bot never run the rewrite, so they still see the home page for old links. Share the new addresses from now on.
+4. **Link handling in notes.** 28 notes hold `#/` links. A renderer change, a click handler and a test are now part of this work.
+5. **`/research` returns 404 before it redirects**, unless it gets its own file. The route table gives it one.
+6. **Unverified host behavior.** The 404 status, the trailing-slash redirect and the `Sitemap:` line are not tested on GitHub Pages. See `architecture.md`, open questions 2 and 3.
+
+## ADR-048: Give each page its own title, description, canonical address and share tags, and publish a sitemap
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Script reads a route's record] --> B[Title: record title plus site name]
+    B --> C[Description: the plain sentence]
+    C --> D{Plain sentence is 200 characters or fewer?}
+    D -- yes --> E[Write title, description, canonical, og and twitter tags]
+    D -- no --> F[Fail the build and name the record]
+    E --> G[Add the route to sitemap.xml]
+    G --> H[Add a Sitemap line to robots.txt]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,G,H new
+    class F fail
+```
+
+*Caption: green is new, red is the failure path. Today the head tags are the same text on every page, and no sitemap exists.*
+
+**Context:** Every page has the home page title and description. No `<link rel="canonical">` exists. The sitemap returns 404. ADR-047 gives each route a file, so each file can carry its own tags.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep one set of tags | No work | Search and previews show the same text for every page |
+| B. Set tags in the browser with a head library | Works for the reader's tab title | A crawler or preview bot that does not run JavaScript sees the old tags |
+| C. Write tags into each file at build time | Every consumer sees the right tags | Part of the plugin from ADR-047 |
+
+**Choice:** Option C. The title is `<record title> | Saketh Velidimalla`. The description is the `plain` sentence, which the copy rules already limit to 25 words. The build warns above 160 characters and fails above 200. Four records are above 160 today (the GEO benchmark ones, up to 178 characters). The image stays the shared `og-image.png`. `404.html` gets `noindex`. Saketh sends `sitemap.xml` to Google Search Console and Bing by hand, because crawlers read `robots.txt` only at the host root.
+
+**Why:** The copy rules already require a plain sentence of 25 words or fewer on every record. Reusing it means no new text to write and no second source to keep in step.
+
+**Given up:**
+
+1. **One share image for all pages.** A note's preview shows the same picture as the home page.
+1a. **Manual step.** Sitemap submission is a person's task. The `Sitemap:` line in this site's `robots.txt` may be ignored.
+2. **Descriptions are not tuned for search.** They are written for a skimming reader, by the copy rules. They may not use the words people search for.
+3. **No `lastmod` dates in the sitemap** unless a record has a date. Work items have `updated`, notes have `date`, and the pages `/work/` and `/writing/` have none.
+4. **A hard limit can block a deploy.** A 201-character sentence fails the build.
+
+## ADR-049: Writing page: tags on series rows, tag filter and a "Start here" row
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged. Builds on ADR-034 and the tags merged in PR #4.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader opens the Writing page] --> B{Address has a tag value?}
+    B -- no --> C[Show Start here row, then the full list]
+    B -- yes --> D{Does any note have that tag?}
+    D -- yes --> E[Show only notes with that tag]
+    D -- no --> F[Show all notes and ignore the tag]
+    C --> G[Each card and chapter row shows its tag pills]
+    E --> G
+    F --> G
+    G --> H[Reader clicks a pill]
+    H --> B
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E,G,H new
+    class F fail
+```
+
+*Caption: green is new. Red is the unknown-tag path, which falls back to the full list. Today the pills are not links, and chapter rows have no pills.*
+
+**Context:** 32 notes carry 97 pills (47 different tags). 24 list cards show pills. The 8 notes inside series show pills only in the article header. A reader cannot act on any pill. The list is newest first, so the three strongest notes can sit far down.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Leave it | No work | Pills do nothing. Series notes are untagged on the list. |
+| B. Pills filter the list | A reader can follow a topic | A second filter next to `?kind=`. More states to test. |
+| C. B plus a "Start here" row | The best notes are first | A hand-kept list that goes stale |
+
+**Choice:** Option C. A record gets an optional `pin` number. The page shows records with a `pin` above the list, sorted by that number, three at most. A pinned series chapter shows as a note card. The tag filter uses `?tag=<name>` (URL-encoded) and combines with `?kind=`. While a tag is active, series cards are replaced by flat note cards. An unknown tag shows the full list, like an unknown `kind` today.
+
+**Why:** Tags and pins use data that already exists or is one field. No new page, no new dependency.
+
+**Given up:**
+
+1. **The pin list is hand-kept.** It is Saketh's choice and can go stale.
+2. **A note can show twice**: in "Start here" and in the list below. We accept this, because hiding it from the list would make the list incomplete.
+3. **Tag names must match exactly.** `RAG` and `rag` are two tags. A test checks that no two tags differ only by case. No separate tag list exists. The tags come from the records.
+4. **No read time on cards** (open question 4 in `architecture.md`).
+
+## ADR-050: The plain sentence of a pinned note states its result
+
+**Status:** Accepted as a rule (2026-11-19). **Not built:** no plain sentence has changed. Saketh must approve each new sentence first. The System 1 draft in this ADR is still to confirm.
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Pick a pinned note] --> B[Read the note's own numbers]
+    B --> C[Draft a plain sentence with the result]
+    C --> D{Is each number in the note text?}
+    D -- yes --> E[Saketh approves the sentence]
+    D -- no --> F[Remove the number or fix the note]
+    E --> G{25 words or fewer, 200 characters or fewer?}
+    G -- yes --> H[Replace the plain sentence]
+    G -- no --> C
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,G,H new
+    class F fail
+```
+
+*Caption: green is new, red is the fix path. Today the plain sentence of each pinned note names the topic, not the result.*
+
+**Context:** The System 1 note's plain sentence says "what three models did on 60 hard test questions". It does not say what they did. Reviewers read for seconds. CLAUDE.md copy rule 1 says the plain sentence names "the problem or the result". Rule 3 allows a number only if it is on the résumé or Saketh confirmed it.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Leave the sentences | No work | The result stays hidden |
+| B. Add a new `takeaway` field | A second sentence on each note | A second thing to keep in step, and two lines say almost the same thing |
+| C. Rewrite `plain` for the pinned notes | One sentence, no new field | Needs Saketh's approval per sentence |
+
+**Choice:** Option C. First draft for the System 1 note, to confirm: "A small first check refused attacks without calling Gemini. On 60 hard questions it made 0 mistakes and ran faster than the big model." (24 words.)
+
+**Why:** The plain sentence is already the first thing a reader sees, and it feeds the search description (ADR-048). One sentence serves both.
+
+**Given up:**
+
+1. **Fewer notes get the treatment.** Only the three pinned notes change now.
+2. **A result sentence can overclaim.** Every number must also appear in the note, and Saketh approves the wording.
+3. **Search and reader copy are one sentence.** If search needs different words, we cannot tune them apart.
+
+## Open questions (all four ADRs)
+
+See `architecture.md`, open questions 1 to 7. In short: a Vite plugin or a `tsx` script, manual sitemap submission, the trailing-slash redirect, which three notes to pin, read time on cards, light theme, a per-note share image, and fixing `architecture.md` line 410 after the change ships.
+
+Also: the System 1 draft sentence above says the small check "ran faster than the big model". The note's table shows Jev (204 ms median) against Gemini (587 ms). Saketh must confirm that the sentence names the right comparison.
+
+**Build result (2026-11-19, ADR-047 to 049).** `npm test` passes (33 tests, 15 new). Lint passes with no errors. Type check shows only the `toSorted` errors that existed before. `vite build` writes 43 route files, `sitemap.xml` (42 addresses) and `404.html`, and warns about 5 descriptions between 164 and 184 characters. Checked in the browser pane against a small server that copies GitHub Pages rules (files per path, `404.html` with status 404, a 301 for a missing trailing slash): an old `#/writing/x?section=y` link became `/writing/x/?section=y` and scrolled to the section; `/research/` answered 200; an unknown path answered 404 with `noindex`; a pill click filtered the list and replaced the series card with its notes; an in-note link moved to another note without a reload; the Start here row shows at 375 px with no sideways scroll. **Changes beyond the drafts:** (1) The review missed that notes use relative paths such as `diagrams/x.svg`. They broke on `/writing/<slug>/`, so the renderer now points every relative `src` and `href` at the site base, with a test. (2) A page does not reload on a client-side move, so the tab title stayed stale. A small `usePageTitle` hook now sets it on each page. **Not checked:** the real GitHub Pages host (404 status, the redirect from a path without a slash, the `Sitemap:` line), Safari and Firefox, and a full-repo lint run (only the changed code was linted). **Not done:** the manual sitemap submission, and the plain sentences of ADR-050.

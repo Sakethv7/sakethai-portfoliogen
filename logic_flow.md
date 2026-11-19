@@ -601,3 +601,105 @@ A click on a contents entry or a heading anchor goes to `#/<route>?section=<id>`
 | Find-in-page does not open the folded phone focus line | The match is hidden | The author, in the browser test |
 
 There are no retries and no loading states beyond the existing body load.
+
+---
+
+# Change 2026-11-19: execution paths for ADR-047 to ADR-050 (revision 2)
+
+## Visual Level
+
+```mermaid
+flowchart TD
+    A[Run npm run build] --> B[Vite writes dist]
+    B --> C[Plugin builds the route list]
+    C --> D{Every route's Markdown file exists?}
+    D -- no --> X[Fail the build and name the route]
+    D -- yes --> E{Every description is 200 characters or fewer?}
+    E -- no --> X
+    E -- yes --> F[Write one HTML file per route]
+    F --> G[Write sitemap, robots line and 404.html]
+    G --> H{Route count equals file count?}
+    H -- no --> X
+    H -- yes --> I[Workflow uploads dist]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef old fill:#e9ecef,stroke:#6c757d,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,I old
+    class C,D,E,F,G,H new
+    class X fail
+```
+
+*Caption: grey exists today, green is new, red is a failed build. A failed build stops the workflow before upload, so the live site does not change.*
+
+## Path 1: build time
+
+1. `vite build` runs as today.
+2. The plugin loads `portfolio.ts` and `experience.ts` from `src/data/` (not `proof.ts`).
+3. It builds the route list (see `api.md`, route table). It keeps only records with `status: 'Published'`.
+4. For each route with a Markdown body (note, case study, experience study) it checks that `src/content/<slug>.md` exists. A missing file is an error.
+5. It checks each description length. Above 160 characters is a warning. Above 200 is an error.
+6. It writes `dist/<route>/index.html` from `dist/index.html` with new head tags. The root element stays empty.
+7. It writes `dist/sitemap.xml`, adds the `Sitemap:` line to `dist/robots.txt` (the file comes from `public/`), and writes `dist/404.html` as a copy of `dist/index.html` with a `noindex` robots tag.
+8. It counts files against routes. A mismatch is an error.
+
+Failure behavior: any error prints one line that names the route and the cause, and fails the build. The workflow stops. GitHub Pages keeps serving the last good deploy. There is no retry. A person fixes the data and pushes again.
+
+## Path 2: a reader opens a real address
+
+1. The browser asks for `/sakethai-portfoliogen/writing/<slug>/`.
+2. GitHub Pages sends `writing/<slug>/index.html` with status 200.
+3. The head script checks `location.hash`. For a normal address it does nothing.
+4. The browser loads the JavaScript. The page is blank until React renders.
+5. `createRoot` fills `#root`. React renders the page. `ScrollToTop` runs.
+6. If the JavaScript fails to load, the reader sees a blank page. This is the same as today.
+
+## Path 3: a reader opens an old hash address
+
+1. The browser asks for `/sakethai-portfoliogen/` (the part after `#` is never sent).
+2. GitHub Pages sends `index.html`.
+3. The head script sees `#/writing/<slug>?section=x`. It calls `history.replaceState` with `/sakethai-portfoliogen/writing/<slug>/?section=x`.
+4. React starts on the real path and shows the note, then scrolls to the section (ADR-043).
+
+A crawler or link-preview bot stops at step 2. It sees the home page. This is the known cost of ADR-047. The inline script puts the slash before any `?`, so `#/writing/x?section=y` becomes `/writing/x/?section=y`.
+
+## Path 4: an unknown address
+
+1. The browser asks for `/sakethai-portfoliogen/nothing/`.
+2. No file exists. GitHub Pages sends `404.html` with status 404.
+3. React reads the path, matches no route, and shows the Not found page.
+
+## Path 5: the Writing page with a tag
+
+State: `kind` (from `?kind=`) and `tag` (from `?tag=`). Each can be empty.
+
+| `kind` | `tag` | Result |
+|---|---|---|
+| empty | empty | "Start here" row, then all notes |
+| set | empty | Notes of that kind (as today) |
+| empty | set, known | Notes with that tag |
+| set | set, known | Notes of that kind with that tag. If none, show the empty-state text. |
+
+While `tag` is known, series cards are not shown. Each matching note, including a series chapter, shows as its own card. The tag value is URL-decoded before the match.
+| any | unknown | The tag is ignored |
+| unknown | any | The kind is ignored (as today) |
+
+"Start here" shows only when both values are empty. A pill click sets `tag` and keeps `kind`. A second click on the active pill clears `tag`.
+
+## Path 6: a reader clicks a link inside a note
+
+1. The renderer already wrote the link as a real path, for example `/sakethai-portfoliogen/writing/<slug>/`. A heading link is `<path>?section=<id>`.
+2. A click handler on the note body checks that the link is on the same site and has no modifier key.
+3. If yes, the handler stops the default action and calls `navigate()`. If no, the browser follows the link as normal.
+4. The router changes the page without a reload. `ScrollToTop` runs.
+
+Failure behavior: a link that no route matches shows the Not found page. A test checks that no `#/` remains in rendered note HTML.
+
+## Path 7: the old redirect address
+
+1. The browser asks for `/sakethai-portfoliogen/research/`.
+2. GitHub Pages sends `research/index.html`, status 200.
+3. React runs the `Navigate` and moves to `/writing/?kind=research`.
+
+## State transitions
+
+The only state is the address. There is no stored state, so there is nothing to migrate.
