@@ -1292,7 +1292,7 @@ flowchart TD
 
 ## ADR-050: The plain sentence of a pinned note states its result
 
-**Status:** Accepted as a rule (2026-11-19). **Not built:** no plain sentence has changed. Saketh must approve each new sentence first. The System 1 draft in this ADR is still to confirm.
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19 for the three pinned notes, not merged. Saketh approved the final wording, which differs from the first System 1 draft below.
 
 ### Visual Level
 
@@ -1324,7 +1324,15 @@ flowchart TD
 | B. Add a new `takeaway` field | A second sentence on each note | A second thing to keep in step, and two lines say almost the same thing |
 | C. Rewrite `plain` for the pinned notes | One sentence, no new field | Needs Saketh's approval per sentence |
 
-**Choice:** Option C. First draft for the System 1 note, to confirm: "A small first check refused attacks without calling Gemini. On 60 hard questions it made 0 mistakes and ran faster than the big model." (24 words.)
+**Choice:** Option C. Approved sentences (2026-11-19):
+
+| Note | Sentence |
+|---|---|
+| System 1 guard | A small first check sorted 60 hard questions into safe, off topic and attack with 0 mistakes, about three times faster than Gemini. (23 words) |
+| Calibrate the judge | Agreement with people can look high while the judge catches nothing, so score failures and passes separately before trusting a judge. (21 words) |
+| Retrieval and generation failures | Scoring retrieval and the written answer separately shows which step failed, so you fix the right one. (17 words) |
+
+The first draft said "ran faster than the big model" and "refused attacks". Both were dropped. The first named an unclear comparison, and the second overclaimed, because the note says the old path was already safe. The two method notes hold no result of Saketh's own, so their sentences state the main point and carry no number.
 
 **Why:** The plain sentence is already the first thing a reader sees, and it feeds the search description (ADR-048). One sentence serves both.
 
