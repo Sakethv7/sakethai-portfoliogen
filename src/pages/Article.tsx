@@ -27,7 +27,7 @@ function findRecord(collection: 'work' | 'writing' | 'experience', slug: string)
   }
   // Planned posts are previewable in `vite dev` only (logic_flow.md, detail-page flow).
   const item = publications.find((entry) => entry.slug === slug && (entry.status === 'Published' || import.meta.env.DEV));
-  return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), plain: item.plain, summary: item.summary, body: item.slug, github: undefined, back: ['/writing', 'Writing'] as const };
+  return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), plain: item.plain, summary: item.summary, tags: item.tags, body: item.slug, github: undefined, back: ['/writing', 'Writing'] as const };
 }
 
 export default function Article({ collection }: { collection: 'work' | 'writing' | 'experience' }) {
@@ -79,6 +79,7 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         <Link className="article-back" to={record.back[0]}><ArrowLeft /> {record.back[1]}</Link>
         <p className="eyebrow">{record.eyebrow}{prepared && ` · about ${prepared.minutes} min read`}</p>
         <h1>{record.title}</h1>
+        {'tags' in record && record.tags && <ul className="tag-row" aria-label="Topics">{record.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}
         <p className="plain-line">{record.plain}</p>
         {record.evidenceStatus && <p className="evidence-status">{record.evidenceStatus}</p>}
         <details className="for-engineers focus-fold" open={!phone}><summary>Technical focus</summary>{record.summary}</details>

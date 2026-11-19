@@ -57,7 +57,7 @@ export default function Collection() {
       <ol className="series-chapters">{entry.chapters.map((chapter) => <li key={chapter.slug}><time>{chapter.date}</time><Link to={`/writing/${chapter.slug}`}>{chapter.title}</Link></li>)}</ol>
       <p className="series-link"><Link to={seriesInfo[entry.name].to}>Read the project overview</Link></p>
     </article> : <article key={entry.item.title}>
-      <div className="meta-line"><span>{entry.item.kind}</span><span>{entry.item.status === 'Published' ? entry.item.date : entry.item.status}</span></div><h2>{entry.item.status === 'Published' ? <Link to={`/writing/${entry.item.slug}`}>{entry.item.title}</Link> : entry.item.title}</h2><p className="plain-line">{entry.item.plain}</p><p className="for-engineers"><span>Technical focus</span>{entry.item.summary}</p>
+      <div className="meta-line"><span>{entry.item.kind}</span><span>{entry.item.status === 'Published' ? entry.item.date : entry.item.status}</span></div><h2>{entry.item.status === 'Published' ? <Link to={`/writing/${entry.item.slug}`}>{entry.item.title}</Link> : entry.item.title}</h2>{entry.item.tags && <ul className="tag-row" aria-label="Topics">{entry.item.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}<p className="plain-line">{entry.item.plain}</p><p className="for-engineers"><span>Technical focus</span>{entry.item.summary}</p>
     </article>) : <div className="honest-empty"><p className="eyebrow">Nothing published yet</p><h2>This shelf starts empty on purpose.</h2><p>New notes will appear here only when there is a real, dated artifact to read.</p></div>}</section>
   </PortfolioShell>;
 }
