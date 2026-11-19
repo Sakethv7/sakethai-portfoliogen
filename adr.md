@@ -1290,6 +1290,46 @@ flowchart TD
 3. **Tag names must match exactly.** `RAG` and `rag` are two tags. A test checks that no two tags differ only by case. No separate tag list exists. The tags come from the records.
 4. **No read time on cards** (open question 4 in `architecture.md`).
 
+### Amendment to ADR-049 (2026-11-19): read time on list cards
+
+Open question 4 asked for read time on the cards. Saketh asked for it. Status: built 2026-11-19, not merged.
+
+#### Visual Level
+
+```mermaid
+flowchart TD
+    A[Build or dev server starts] --> B[Plugin reads every Markdown note]
+    B --> C[Count words with the same rule as the note page]
+    C --> D[Serve the slug to minutes map as a virtual module]
+    D --> E[Writing page imports the map]
+    E --> F{Does the note have a minutes value?}
+    F -- yes --> G[Show about N min read on the card]
+    F -- no --> H[Show no read time]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E,F,G new
+    class H fail
+```
+
+*Caption: green is new. Red is the path for a card with no Markdown file, which shows no label. Level 3 explainer: skipped. The change adds no new failure path and no step outside this chart, so level 2 already shows every step.*
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Load every note into the Writing page | Simple code | The list page would carry all 32 notes, about 250 kB of text |
+| B. A generated data file kept in the repo | Small | Goes stale when a note changes |
+| C. A virtual module built from the Markdown at build time | Small (about 1 kB), always current, one counting rule | A new Vite plugin |
+
+**Choice:** Option C. `src/lib/readingTime.ts` holds the one counting rule. The note page and the plugin both use it. A test checks that every card value equals the note page value.
+
+**Given up:**
+
+1. A second small Vite plugin to maintain.
+2. The reading speed (230 words a minute) is an assumption with no source. Every label says "about".
+3. Series chapter rows show no read time. The series card shows the sum of its chapters.
+4. A note with no Markdown file, such as a planned note in dev, shows no label.
+
 ## ADR-050: The plain sentence of a pinned note states its result
 
 **Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19 for the three pinned notes, not merged. Saketh approved the final wording, which differs from the first System 1 draft below.

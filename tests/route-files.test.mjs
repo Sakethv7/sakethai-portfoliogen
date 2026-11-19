@@ -100,3 +100,16 @@ test('pins: at most three, unique, from 1 to 3, all published', () => {
     assert.equal(note.status, 'Published', note.slug);
   }
 });
+
+test('card read time equals the note page read time for every note (ADR-049)', async () => {
+  const { readingTimes } = await import('../scripts/readingTimes.ts');
+  const { prepareArticle } = await import('../src/lib/article.ts');
+  const { readFile } = await import('node:fs/promises');
+  const dir = new URL('../src/content/', import.meta.url);
+  const times = readingTimes(dir.pathname);
+  assert.ok(Object.keys(times).length >= 30);
+  for (const [slug, minutes] of Object.entries(times)) {
+    assert.ok(minutes >= 1, slug);
+    assert.equal(minutes, prepareArticle(await readFile(new URL(`${slug}.md`, dir), 'utf8'), `/writing/${slug}`).minutes, slug);
+  }
+});
