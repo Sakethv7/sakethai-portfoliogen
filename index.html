@@ -8,6 +8,18 @@
     <meta name="author" content="Saketh Velidimalla" />
     <link rel="canonical" href="https://sakethv7.github.io/sakethai-portfoliogen/" />
 
+    <!-- Set the theme class before first paint so there is no flash (ADR-051). Same key as next-themes. -->
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.className = t;
+      })();
+    </script>
+
     <!-- Old links look like /#/writing/x?section=y. Rewrite them to /writing/x/?section=y before React starts (ADR-047). -->
     <script>
       (function () {

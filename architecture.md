@@ -965,3 +965,60 @@ An independent reviewer read the first draft against the code. Findings and what
 | 11 | Prose too dense in places | Several sentences split |
 
 Not checked by the reviewer, and not checked by me: GitHub Pages redirect and 404 behavior on this exact host. Both must be tested after the first deploy.
+
+## Light and dark theme (ADR-051, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[index.html with inline script] --> B[Script sets theme class on html]
+    B --> C[CSS tokens in root or dark block]
+    C --> D[Components read tokens]
+    E[ThemeProvider reads same class] --> F[Header toggle]
+    F --> G{Can storage save the choice?}
+    G -- yes --> H[Save choice and swap class]
+    G -- no --> I[Swap class for this visit only]
+    H --> C
+    I --> C
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,E,F,G,H new
+    class I fail
+```
+
+*Caption: green is new or changed, red is the failure path. The pages, the tokens and the components exist today. The script, the provider, the toggle and the light token values are new.*
+
+**Complexity tier: single script (a static site).** The theme is a client-side display state. It needs no service, no server and no build step beyond today's. A higher tier would add nothing, so I did not propose one.
+
+**What a token is.** A token is a named CSS variable such as `--background`. Each component says "use `--background`" and does not say which color. The page can then swap every color by changing the variable values. This site already works this way. Almost every color in `src/index.css` is a token. That is why the change is small.
+
+**How the switch works.** The page root (`<html>`) holds a class. No class, or `light`, means the light values in `:root` apply. The class `dark` means the values in the `.dark` block apply. The browser repaints every token user at once. The inline script sets the class before the first paint. `next-themes` then takes over the class when React starts. Both use the storage key `theme`, so they agree.
+
+**Why the inline script is needed.** React starts after the browser has already painted the HTML. Without the script, a dark-mode reader would see a light page for a moment, then a dark page. This is a flash of the wrong theme. The script runs first, so the first paint is correct.
+
+**Parts touched.**
+
+| Part | Change |
+|---|---|
+| `src/index.css` | Move current values to `.dark`. Add light values to `:root`. Add `color-scheme` to each. |
+| `index.html` | Add the inline script. All 43 route files copy it (ADR-047). |
+| `src/App.tsx` | Wrap the app in `ThemeProvider`. |
+| `src/components/ThemeToggle.tsx` | New. One button. |
+| `src/components/Navigation.tsx` | Render the toggle in the header. |
+| `src/components/ui/sonner.tsx` | No change. It already reads the `next-themes` value. |
+| `tests/` | New contrast test over both token sets. |
+
+**Parts not touched, and why.** `public/diagrams/*.svg` (17 files) keep their own dark fills. They load as images, so page CSS cannot reach them. `public/og-image.png` stays dark. A share preview cannot follow a reader's theme. `ParticleBackground.tsx` has three fixed colors, but no file imports it, so it does not run.
+
+**Code against docs.** `architecture.md` line 945 (open question 5 of ADR-047 to 050) says light theme needs its own ADR. This section and ADR-051 answer it. After the change ships, update that line.
+
+### Open questions (ADR-051)
+
+1. **Default theme.** Resolved 2026-11-19: follow the system. A reader on a light computer sees light.
+2. **Diagrams on a light page.** Proposal: leave all 17 dark. Alternative: redraw them with a media query inside each SVG (follows the system only, not the toggle) or inline them so tokens apply (large change, its own ADR). Saketh decides.
+3. **Code blocks.** `.article-body pre` uses `--secondary` as its background. In the light theme that turns light. Proposal: add fixed `--code-*` tokens so code blocks stay dark in both themes. I have not checked whether notes use syntax colors.
+4. **Light palette.** The values in `api.md` are my proposal. They are targets for the contrast test, not a finished design. Saketh should look at them in the browser before approval of the build.
+5. **`theme-color` meta and the share image.** Not in this change. Both stay as they are.
+6. **Pre-render check.** I have not confirmed that the route-file plugin copies the inline script into every file. The build test must check one route file.
+7. **Mobile header.** At 375 px the header is a three-column grid. I have not checked whether a toggle fits without a sideways scroll.

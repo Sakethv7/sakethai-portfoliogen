@@ -703,3 +703,68 @@ Failure behavior: a link that no route matches shows the Not found page. A test 
 ## State transitions
 
 The only state is the address. There is no stored state, so there is nothing to migrate.
+
+## Theme: first paint and toggle (ADR-051, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Browser loads the page] --> B{Is JavaScript on?}
+    B -- no --> C[Show light tokens]
+    B -- yes --> D[Script reads saved choice]
+    D --> E{Value is light or dark?}
+    E -- yes --> G[Set class on html]
+    E -- no or storage error --> F[Read system setting]
+    F --> G
+    G --> H[Page paints]
+    H --> I[Reader clicks toggle]
+    I --> J[Swap class and try to save]
+    J --> K{Save worked?}
+    K -- yes --> L[Choice kept for next visit]
+    K -- no --> M[Choice lasts this visit only]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class D,E,F,G,I,J,K,L new
+    class C,M fail
+```
+
+*Caption: green is new, red is where the feature degrades. Today none of these steps exist. The page always shows dark.*
+
+### Path A: first paint
+
+1. The browser reads `index.html`. The inline script runs in `<head>`, before the body.
+2. The script reads `localStorage.theme` inside a `try` block.
+3. If the value is exactly `light` or `dark`, the script uses it.
+4. Otherwise the script calls `matchMedia("(prefers-color-scheme: dark)")`. A match gives `dark`. No match gives `light`.
+5. The script sets `document.documentElement.className` to the result.
+6. The body paints with the tokens of that class.
+7. React starts. `ThemeProvider` reads the same class and storage key. It makes no visible change.
+
+### Path B: the reader clicks the toggle
+
+1. `ThemeToggle` calls `setTheme` with the opposite theme.
+2. `next-themes` swaps the class on `<html>` and writes `theme` to `localStorage`.
+3. The browser repaints. Every token user changes color at once.
+4. The Sonner toast theme follows, because it reads the same value.
+
+### Failure paths
+
+| Failure | What happens | End state |
+|---|---|---|
+| `localStorage` throws (private mode, blocked data) | The script catches it and uses the system setting. A click still swaps the class. The write fails quietly. | Works for this visit. Choice is lost on reload. |
+| Saved value is not `light` or `dark` | The script ignores it. | System setting applies. |
+| JavaScript off | No class is set. | Light tokens show. Text stays readable. The toggle does not render. |
+| Inline script has a syntax error | The class stays unset. React starts and `next-themes` sets it. | A flash of the wrong theme. Pages still work. |
+| System setting changes while the page is open | No change. The page does not listen after first paint. | The reader's next visit follows the new setting, unless a choice is saved. |
+
+### State transitions
+
+| From | Event | To |
+|---|---|---|
+| no choice, system dark | page load | dark (not saved) |
+| no choice, system light | page load | light (not saved) |
+| any | click toggle | opposite theme (saved if storage works) |
+| saved choice | page load | saved choice, whatever the system says |
+
+No choice is ever cleared by the site. The reader clears it by clearing site data.

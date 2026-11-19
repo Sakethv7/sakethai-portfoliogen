@@ -1401,3 +1401,58 @@ Also: the System 1 draft sentence above says the small check "ran faster than th
 **Rejected:** Add a separate “why” field and new UI labels. The current card layouts already show a short plain line and longer technical line, so clearer copy can solve the problem without changing the content schema or page behavior.
 
 **Teach-back:** not required. Copy-only change; no schema, data flow, or interface behavior changes.
+
+## ADR-051: Add a light theme and a toggle, and keep dark as the look of today
+
+**Status:** Accepted by Saketh (2026-11-19). Built 2026-11-19, not merged. Build result at the end of this ADR.
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-051-light-dark-theme.html](docs/visuals/adr-051-light-dark-theme.html)
+
+```mermaid
+flowchart TD
+    A[Browser asks for a page] --> B[Inline script reads saved choice]
+    B --> C{Saved choice found?}
+    C -- yes --> E[Set theme class on the page root]
+    C -- no or storage blocked --> D[Read the system setting]
+    D --> E
+    E --> F[React starts and reads the same class]
+    F --> G[Page paints with that theme's colors]
+    G --> H[Reader clicks the toggle]
+    H --> I{Can the browser save the choice?}
+    I -- yes --> J[Save choice and swap class]
+    I -- no --> K[Swap class for this visit only]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,E,F,H,I,J new
+    class K fail
+```
+
+*Caption: green is new, red is the failure path. Today the site has one dark theme, set in `:root`, and no step in this chart exists.*
+
+**Context:** The site has one dark theme. Every color comes from CSS variables in `src/index.css`, so a second set of values is a small change. Some parts do not use the variables: three diagram colors in `ParticleBackground.tsx`, one gradient in `index.css`, and 17 SVG files in `public/diagrams/` with dark fills written into each file. `architecture.md` open question 5 says light theme needs its own ADR. This is that ADR.
+
+**Decisions inside this ADR:**
+
+| # | Question | Options | Choice |
+|---|---|---|---|
+| 1 | How does the page switch theme? | A. A `dark` class on `<html>`. B. A `data-theme` attribute. C. Only `prefers-color-scheme`, no toggle. | A. `tailwind.config.ts` already has `darkMode: ["class"]`. Option C gives the reader no control. |
+| 2 | Who manages the state? | A. `next-themes` (already installed, `sonner.tsx` imports it). B. A new hook of about 20 lines. | A. It adds no dependency and it makes the toast theme follow the page. |
+| 3 | How do we avoid a flash of the wrong theme? | A. Rely on `next-themes` alone. B. A small inline script in `index.html`. | B, together with A. `next-themes` runs after React starts, so the first paint can show the wrong theme. The script runs before paint. |
+| 4 | Which theme shows first? | A. Follow the system setting. B. Always dark until the reader chooses. | A. Confirmed by Saketh (2026-11-19). |
+| 5 | How many toggle states? | A. Two (light, dark). B. Three (light, dark, system). | A. The first visit follows the system. After one click the choice is saved. Three states need more UI for little gain. |
+
+**Choice:** Put the dark values in `.dark` and the light values in `:root`. Add the inline script to `index.html`. Wrap the app in `next-themes` `ThemeProvider` with `attribute="class"`. Add a `ThemeToggle` button to the site header. Add a test that checks every text and background token pair in both themes meets WCAG AA (4.5 to 1 for text).
+
+**Why the contrast test:** The current purple (`263 74% 70%`) is about 3 to 1 on white. It would fail on a light page. The light theme needs a darker purple. A test fails the build if a later edit breaks this. Nobody has to remember to check.
+
+**Given up:**
+
+1. **No-JavaScript readers see the light theme.** Today they see dark. The site works without JavaScript only for the page text, and crawlers run JavaScript, so the effect is small.
+2. **One more thing to check on every new page.** A new component must use the tokens and not a fixed color. The test covers tokens only. It cannot see a fixed color in a component.
+3. **Diagrams stay dark in both themes** if open question 2 goes as proposed. On a light page they look like dark panels. That is a visible compromise.
+4. **About 20 more lines of code in the first paint path.** The inline script blocks paint for a few microseconds. A wrong script would break every page, because all 43 route files copy `index.html`.
+5. **The first impression may change for recruiters.** A recruiter on a light-mode computer now sees a light site, not the dark one Saketh chose.
+
+**Build result (2026-11-19, ADR-051).** `npm test` passes (60 pass, 1 skipped). Lint passes on the changed files. The type check shows no new errors. `vite build` writes 43 route files, and the theme script is in the ones I checked. Checked in the browser pane: with no saved choice and a light system, the page is light. A click gives dark, saves `theme=dark`, and the choice holds across a page move. At 375 px the header fits with no sideways scroll, and code blocks stay dark on a light page. **Skipped test:** `destructive-foreground` on `destructive` in the dark theme is 4.19 to 1. The dark values are the old look, so I left them. **Not checked:** the dark-system first paint (this pane cannot emulate it for local pages), the flash on a slow connection, Safari and Firefox, the 17 diagrams on a light page, and a screenshot of every page in light. **Not done:** the explainer in dark mode.

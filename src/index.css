@@ -3,11 +3,22 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+  --background: 40 25% 97%; --foreground: 222 33% 10%; --card: 0 0% 100%; --card-foreground: 222 33% 10%;
+  --popover: 0 0% 100%; --popover-foreground: 222 33% 10%; --primary: 263 60% 45%; --primary-foreground: 0 0% 100%;
+  --secondary: 40 15% 92%; --secondary-foreground: 222 33% 10%; --muted: 40 15% 92%; --muted-foreground: 220 10% 38%;
+  --accent: 186 70% 28%; --accent-foreground: 0 0% 100%; --destructive: 0 72% 45%; --destructive-foreground: 0 0% 100%;
+  --border: 40 10% 84%; --input: 40 10% 84%; --ring: 263 60% 45%; --radius: .5rem;
+  --code-bg: 222 18% 13%; --code-fg: 42 20% 92%;
+}
+/* Dark values are the original look of the site (ADR-051). */
+.dark {
+  color-scheme: dark;
   --background: 222 33% 5%; --foreground: 42 20% 92%; --card: 222 25% 8%; --card-foreground: 42 20% 92%;
   --popover: 222 25% 8%; --popover-foreground: 42 20% 92%; --primary: 263 74% 70%; --primary-foreground: 222 33% 5%;
   --secondary: 222 18% 13%; --secondary-foreground: 42 20% 92%; --muted: 222 18% 13%; --muted-foreground: 218 12% 65%;
   --accent: 186 55% 55%; --accent-foreground: 222 33% 5%; --destructive: 0 70% 50%; --destructive-foreground: 42 20% 92%;
-  --border: 220 14% 18%; --input: 220 14% 18%; --ring: 263 74% 70%; --radius: .5rem;
+  --border: 220 14% 18%; --input: 220 14% 18%; --ring: 263 74% 70%;
 }
 * { box-sizing: border-box; border-color: hsl(var(--border)); }
 html { scroll-behavior: smooth; }
@@ -21,6 +32,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .site-nav { display: flex; align-items: center; gap: 28px; color: hsl(var(--muted-foreground)); font-size: .9rem; }
 .site-nav a { padding: 25px 0 22px; border-bottom: 2px solid transparent; }
 .site-nav a:hover, .site-nav a.active { color: hsl(var(--foreground)); border-bottom-color: hsl(var(--primary)); }
+.header-actions { justify-self: end; display: flex; align-items: center; gap: 10px; }
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid hsl(var(--border)); border-radius: 999px; background: transparent; color: hsl(var(--muted-foreground)); cursor: pointer; }
+.theme-toggle:hover, .theme-toggle:focus-visible { color: hsl(var(--foreground)); border-color: hsl(var(--foreground) / .45); }
+.theme-toggle svg { width: 16px; height: 16px; }
 .resume-link { justify-self: end; border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 7px 15px; font-size: .86rem; }
 .editorial-section { padding-block: 92px; border-bottom: 1px solid hsl(var(--border)); }
 .hero { padding-top: 120px; }
@@ -192,7 +207,7 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .article-body th, .article-body td { border: 1px solid hsl(var(--border)); padding: 10px 14px; text-align: left; }
 .article-body th { background: hsl(var(--card) / .55); font-weight: 600; }
 .article-body code { font-family: ui-monospace, monospace; font-size: .88em; background: hsl(var(--secondary)); padding: 2px 6px; border-radius: 4px; }
-.article-body pre { overflow-x: auto; color-scheme: dark; scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--secondary)); background: hsl(var(--secondary)); padding: 16px 18px; border-radius: 6px; line-height: 1.35; }
+.article-body pre { overflow-x: auto; color-scheme: dark; scrollbar-color: hsl(218 12% 65%) hsl(var(--code-bg)); background: hsl(var(--code-bg)); color: hsl(var(--code-fg)); padding: 16px 18px; border-radius: 6px; line-height: 1.35; }
 .article-body pre code { background: none; padding: 0; font-size: .8rem; }
 .collection-list h2 a:hover { color: hsl(var(--primary)); }
 
@@ -222,7 +237,7 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
   .article-body h2 { margin-top: 44px; }
   .site-header { min-height: 108px; grid-template-columns: 1fr auto; grid-template-rows: 52px 52px; }
   .wordmark { grid-column: 1; grid-row: 1; }
-  .resume-link { grid-column: 2; grid-row: 1; }
+  .header-actions { grid-column: 2; grid-row: 1; }
   .site-nav { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: space-between; padding: 0; overflow: visible; border-top: 1px solid hsl(var(--border)); }
   .site-nav a { padding: 14px 0 12px; }
   .resume-link { padding: 5px 9px; }

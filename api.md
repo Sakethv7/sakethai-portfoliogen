@@ -905,3 +905,96 @@ The `?section=` value, the reading aids, and the tag pill look (ADR-042 to ADR-0
 1. The home page `#contact` link logic (api.md, "Get in touch") stopped being needed once routing leaves the hash. Leave it as is, or remove it. This draft leaves it.
 2. The `plain` sentence for the four GEO records is over 160 characters. Warn, or shorten them in this change.
 3. `Collection.tsx` shows Planned items when `import.meta.env.DEV` is true. The plugin ignores them, so a Planned item has a card in dev and no page in production.
+
+## Theme contract (ADR-051, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Storage key theme] --> B[Inline script]
+    A --> C[ThemeProvider]
+    B --> D[Class on html]
+    C --> D
+    D --> E{Class is dark?}
+    E -- yes --> F[dark token block applies]
+    E -- no --> G[root token block applies]
+    H[ThemeToggle] --> C
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    class A,B,C,D,E,F,G,H new
+```
+
+*Caption: green is new. The contract has one shared key and one shared class. Every other piece reads one of them.*
+
+### Shared state
+
+| Name | Type | Values | Owner |
+|---|---|---|---|
+| `localStorage["theme"]` | string | `"light"`, `"dark"`. Any other value or no value means "no choice". | Written by `next-themes`. Read by the script and the provider. |
+| `html` class | string | `"light"` or `"dark"`. | Set by the script first, then by `next-themes`. |
+
+Invariant: after the script runs, the `html` class is always one of the two values. The `dark` class selects the `.dark` token block. Any other class selects the `:root` block.
+
+### Provider
+
+```tsx
+<ThemeProvider attribute="class" defaultTheme="system" storageKey="theme" enableSystem disableTransitionOnChange>
+```
+
+`defaultTheme` follows open question 1 in `architecture.md`. `disableTransitionOnChange` stops a half-second color fade on every element during a swap.
+
+### Component
+
+```ts
+// src/components/ThemeToggle.tsx
+export default function ThemeToggle(): JSX.Element
+```
+
+Takes no props. Renders one `<button type="button">`. Its `aria-label` names the action: "Switch to light theme" when dark, "Switch to dark theme" when light. Before `next-themes` knows the theme (first client render), it renders a button of the same size with no icon, so the header does not shift.
+
+### Tokens
+
+Same names as today. Dark values do not change. Light values below are targets, checked by the contrast test.
+
+| Token | Dark (today) | Light (proposed) |
+|---|---|---|
+| `--background` | `222 33% 5%` | `40 25% 97%` |
+| `--foreground` | `42 20% 92%` | `222 33% 10%` |
+| `--card`, `--popover` | `222 25% 8%` | `0 0% 100%` |
+| `--card-foreground`, `--popover-foreground` | `42 20% 92%` | `222 33% 10%` |
+| `--primary`, `--ring` | `263 74% 70%` | `263 60% 45%` |
+| `--primary-foreground` | `222 33% 5%` | `0 0% 100%` |
+| `--secondary`, `--muted` | `222 18% 13%` | `40 15% 92%` |
+| `--secondary-foreground` | `42 20% 92%` | `222 33% 10%` |
+| `--muted-foreground` | `218 12% 65%` | `220 10% 38%` |
+| `--accent` | `186 55% 55%` | `186 70% 28%` |
+| `--accent-foreground` | `222 33% 5%` | `0 0% 100%` |
+| `--destructive` | `0 70% 50%` | `0 72% 45%` |
+| `--destructive-foreground` | `42 20% 92%` | `0 0% 100%` |
+| `--border`, `--input` | `220 14% 18%` | `40 10% 84%` |
+
+New in each block: `color-scheme: light` (in `:root`) and `color-scheme: dark` (in `.dark`). This makes scrollbars and form controls match.
+
+### Contrast test
+
+File: `tests/themeContrast.test.ts`. It reads both token blocks from `src/index.css`.
+
+| Check | Minimum ratio |
+|---|---|
+| `foreground` on `background`, `card`, `secondary` | 4.5 |
+| `muted-foreground` on `background`, `card`, `secondary` | 4.5 |
+| `primary` on `background` and `card` (used as link and label text) | 4.5 |
+| `primary-foreground` on `primary` | 4.5 |
+| `accent-foreground` on `accent` | 4.5 |
+| `destructive-foreground` on `destructive` | 4.5 |
+
+Error shape: the test names the theme, the token pair and the measured ratio.
+
+### Unchanged
+
+Route addresses, head tags, the sitemap, the page-title hook, and every content API.
+
+### Open contract questions
+
+1. Whether `--code-bg` and `--code-fg` become new tokens (architecture open question 3).
+2. Whether the pair `primary` on `secondary` also needs a check. Some tags use that pair.
