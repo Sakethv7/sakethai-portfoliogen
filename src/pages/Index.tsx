@@ -94,7 +94,7 @@ const Index = () => {
         <div><p className="eyebrow">Research</p><h2>Experiments with measured limits</h2></div>
         <Link to="/writing?kind=research">All {noteCounts.research} research notes <ArrowRight /></Link>
       </div>
-      <p className="section-intro">Independent experiments on clustering algorithms and AI-agent behavior. Each study separates its measured result from what it does not prove.</p>
+      <p className="section-intro">I run small, controlled tests to answer practical questions about model speed and AI-agent behavior. Each note explains why I ran the test, what happened, and what the result cannot establish.</p>
       <div className="featured-grid">
         {research.map((item, index) => <article className="featured-card" key={item!.slug}>
           <p className="item-index">0{index + 1}</p><p className="evidence-status">{item!.kind} · {item!.date}</p><h3>{item!.title}</h3><p className="plain-line">{item!.plain}</p>

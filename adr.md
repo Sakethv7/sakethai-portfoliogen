@@ -1389,3 +1389,15 @@ See `architecture.md`, open questions 1 to 7. In short: a Vite plugin or a `tsx`
 Also: the System 1 draft sentence above says the small check "ran faster than the big model". The note's table shows Jev (204 ms median) against Gemini (587 ms). Saketh must confirm that the sentence names the right comparison.
 
 **Build result (2026-11-19, ADR-047 to 049).** `npm test` passes (33 tests, 15 new). Lint passes with no errors. Type check shows only the `toSorted` errors that existed before. `vite build` writes 43 route files, `sitemap.xml` (42 addresses) and `404.html`, and warns about 5 descriptions between 164 and 184 characters. Checked in the browser pane against a small server that copies GitHub Pages rules (files per path, `404.html` with status 404, a 301 for a missing trailing slash): an old `#/writing/x?section=y` link became `/writing/x/?section=y` and scrolled to the section; `/research/` answered 200; an unknown path answered 404 with `noindex`; a pill click filtered the list and replaced the series card with its notes; an in-note link moved to another note without a reload; the Start here row shows at 375 px with no sideways scroll. **Changes beyond the drafts:** (1) The review missed that notes use relative paths such as `diagrams/x.svg`. They broke on `/writing/<slug>/`, so the renderer now points every relative `src` and `href` at the site base, with a test. (2) A page does not reload on a client-side move, so the tab title stayed stale. A small `usePageTitle` hook now sets it on each page. **Not checked:** the real GitHub Pages host (404 status, the redirect from a path without a slash, the `Sitemap:` line), Safari and Firefox, and a full-repo lint run (only the changed code was linted). **Not done:** the manual sitemap submission, and the plain sentences of ADR-050.
+
+## ADR-052: Explain the question and takeaway in portfolio summaries
+
+**Status:** Implemented in source, not merged (2026-11-19).
+
+**Context:** Project and note cards often named a system or listed measurements without saying why the work was done. A reader had to open the note to learn the question or intended use.
+
+**Decision:** Use the short `plain` copy for the question or goal and the practical takeaway. Keep the exact setup, numbers, and technical scope in `summary`, and retain caveats such as public-data-only validation. Apply this to Home, Work, Experience, and Writing cards through their shared data records. Keep the existing research evidence and avoid adding claims not supported by the published note or project record.
+
+**Rejected:** Add a separate “why” field and new UI labels. The current card layouts already show a short plain line and longer technical line, so clearer copy can solve the problem without changing the content schema or page behavior.
+
+**Teach-back:** not required. Copy-only change; no schema, data flow, or interface behavior changes.

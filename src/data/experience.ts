@@ -27,7 +27,7 @@ export const experiences: ExperienceItem[] = [
       summary: 'Schema-validated pipelines, LLM evaluation, trace-level observability, and lineage-aware failure triage across interaction and downstream support-intake outcomes.',
       evidenceStatus: 'Production / enterprise',
     },
-    summary: 'Data scientist for enterprise AI quality and operational analytics: schema-governed pipelines, LLM evaluation, observability, and semantic reporting for a RAG and support-automation platform serving approximately 140,000 internal users.',
+    summary: 'I build the data and evaluation systems that show whether an enterprise RAG platform is helping users, where it fails, and which fixes improve resolution.',
     highlights: [
       'Owned evaluation, analytics, reporting, and observability for a production enterprise RAG system serving approximately 140,000 internal users across knowledge retrieval, case-management, and content-governance workflows.',
       'Built a three-layer LLM-as-judge pipeline on AWS Bedrock / Llama 3.2 combining rule-based classifiers, batch LLM categorization, and keyword fallbacks to evaluate thousands of queries daily.',
@@ -46,7 +46,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: 'idwteam', company: 'iDwTeam LLC', title: 'Data Science Engineer', employmentType: 'Full-time',
     period: 'Nov 2024 – Feb 2025', location: 'Alpharetta, Georgia', workMode: 'Remote', linkedinOnly: true,
-    summary: 'AI-enabled HR operations analytics combining unstructured query analysis, lakehouse modeling, and stakeholder-facing dashboards.',
+    summary: 'I explored how NLP and semantic similarity could group recurring HR questions, then modeled the results for operational dashboards.',
     highlights: [
       'Built an HR operations analytics prototype using synthetic and proxy data to simulate enterprise workflows.',
       'Applied TF-IDF, topic modeling, and semantic similarity to recurring patterns in unstructured query logs.',
@@ -56,7 +56,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: 'hp', company: 'Hewlett Packard Inc.', title: 'Data Science Engineer', employmentType: 'Contract',
     period: 'Jul 2024 – Nov 2024', location: 'Spring, Texas', workMode: 'On-site',
-    summary: 'Distributed data pipelines and business-facing telemetry analytics for hardware engineering teams.',
+    summary: 'I built data pipelines and telemetry reports so hardware engineering teams could compare device trends and prioritize issues.',
     highlights: [
       'Built Airflow DAGs running PySpark transformations from S3 PC telemetry into Redshift views for Power BI reporting across hardware, software, power, sensor, and BIOS data.',
       'Optimized PySpark processing on AWS EMR, reducing runtime by approximately 25% through query optimization, repartitioning, and pipeline tuning.',
@@ -67,7 +67,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: 'asu', company: 'Arizona State University', title: 'Data Science Graduate Assistant', employmentType: 'Part-time',
     period: 'Feb 2023 – May 2024', location: 'Tempe, Arizona', workMode: 'On-site', linkedinOnly: true,
-    summary: 'Applied NLP research for educational analytics and student-feedback analysis.',
+    summary: 'I applied NLP to student feedback and engagement data to surface patterns for educational research and review.',
     highlights: [
       'Researched transformer models and semantic-similarity methods for identifying at-risk students.',
       'Built Python sentiment-analysis workflows using BERT and RoBERTa on course feedback and evaluations.',
@@ -77,7 +77,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: 'ecrent', company: 'ECrent Worldwide Company', title: 'Machine Learning Engineer', employmentType: 'Full-time',
     period: 'Jul 2021 – Jun 2022', location: 'Bengaluru, Karnataka, India', workMode: 'Remote',
-    summary: 'Recommendation and semantic-ranking systems for a real-estate marketplace.',
+    summary: 'I built listing recommendations and semantic ranking so marketplace users could find relevant properties from attributes and descriptions.',
     highlights: [
       'Built and deployed a content-based recommendation system for real-estate listings using structured attributes and text descriptions to generate personalized suggestions.',
       'Implemented semantic-similarity ranking with Word2Vec embeddings and evaluated results with Precision-at-K and Recall-at-K.',
