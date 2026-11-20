@@ -1103,3 +1103,49 @@ flowchart TD
 **Complexity tier: single script (a static site).** One optional field on two record types and one row of chips. No new step at build or run time.
 
 **Parts touched.** `src/data/portfolio.ts` (field and six lists), `src/pages/Index.tsx` (chip row on featured and research cards), `src/index.css` (chip style), `tests/home-thread.test.mjs` (limits). The `/work` and `/writing` pages do not change.
+
+## Work page: curated, then archive (ADR-060 to ADR-062, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Work header: five projects, then the rest] --> B[Five selected cards]
+    B --> C[GEO card links to Seven findings]
+    C --> D[GEO case study section: seven findings]
+    B --> E[Compact archive in three groups]
+    E --> F[GitHub repositories link]
+    G[Commit chart] --> H{Still on the page?}
+    H -- no --> I[Removed with its data file and script]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E new
+    class I fail
+```
+
+*Caption: green is new or changed. Red is the part that leaves. The GitHub repositories link exists today and does not change. The full page with each failure path is in [adr-060-062-work-page.html](docs/visuals/adr-060-062-work-page.html).*
+
+**Complexity tier: single script (a static site).** All data is static records. The change is layout, copy and one Markdown section. No server, fetch or build step is added. One build-time script is removed.
+
+**What "curated, then archive" means.** The top of the page holds a short, fixed list of projects, chosen by hand. These are the ones that back the claim on the home page. They get full cards. Every other project stays on the page as one line. Nothing is hidden behind a fold.
+
+**Parts touched.**
+
+| Part | Change |
+|---|---|
+| `src/pages/Work.tsx` | Selected list and full cards. Compact archive. No folds. No commit chart. |
+| `src/data/portfolio.ts` | RAG Mini and SDLC get label, diagram and tools. New RAG Mini and SDLC plain lines. RoastRank and AI digest change group. "Creative builds" becomes "Automations & creative builds". Three ML records become `ml-fundamentals` with a `repos` list. SakethWiki date. LeetCode Coach line. GEO `proofLink` points on site. |
+| `src/content/geo-agent-bench-overview.md` | New "Seven findings" section. |
+| `src/pages/Index.tsx` | The results block title links on site. |
+| `scripts/routes.ts` | New `/work/` description. |
+| `src/index.css` | Selected card and archive line styles. Fold and chart styles go. |
+| Deleted | `src/components/CommitChart.tsx`, `src/data/commits.ts`, `scripts/update-commits.sh` |
+| `tests/` | A new test for the selected list, the section id and the merged record. |
+
+**Shared pieces.** The selected cards reuse the home card parts: the thumbnail, the tool chips and the links row. They are not a second design. If both pages need the same card, the card moves into one component in `src/components/`.
+
+**Code against docs.** ADR-037 folds two groups and keeps counts off the header. This change removes the folds. After approval, mark that part of ADR-037 superseded in place. The `/work/` description in `scripts/routes.ts` makes the same false claim as the header. This change fixes both.
+
+### Open questions (ADR-060 to ADR-062)
+
+See the open questions at the end of the ADR-060 to ADR-062 block in `adr.md`. They cover RoastRank, Job Tracker, the Render demo and the SDLC tool list.

@@ -30,7 +30,7 @@ export function buildRoutes({ work, publications, experiences }: SiteData): Rout
   const routes: RouteHead[] = [
     { path: '/', title: '', description: '', type: 'website', sitemap: true, keepHead: true },
     { path: '/work/', title: titleOf('Work archive'), type: 'website', sitemap: true,
-      description: 'Production-facing systems, developer tools and experiments. Each entry says whether it is deployed work, a prototype or learning work.' },
+      description: 'Five projects that show how I find AI failures, then everything else I have built.' },
     { path: '/experience/', title: titleOf('Experience'), type: 'website', sitemap: true,
       description: 'From marketplace machine learning to hardware telemetry and production enterprise AI quality systems.' },
     { path: '/writing/', title: titleOf('Writing'), description: writingText, type: 'website', sitemap: true },

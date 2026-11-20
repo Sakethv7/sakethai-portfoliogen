@@ -1119,3 +1119,65 @@ stack?: string[]; // 1 to 6 entries, each 40 characters or fewer, each named in 
 ```
 
 **Invariants:** at most 6 entries, each 40 characters or fewer, no duplicates in one list. `tests/home-thread.test.mjs` checks the count and length. Nothing checks that a note names each tool. The author checks that at review. `stack` does not feed the `/writing` tag filter.
+
+## Work page contracts (ADR-060 to ADR-062, proposed 2026-11-19)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[selectedSlugs in Work.tsx] --> B{Each slug is a work record?}
+    B -- yes --> C[Full card]
+    B -- no --> D[Test fails]
+    E[WorkItem with repos] --> F[One archive line with one link per repo]
+    G[proofLink with to] --> H[Section link on the same site]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,E,F,G,H new
+    class D fail
+```
+
+*Caption: green is new. Red is the failure path.*
+
+### Type changes in `src/data/portfolio.ts`
+
+```ts
+export type WorkCategory = 'Flagship systems' | 'Developer tools' | 'Experiments & learning' | 'Automations & creative builds';
+export interface WorkItem {
+  // ...existing fields
+  repos?: { label: string; href: string }[]; // archive line links when one record covers several repositories
+}
+```
+
+`'Creative builds'` is renamed. No record keeps the old value.
+
+### New constant in `src/pages/Work.tsx`
+
+```ts
+const selectedSlugs = ['geo-agent-bench', 'rag-mini', 'sakethwiki', 'lekhni', 'sdlc-intelligence-agent'];
+```
+
+### Record changes
+
+| Record | Field | Value |
+|---|---|---|
+| `geo-agent-bench` | `proofLink` | `{ label: 'Seven findings', to: '/work/geo-agent-bench?section=seven-findings' }` |
+| `rag-mini` | `plain`, `evidenceStatus`, `diagram`, `stack` | As in ADR-060 |
+| `sdlc-intelligence-agent` | `plain`, `diagram`, `stack` | As in ADR-060 |
+| `sakethwiki` | `updated` | `'2026-10-08'` |
+| `roastrank` | `category` | `'Experiments & learning'` |
+| `ai-digest` | `category` | `'Automations & creative builds'` |
+| `classical-ml-lab`, `ml-foundations`, `neurons-background` | removed | Replaced by `ml-fundamentals` with `repos` for all three |
+| `leetcode-coach` | `plain` | As in ADR-060 |
+
+### Home results block
+
+The block draws when `results` exists and `proofLink` exists, with either `to` or `href`. The title reads "From the seven findings" for a `to` link and stays "From FINDINGS.md" for an `href` link.
+
+### Invariants
+
+1. Every slug in `selectedSlugs` names a work record. A test checks this.
+2. The heading "Seven findings" in `geo-agent-bench-overview.md` exists, so the id `seven-findings` exists. A test checks this.
+3. No record has `category: 'Creative builds'`.
+4. Every `repos` entry has a non-empty label and an `https://github.com/` address.
+5. No file imports `CommitChart` or `@/data/commits`.

@@ -6,8 +6,7 @@ import { ContactSection } from '@/components/ContactSection';
 import { noteCounts, publications, work, type WorkItem } from '@/data/portfolio';
 import { heroProof, homeRoleLine, stackLadder } from '@/data/proof';
 import { resumeExperiences } from '@/data/experience';
-
-const base = import.meta.env.BASE_URL;
+import { StackRow, Thumb } from '@/components/CardParts';
 
 // The three evaluation notes, in this order (ADR-057). Diagrams are local because only home uses them.
 const researchSlugs = ['system-one-guard-for-rag', 'calibrate-your-llm-judge', 'retrieval-vs-generation-failures'];
@@ -16,16 +15,6 @@ const noteDiagrams: Record<string, NonNullable<WorkItem['diagram']>> = {
   'calibrate-your-llm-judge': { src: 'diagrams/judge-calibration-loop.svg', alt: 'Judge calibration loop: label a small set, tune the judge on one half, then report true positive and true negative rates on the held-out half', width: 900, height: 960 },
   'retrieval-vs-generation-failures': { src: 'diagrams/retrieval-vs-generation.svg', alt: 'Four outcomes from two questions: was the context good, and was the answer good. Each bad pair points to retrieval or generation', width: 900, height: 700 },
 };
-
-// Tools, services and methods named in the note or repository (ADR-059).
-function StackRow({ stack }: { stack?: string[] }) {
-  if (!stack?.length) return null;
-  return <ul className="stack-row" aria-label="Tools and methods">{stack.map((name) => <li key={name}>{name}</li>)}</ul>;
-}
-
-function Thumb({ diagram }: { diagram: NonNullable<WorkItem['diagram']> }) {
-  return <img className="card-diagram" src={`${base}${diagram.src}`} alt={diagram.alt} width={diagram.width} height={diagram.height} loading="lazy" />;
-}
 
 const Index = () => {
   usePageTitle();
@@ -93,8 +82,9 @@ const Index = () => {
           {item.diagram && <Thumb diagram={item.diagram} />}
           <p className="for-engineers"><span>Technical scope</span>{item.summary}</p>
           <StackRow stack={item.stack} />
-          {item.results && item.proofLink?.href && <figure className="results-block">
-            <figcaption><a href={item.proofLink.href} target="_blank" rel="noreferrer">From FINDINGS.md <ExternalLink /></a></figcaption>
+          {item.results && item.proofLink && <figure className="results-block">
+            {/* On-site findings link to the case study section (ADR-061). An outside source keeps its file name. */}
+            <figcaption>{item.proofLink.to ? <Link to={item.proofLink.to}>From the seven findings <ArrowRight /></Link> : <a href={item.proofLink.href} target="_blank" rel="noreferrer">From FINDINGS.md <ExternalLink /></a>}</figcaption>
             {/* Each line is "label   values". The label gets its own column so the values can wrap in a narrow card. */}
             <dl>{item.results.map((line) => { const [, label = line, value = ''] = line.match(/^(\S.*?)\s{2,}(.*)$/) ?? []; return <div key={line}><dt>{label}</dt><dd>{value}</dd></div>; })}</dl>
           </figure>}

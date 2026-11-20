@@ -83,7 +83,7 @@ test('each stack list has 1 to 6 entries of 40 characters or fewer, with no dupl
   const portfolio = await read('src/data/portfolio.ts');
   const lists = [...portfolio.matchAll(/stack: \[([^\]]*)\]/g)].map(([, body]) => [...body.matchAll(/'((?:[^'\\]|\\.)*)'|"([^"]*)"/g)].map((match) => match[1] ?? match[2]));
 
-  assert.equal(lists.length, 6);
+  assert.ok(lists.length >= 6);
   for (const list of lists) {
     assert.ok(list.length >= 1 && list.length <= 6, list.join(', '));
     assert.equal(new Set(list).size, list.length, list.join(', '));

@@ -1896,3 +1896,224 @@ flowchart TD
 3. The calibration note mentions Llama once. I did not read whether it is a tool you used or an example from a source, so I left it out.
 
 **Build result (2026-11-19, ADR-059).** `npm test` gives 67 pass, 0 fail, 1 skipped. Two new tests check the list limits and that both card types draw the row. Lint passes on the changed files. The type check shows no new errors. `vite build` writes 43 route files. In the dev server, all 6 cards show their chips (6, 6, 6, 6, 4, 4) at 1280 px light. At 375 px dark, nothing scrolls sideways. **Change beyond the ADR:** the slug `geo-agent-bench` names both a work record and a publication. The list goes on the work record. **Not checked:** Safari and Firefox, and the tablet width.
+
+# Change 2026-11-19: the Work page is curated first, then an archive (ADR-060 to ADR-062, proposed)
+
+All three ADRs share one level 3 explainer: [docs/visuals/adr-060-062-work-page.html](docs/visuals/adr-060-062-work-page.html). It shows the Work page from top to bottom after the change. It also shows the GEO findings section and each failure path.
+
+**Where this came from.** A review on 2026-11-19 used the same audit as the home page. It found four problems:
+
+1. **The header is not true.** It says each entry states whether it is deployed work, a prototype or learning work. Only 6 of 22 entries have that label.
+2. **The one live AI system is hidden.** RAG Mini runs on Render, and its demo answered 200 on 2026-11-19. It sits in "Experiments & learning", which starts folded.
+3. **Every project has the same weight.** The page is about 6,200 px tall, and nothing says where to stop.
+4. **The findings are off the site.** The seven GEO findings, each with its evidence and limit, live only in `FINDINGS.md` on GitHub. The home card links there.
+
+Saketh chose "curated, then archive" for the Work page (2026-11-19).
+
+## ADR-060: The Work page shows five selected projects as full cards, then a compact archive
+
+**Status:** Accepted by Saketh (2026-11-19).
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-060-062-work-page.html](docs/visuals/adr-060-062-work-page.html)
+
+```mermaid
+flowchart TD
+    A[Reader opens the Work page] --> B[Read the header: five projects, then everything else]
+    B --> C[Draw five selected cards in a fixed order]
+    C --> D{Is each selected slug a work record?}
+    D -- no --> E[Test fails before the build ships]
+    D -- yes --> F[Draw label, plain line, diagram, scope, tools, links]
+    F --> G[Draw the archive: one line per remaining project]
+    G --> H{Is the archive group empty?}
+    H -- yes --> I[Skip that group]
+    H -- no --> J[Draw the group heading and its lines]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,C,D,F,G,H,J new
+    class E,I fail
+```
+
+*Caption: green is new or changed. Red is a failure path or a skipped group. Today the page draws four groups of full rows, and two groups start folded.*
+
+**Context:** Today every project gets a full row with a scope line, generic tags and every note title. GEO alone lists 10 note titles inline. RAG Mini, with its live demo, is folded. RoastRank, a résumé scorer from December 2025 with no note, sits in "Flagship systems". Three ML notebook projects say almost the same thing in three rows.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep the archive, fix the copy | Small change | Still no order, and RAG Mini stays hidden |
+| B. Curated cards, then a compact archive | The strongest proof comes first, and every project stays reachable | Two layouts on one page, and a fixed list to keep up to date |
+| C. Show only the best projects | Shortest page | Real work disappears from the site, and GitHub becomes the archive |
+
+**Choice:** Option B.
+
+**Selected, in this order.** The list lives in `Work.tsx`, the same way the home page holds its research list.
+
+| # | Project | Plain line | Links |
+|---|---|---|---|
+| 1 | GEO agent benchmark | No change | Code · Seven findings (ADR-061) · Case study |
+| 2 | RAG Mini | A document Q&A app, live on Render, with a small model that screens each question before Gemini answers. It sorted 60 hard questions with 0 mistakes. | Live demo · Code · System 1 note |
+| 3 | SakethWiki | No change | Code · System design |
+| 4 | Lekhni | No change | Repository · Case study |
+| 5 | SDLC Intelligence Agent | A GitLab bot that reviews each change against security policy and explains why a pipeline failed. | Code · Build log |
+
+Each selected card shows the evidence label, title, plain line, diagram thumbnail, scope line, tool chips (ADR-059) and links. It shows the 2 most important notes and a link "All N notes", not every title. RAG Mini and SDLC get a label, a diagram and a tool list:
+
+| Project | Label | Diagram | Tools |
+|---|---|---|---|
+| RAG Mini | Public prototype | `system-one-guard-flow.svg` | Jev decision model (TypeSafe AI) · Gemini · Qdrant Cloud · FastAPI and React · Render |
+| SDLC Intelligence Agent | Public prototype (already set) | `sdlc-agent-routing.svg` | GitLab webhooks · Plain-function orchestrator · Four agents · Policy retrieval from a vector store · Pipeline log analysis · Weekly Slack digest |
+
+**The archive.** Every other project gets one line: title, plain line, and a code or case-study link. There are no tags, no scope line and no folds. The groups are:
+
+1. Developer tools.
+2. Experiments & learning. RoastRank moves here (open question 1).
+3. Automations & creative builds. This renames "Creative builds", and AI & Tech Policy Digest moves into it.
+
+Two archive lines change:
+
+| Record | New line |
+|---|---|
+| `ml-fundamentals` (merges the three ML notebook projects, links all three repositories) | ML fundamentals in three notebook series: classical algorithms, loss and optimization, perceptrons to networks. |
+| `leetcode-coach` | A browser extension that gives hints and visuals for data-structure problems, not answers. |
+
+SakethWiki's `updated` date becomes 2026-10-08, the date of the conflict-review release in `activity`.
+
+**Header:** "Five projects that show how I find AI failures, then everything else I have built." The `/work/` route description in `scripts/routes.ts` changes to match.
+
+**Why:** A reviewer reads the first screen. The first screen must hold the five projects that back the home page claim. Everything else stays one click away and costs one line.
+
+**Given up:**
+
+1. **A fixed list to maintain.** A new strong project does not appear on top until someone edits the list.
+2. **Archive projects lose detail.** Their scope lines and tags stop showing. A reader who wants the stack must open the repository.
+3. **Three ML records become one.** Each notebook series loses its own line and its own date.
+4. **The folds go.** The archive is short enough to show open. If it grows, the page grows.
+5. **Two lists overlap with home.** GEO, SakethWiki and Lekhni are on both pages. The Work page shows more about them, but a reader sees them twice.
+
+## ADR-061: The seven GEO findings move onto the site, in the case study
+
+**Status:** Accepted by Saketh (2026-11-19). Asked for by Saketh: "add this in the portfolio too, why send towards GitHub?"
+
+### Visual Level
+
+Explainer (level 3): [docs/visuals/adr-060-062-work-page.html](docs/visuals/adr-060-062-work-page.html)
+
+```mermaid
+flowchart TD
+    A[Reader clicks Findings on a home or Work card] --> B[Open the GEO case study at the findings section]
+    B --> C[Read seven findings: claim, number, limit]
+    C --> D{Does the reader want the method?}
+    D -- yes --> E[Follow the link to the chapter that measured it]
+    D -- no --> F[Reader leaves with the results]
+    B --> G{Does the section id exist?}
+    G -- no --> H[Page opens at the top, section test fails]
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class A,B,C,D,E new
+    class H fail
+```
+
+*Caption: green is new or changed. Red is the failure path. Today the Findings link opens `FINDINGS.md` on GitHub, and the case study has a shorter five-point list.*
+
+**Context:** `FINDINGS.md` lists seven findings. Each one has its evidence and its limit. The site has the same facts, but they are spread over 10 chapters. The case study `geo-agent-bench-overview` has a shorter list, "What I would tell an engineer who builds for agents". That list gives advice, not evidence. A reader who wants "what did you find" must leave the site.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep the GitHub link | No work | The reader leaves the site, and GitHub renders it as a code file |
+| B. A new note, `/writing/geo-agent-bench-findings` | A page of its own | An eleventh GEO note, and a reader must find it |
+| C. A "Seven findings" section in the case study | The project page answers "what did you find" | The case study gets longer |
+
+**Choice:** Option C. Add a section "Seven findings" after "What exists" in `geo-agent-bench-overview.md`. Each finding has:
+
+1. A one-line claim, from `FINDINGS.md`.
+2. The number, from `FINDINGS.md`.
+3. The limit, from `FINDINGS.md`.
+4. A link to the chapter that measured it.
+
+The text is a copy-edit of `FINDINGS.md`, not new claims. The section id is `seven-findings`. The links change:
+
+| Place | Today | After |
+|---|---|---|
+| Home GEO card, "Findings" link | `FINDINGS.md` on GitHub | `/work/geo-agent-bench?section=seven-findings` |
+| Home GEO results block title | "From FINDINGS.md", to GitHub | "From the seven findings", to the same section |
+| Work GEO card | none | "Seven findings", to the same section |
+| "Code" link | GitHub repository | No change |
+
+**Why:** The site should answer the main question about its main project. GitHub stays the place for code.
+
+**Given up:**
+
+1. **Two copies of the findings.** `FINDINGS.md` stays in the repository for code readers. If it changes, the site does not change with it.
+2. **The case study gets longer,** by about 350 words.
+3. **The "What I would tell an engineer" list overlaps** with the findings. It stays, because it gives advice and the findings give evidence. A reader sees some facts twice on one page.
+4. **A section link can break.** If someone renames the heading, the id changes and the links open at the top of the page. A test checks the id.
+
+## ADR-062: Remove the commit chart from the Work page
+
+**Status:** Accepted by Saketh (2026-11-19).
+
+### Visual Level
+
+Explainer (level 3): skipped for this ADR. It removes one section and has no flow. The shared explainer shows the page without it.
+
+```mermaid
+flowchart TD
+    A[Work page draws the archive] --> B{Is the commit chart still on the page?}
+    B -- yes, today --> C[Draw a snapshot chart dated 2026-11-04]
+    B -- no, after --> D[Draw the GitHub archive link]
+    C --> D
+    classDef new fill:#d4edda,stroke:#2d6a3e,color:#111
+    classDef fail fill:#f8d7da,stroke:#842029,color:#111
+    class B,D new
+    class C fail
+```
+
+*Caption: green is the path after the change. Red is the step that goes. The GitHub archive link exists today and stays.*
+
+**Context:** The chart shows commits per month from a snapshot dated 2026-11-04, public repositories only. Its own caption says "Commits are not deployments." The June bar shows 1 commit, which raises a question the page cannot answer. An evaluation reader learns nothing about evaluation from it.
+
+**Options:**
+
+| Option | Result | Weakness |
+|---|---|---|
+| A. Keep it | No work | Stale, and it invites a question about June |
+| B. Refresh it with private repositories | More current | Still a vanity metric, and the refresh is manual |
+| C. Remove it and its orphan files | A shorter page | Activity over time is no longer visible |
+
+**Choice:** Option C. Remove `<CommitChart />` from `Work.tsx`. Delete the files that only the chart uses: `src/components/CommitChart.tsx`, `src/data/commits.ts` and `scripts/update-commits.sh`. Remove the chart CSS.
+
+**Why:** The page should show work, not volume.
+
+**Given up:**
+
+1. **No sign of steady activity.** A reader who looks for consistency loses the one chart that showed it.
+2. **The refresh script goes.** Bringing the chart back means rewriting it from git history.
+
+## Open questions (ADR-060 to ADR-062)
+
+1. **RoastRank.** **Resolved 2026-11-19: archive.**
+2. **Job Tracker.** **Resolved 2026-11-19: add an archive line** under Developer tools, private. Its line comes from the `activity` entry: a macOS app that turns job-application emails into a tracked pipeline.
+3. **Render sleep.** **Resolved 2026-11-19: it sleeps.** The demo link reads "Live demo (may take a moment to wake)".
+4. **SDLC tool list.** **Resolved 2026-11-19:** taken from the published note `sdlc-intelligence-agent-design`. Saketh said to go ahead.
+
+**Build result (2026-11-19, ADR-060 to ADR-062).** Built, not merged.
+
+1. **Tests:** `npm test` gives 72 pass, 0 fail, 1 skipped. The new file `tests/work-page.test.mjs` adds 5 tests.
+2. **Lint, types, build:** lint passes on the changed files. The type check shows no new errors. `vite build` writes 43 route files.
+3. **Browser check (dev server):** at 1280 px light, the five selected cards render in order with diagrams, tools and links. The RAG Mini link reads "Live demo (may take a moment to wake)". The archive shows three groups (8, 4 and 4 lines). The Work page is about 5,000 px tall, down from about 6,200. The "Seven findings" link opens the case study, which scrolls to the section. At 375 px dark, nothing scrolls sideways.
+
+**Changes beyond the ADRs:**
+
+1. **Extra notes fold.** Notes beyond the first two fold under "N more", not under a "All N notes" link. The Writing page has no filter by project, so a link had no good target.
+2. **The thumbnail and chip parts moved** from `Index.tsx` to `src/components/CardParts.tsx`, because both pages now use them (architecture.md, "Shared pieces").
+3. **`demoNote` field.** A new optional `demoNote` field holds the Render warning, so the warning text lives with the record.
+4. **`directors-lab` also moved** into "Automations & creative builds". It was the third record in the old group.
+5. **Finding 7 has no note.** The case study's Phase F row now says "Finding 7 above", in place of the GitHub link. The OpenAI probe has no note of its own.
+6. **The RAG Mini System 1 note** shows in the notes list, not as a separate link.
+
+**Not checked:** the dev-server console kept old hot-reload errors from before the reload. The dev-server log shows no errors. Also not checked: Safari and Firefox, the tablet width, and the live Render demo after a wake.
