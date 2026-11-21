@@ -41,7 +41,7 @@ I first wrote the signer and the verifier in one sitting. They agreed with each 
 
 Then I read the newest working-group draft, from 2026-10-29. It changed the value. The header now holds the address of the key set itself, not an origin that the site extends with a standard path. My signer sent the origin. A verifier that follows the new draft would have fetched my site's home page and failed. I changed the signer again. The verifier now accepts the new form, the origin form and the plain string. I checked all of them against the live site, and each gave "valid". A throwaway key still gave "unknown key", and no signature still gave no verdict.
 
-The lesson is the same both times. Code that I write for both sides of a check agrees with itself, so only the text of the standard can show a mismatch. My 18 sign-in runs used the oldest form, and I did not rerun them.
+Both times the cause was the same. Code that I write for both sides of a check agrees with itself, so only the text of the standard can show a mismatch. My 18 sign-in runs used the oldest form, and I did not rerun them.
 
 ## Other people's code
 

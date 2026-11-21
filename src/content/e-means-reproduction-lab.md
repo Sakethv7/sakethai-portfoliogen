@@ -4,6 +4,8 @@
 
 ## The result
 
+Clustering groups similar items, such as similar images, so a large search system can find matches faster. The standard method, Lloyd's k-means, reads the whole dataset on every pass. A 2026 paper proposed a variant called e-means that updates from small batches instead, and reported that it reaches the same quality faster. I tried to reproduce its speed claim on my own laptop.
+
 I tested whether e-means, a mini-batch alternative to Lloyd's k-means, could
 reach the same held-out clustering error with fewer data passes and less wall
 time on a 16 GB Apple M4 laptop.

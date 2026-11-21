@@ -1,12 +1,12 @@
-I wrote a [build log](#/writing/lekhni-recording-to-knowledge) about how Lekhni turns recordings into notes. This is the system design: the parts, the data flow, how it fails, and what I traded away.
+Lekhni is my meeting-notes app for the Mac. It records a call, writes a transcript and turns it into notes, all on my own laptop. I wrote a [build log](#/writing/lekhni-recording-to-knowledge) about how it works. This note covers the system design: the parts, the data flow, how it fails, and what I gave up.
 
 ## Where it came from
 
-[Granola](https://www.granola.ai/) was the inspiration. Its idea is simple. You type rough notes while a call is recorded, and the app uses your notes to guide the summary it writes afterward. No bot joins the call, and there is one window.
+[Granola](https://www.granola.ai/), a commercial meeting-notes app, was the inspiration. Its idea is simple. You type rough notes while a call is recorded, and the app uses your notes to guide the summary it writes afterward. No bot joins the call, and there is one window.
 
 I wanted that workflow, but with everything on my own machine. Granola's [security page](https://www.granola.ai/security) says it does not store meeting audio. It also says it uses transcription providers (it names Deepgram and AssemblyAI) and AI providers (it names OpenAI and Anthropic) to summarize the meeting. That is a reasonable design for a product. For me it meant my conversations went through other companies' servers. I record study sessions, technical talks, and sometimes work calls, and I wanted none of it to leave my laptop.
 
-So the rule for Lekhni is: record on the Mac, transcribe on the Mac, summarize with a model running on the Mac. One honest caveat. The code has an optional OpenAI backend that I can switch on for a single run. The default is the local model, and the optional backend is the only path where a transcript leaves the machine.
+So the rule for Lekhni is: record on the Mac, transcribe on the Mac, summarize with a model running on the Mac. There is one exception. The code has an optional OpenAI backend that I can switch on for a single run. The default is the local model, and the optional backend is the only path where a transcript leaves the machine.
 
 ## What it has to do
 
@@ -22,7 +22,7 @@ It does not need accounts, sync between devices, or more than one user.
 
 **Two-process desktop app on one machine.** That sits between a single-process tool and a multi-service app.
 
-It is two processes because the capture code is Swift. It has to run inside an app bundle to hold the macOS audio permissions. The notes pipeline is Python. Merging them would mean embedding Python in the Swift app or rewriting generation in Swift. Neither would change what I see day to day. Keeping capture in a separate third process was how it worked before, and it is what I moved away from. Two is the smallest honest number.
+It is two processes because the capture code is Swift. It has to run inside an app bundle to hold the macOS audio permissions. The notes pipeline is Python. Merging them would mean embedding Python in the Swift app or rewriting generation in Swift. Neither would change what I see day to day. An earlier version ran capture as a separate third process, and I moved away from that. Two processes is the smallest number that fits these constraints.
 
 ## The parts
 
@@ -44,7 +44,7 @@ It is two processes because the capture code is Swift. It has to run inside an a
 
 *Caption: the two processes never share memory. They share a folder on disk and one HTTP call that says "the transcript is ready".*
 
-**Capture (Swift).** Microphone audio comes from the default input. Audio from the other side of a call comes from a macOS process tap. This is a Core Audio feature that gives an app a copy of what other apps are playing. That avoids installing a virtual audio driver. Transcription runs on the device with Parakeet, a speech model I run through a Core ML port. My design notes put it at about 20 seconds per hour of audio. The capture code started as [Quill](https://github.com/digimata/quill), an MIT-licensed recorder. I vendored it into the app once keeping it as a separate menu-bar app became the thing that slowed my workflow down.
+**Capture (Swift).** Microphone audio comes from the default input. Audio from the other side of a call comes from a macOS process tap. This is a Core Audio feature that gives an app a copy of what other apps are playing. That avoids installing a virtual audio driver. Transcription runs on the device with Parakeet, a speech model I run through a Core ML port. My design notes put it at about 20 seconds per hour of audio. The capture code started as [Quill](https://github.com/digimata/quill), an MIT-licensed recorder. I vendored it (copied its code into my app) once keeping it as a separate menu-bar app became the thing that slowed my workflow down.
 
 **The session folder.** Every input becomes a folder: audio, a transcript, my scratch notes, the generated notes, and a few marker files. This folder is the contract between the two processes and the source of truth. The SQLite database is a mirror for browsing, stats, and traces. It can be rebuilt from the folders at any time.
 
@@ -77,7 +77,7 @@ It is two processes because the capture code is Swift. It has to run inside an a
 | Transcription fails | A marker file records it. The audio is still there. |
 | Two generations start on one session | A transient lock file stops the second. |
 | I close the window mid-recording | The app stays alive while it is recording or transcribing. |
-| I upload audio with no transcript | It stays pending. Lekhni does not pretend to have notes it cannot produce. |
+| I upload audio with no transcript | It stays pending. Lekhni shows no notes until it has a transcript to write them from. |
 | A prompt change makes notes worse | The traces and eval set show which change did it. Nothing rewrites a prompt without my decision. |
 
 ## One decision I tested: Ollama or MLX

@@ -2,7 +2,7 @@
 
 > Internal system names, team names, metric definitions, and data are left out on purpose. Everything here is described in general terms.
 
-> **In one paragraph.** I designed the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees. The work links interaction events, model traces, API payloads, and downstream support-intake outcomes at the correct event grain, so a low score can be traced to retrieval, taxonomy, knowledge, routing, or intake rather than treated as one undifferentiated AI failure. Analysis-guided fixes raised response and containment rates by 10 percentage points; correcting topic classification raised three resolution measures by 3 to 5% each.
+> **In one paragraph.** A large company runs an AI assistant that answers employee questions from its internal articles. About 140,000 employees can use it. It is a RAG system: it searches the articles first, then writes an answer from what it found. I built the data and evaluation work around it. I connect what users asked, what the assistant did, and what happened next, such as a support case or a chat with a live agent. So when an answer is bad, I can show which step failed: the search, the topic label, missing content, the routing, or the handoff to a person. Fixes guided by this analysis raised response and containment rates by 10 percentage points. Correcting the topic labels raised three resolution measures by 3 to 5% each.
 
 ## System flow
 
@@ -37,7 +37,7 @@ Each one has a different owner and a different fix. Blending them into one numbe
 
 ### 1. A three-layer LLM-as-judge
 
-Every query gets categorized, thousands of them a day. Running an LLM on all of them is slow and expensive, and running only rules misses anything ambiguous. So the pipeline works in layers:
+An LLM judge is a language model used to grade or label another model's output. Every query gets a label, thousands of them a day. Running an LLM on all of them is slow and expensive, and running only rules misses anything ambiguous. So the pipeline works in layers:
 
 1. **Rules first.** Deterministic classifiers handle the clear cases for almost no cost.
 2. **Batch LLM categorization** on AWS Bedrock (Llama 3.2) handles what the rules can't.
@@ -49,7 +49,7 @@ The output is a failure-mode label per query: retrieval, taxonomy, or data quali
 
 Prompt changes, model changes, and index changes can all quietly make answers worse. I built LLM regression tests on a ground-truth benchmark. A judge scores each answer's similarity to the expected one, and results are tracked across runs. That makes drift visible over time, not just as a pass/fail on one day. The tests look for regressions in relevance, hallucination, latency, and retrieval quality.
 
-For investigating individual failures, I deployed Arize Phoenix to trace hallucinations, latency spikes, and retrieval degradation.
+For investigating individual failures, I deployed Arize Phoenix, an open-source tool that records and displays each request's steps, to trace hallucinations, latency spikes, and retrieval degradation.
 
 ### 3. Lineage-aware joins, not assumed joins
 
@@ -59,7 +59,7 @@ For an attributable escalation, the Q&A event had to precede the downstream even
 
 ### 4. Schema-aware operational analytics pipeline
 
-The analytical path was designed as a data product, not a dashboard extract:
+I built the analysis path as a maintained data product that others can rely on, not as a one-off copy for a dashboard:
 
 ```text
 DynamoDB interaction events + API payloads + support-intake events
@@ -70,19 +70,19 @@ DynamoDB interaction events + API payloads + support-intake events
   -> business-operations and leadership review
 ```
 
-This matters for both correctness and cost. In DynamoDB, a Scan consumes read capacity for items read before downstream filters remove rows. I treated scan concurrency, page size, backoff, throttling, and refresh freshness as explicit operational constraints; a reporting copy or incremental watermark is safer than simply increasing parallel scans. At the metric layer, each number carried a defined grain and source path so that operational stakeholders could challenge a KPI without losing the evidence behind it.
+This design affects both correctness and cost. In DynamoDB, a Scan reads every item and pays for each read, even for rows a later filter throws away. So I set explicit limits for scan concurrency, page size, retry backoff, throttling and refresh freshness. A reporting copy, or an incremental watermark that reads only new rows, is safer than running more scans in parallel. At the metric layer, each number has a defined grain (what one row stands for) and a source path. So a business stakeholder can question a KPI and still see the evidence behind it.
 
 ### 5. Storage follows the access pattern
 
-The operational records were event-shaped: query, response, retrieval, routing, and later support-intake details can arrive at different times and carry different fields. DynamoDB was the operational source for that variable interaction data; it was not the analytical join engine. The pipeline moved normalized records into an analytical layer where cross-source questions, semantic measures, and reporting joins could be made explicit and reviewed.
+The operational records are events. The question, the response, the retrieval, the routing and later support details can arrive at different times with different fields. DynamoDB, a NoSQL database, stores that changing interaction data. It is not where the cross-source joins happen. The pipeline moves cleaned records into an analysis layer. There, joins across sources, report measures and KPI definitions are written down and reviewed.
 
-This distinction matters in system design. A relational store is the default when entities need frequent joins and multi-record transactions. A non-relational store is appropriate when the access pattern is key-oriented and the operational records evolve independently. Choosing NoSQL does not remove relational work; it moves it into data modeling and application or analytical code. For this system, that meant preserving identifiers and event time, validating the source schema, and making joins conditional on evidence rather than assuming they were valid.
+A relational database fits best when entities need frequent joins and transactions across several records. A NoSQL store fits when most reads and writes go by key and records change on their own. Choosing NoSQL does not remove the relational work. It moves that work into data modeling and code. For this system, that meant keeping identifiers and event times, checking the source schema, and joining records only when the evidence supports the link. The note [Why a NoSQL database still needs a data model](#/writing/nosql-does-not-remove-data-modeling) explains this in general terms.
 
 ### 6. Write path, extraction path, and monitoring are different concerns
 
-For the DynamoDB write audit, I distinguished the application timestamps from the underlying API operations: `PutItem` for the initial record and `UpdateItem` for a later save or lifecycle update. That distinction prevented a request timestamp from being presented as proof of persistence timing. A defensible audit needs the corresponding API event time, retries, failures, and throttling evidence.
+For the DynamoDB write audit, I kept the application timestamps apart from the database operations: `PutItem` for the first record and `UpdateItem` for a later save or status change. So nobody could present a request timestamp as proof of when the database saved the record. An audit that holds up needs the matching API event time, plus the retries, failures and throttling.
 
-For reporting extraction, I treated the full Scan as a bounded batch job rather than a free query. A full Scan can read a large table before local filters reduce it. The safer design is an incremental watermark: read the last successful timestamp, pull newer rows, validate and append them, then advance the watermark only after a successful run. Work segmentation, controlled concurrency, retry/backoff, and read-throttle monitoring can reduce pressure, but they do not make an unbounded Scan cheap. The goal is predictable refresh cost and dashboard freshness, not maximum parallelism.
+For reporting, I treated a full Scan as a limited batch job, not as a free query. A full Scan can read a large table before any filter reduces it. The safer design is an incremental watermark. The job reads the last successful timestamp, pulls newer rows, checks and appends them, and moves the watermark forward only after a successful run. Splitting the work, limiting parallel workers, retrying with backoff and watching read throttling can reduce the load. They do not make an unlimited Scan cheap. I aimed for a predictable refresh cost and fresh dashboards, not for the most parallel workers.
 
 ### 7. Access, safety, and per-organization views
 
@@ -108,10 +108,10 @@ These are results I can share. Each came from work I did with other teams, and I
 
 ## What I learned
 
-**Cheap layers first.** Most queries don't need a model to classify them. Putting rules in front of the LLM made daily evaluation affordable, and the fallback meant the pipeline never silently dropped data.
+**Cheap layers first.** Most queries do not need a model to classify them. Rules in front of the LLM made daily evaluation affordable. The keyword fallback meant the pipeline did not drop unlabeled queries without notice.
 
-**A judge needs checking too.** An LLM judge is only as trustworthy as its agreement with human labels. Its labels are worth spot-checking against human judgment before anyone builds decisions on them.
+**Check the judge.** I trust an LLM judge only as far as it agrees with human labels. So I spot-check its labels against people before anyone makes decisions from them.
 
-**The join is the product.** The most useful work wasn't a model. It was connecting four systems that each held part of the story, so one session could be read end to end.
+**The join did the most work.** The most useful work was not a model. It was connecting four systems that each held part of a session, so one session could be read from start to end.
 
 *Related: [Evaluating retrieval failures separately from generation failures](#/writing/retrieval-vs-generation-failures)*

@@ -1,8 +1,8 @@
-I built the SDLC Intelligence Agent for the GitLab AI Hackathon. It is a small service, so this is a short note on how it is put together. It is not a full system-design doc.
+I built the SDLC Intelligence Agent for the GitLab AI Hackathon. SDLC means the software development life cycle: writing, reviewing, testing and shipping code. GitLab is a service where teams store code and run automated build pipelines. The agent is a bot that watches a GitLab project, reviews changes against security policy and explains failed builds. It is a small service, so this note is short and not a full system-design document.
 
 ## The idea
 
-AI can already write code. The slow parts are around the code. Security review arrives late. Merge requests skip process steps. Nobody has time to triage pipeline failures. There is no clear weekly picture of what shipped. I wanted agents that react to real GitLab events and post their results where the team already looks. A chat window was not the goal.
+In my view, AI tools already help people write code, but much of the slow work happens around the code. Security review often comes late. Merge requests (proposed code changes) skip process steps. Pipeline failures wait for someone with time to look at them. And there is often no clear weekly summary of what shipped. I wanted agents that react to real GitLab events and post their results where the team already looks. A chat window was not the goal.
 
 ## The shape
 
@@ -22,7 +22,7 @@ Every other event is ignored with a clear response. The webhook checks GitLab's 
 <figcaption>The table above, drawn as a route. One crashing agent does not stop the others.</figcaption>
 </figure>
 
-## Three decisions worth writing down
+## Three design decisions
 
 **The orchestrator is a plain function.** It is an if/else on the event name that calls agent objects from a dictionary. There is no agent framework. With four agents and fixed triggers, a framework would add more machinery than it removes. The cost is that adding a fifth agent means editing the function.
 

@@ -23,7 +23,7 @@ Each value is the share of changed rules in the right state at the end. There we
 
 The notes failed for a simple reason. In 17 of 24 runs the agent never wrote a decision down. On release day it searched the repo, found nothing and changed nothing. When it did write a decision, the decision stayed: I saw no case where the agent erased its own notes.
 
-So the useful question is not "which memory format" but "who writes it". Memory that the system records from the human's instructions worked every time. Memory that depends on the agent choosing to write it did not.
+So in this test, who wrote the memory mattered more than its format. Memory that the system recorded from the human's instructions worked every time. Memory that depended on the agent choosing to write it did not.
 
 ## What I tested, and in what order
 

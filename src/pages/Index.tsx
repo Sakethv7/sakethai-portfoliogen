@@ -26,8 +26,8 @@ const Index = () => {
         <p className="eyebrow">AI Evaluation & Data Engineer</p>
         <h1>Saketh Velidimalla</h1>
         <p className="hero-role-line">Data scientist building production AI evaluation and data systems <span aria-hidden="true">·</span> Python, SQL, PySpark, AWS</p>
-        <p className="hero-thesis">I find out why production AI gives wrong answers, and I build the data that shows it. On a RAG platform used by about 140,000 employees, I write the ETL pipelines, build the reports and KPIs with the business, and trace each failure to retrieval, ranking, generation or handoff.</p>
-        <p className="hero-thesis hero-thesis-own">Outside work, I ask the same question one layer lower: how agents read the web, and how local models behave under heat and memory limits. Next, I am learning networking and embedded hardware.</p>
+        <p className="hero-thesis">I work on the data and evaluation behind a company AI assistant that about 140,000 employees can use. It is a RAG platform: it searches internal articles, then writes an answer. I write the ETL pipelines and build the reports and KPIs with the business. When an answer is wrong, I trace it to the step that failed: retrieval, ranking, generation or handoff.</p>
+        <p className="hero-thesis hero-thesis-own">Outside work, I run my own tests on how AI agents read websites, and on how AI models behave on a laptop with limited memory and heat. Next, I am learning networking and embedded hardware.</p>
         {/* The stack ladder replaces the topic pills (ADR-054). Top rung is depth today, bottom rung is learning. */}
         <ol className="stack-ladder" aria-label="Where my work sits, from product down to hardware">
           {stackLadder.map((rung) => <li key={rung.layer} className={rung.mark === 'learning' ? 'is-learning' : undefined}>
@@ -105,7 +105,7 @@ const Index = () => {
         <div><p className="eyebrow">Research</p><h2>How I find failures</h2></div>
         <Link to="/writing?kind=research">All {noteCounts.research} research notes <ArrowRight /></Link>
       </div>
-      <p className="section-intro">Each note asks where an AI system goes wrong, tests it, and says what the result cannot show.</p>
+      <p className="section-intro">Each note describes one test of an AI system: what I ran, what I found, and what the result does not show.</p>
       <div className="featured-grid">
         {research.map((item) => <article className="featured-card" key={item!.slug}>
           <p className="evidence-status">{item!.kind} · {item!.date}</p><h3>{item!.title}</h3><p className="plain-line">{item!.plain}</p>

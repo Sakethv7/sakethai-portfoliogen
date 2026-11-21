@@ -1,26 +1,26 @@
-A prompt tweak makes one answer better. A week later, someone notices another answer got worse. Nobody can say when. By the tenth tweak, no one remembers which earlier behavior was traded away.
+Teams change the instructions (the prompt) of an AI assistant often. One change makes one answer better. A week later, someone sees that another answer got worse, and nobody can say which change caused it. After ten changes, nobody remembers what the assistant used to get right.
 
-That is the problem a ground-truth set and regression tests solve. The set is a fixed collection of questions with known good outcomes. The regression test runs your system against it on every change and tells you what moved. Without them, quality is a feeling. With them, it is a number you can compare across weeks.
+A ground-truth set and a regression test help with this. The ground-truth set is a fixed list of questions, each with a known good answer. The regression test runs the assistant on that list after every change and reports which answers changed. Then a team can compare quality across weeks with a number, instead of with an impression.
 
 This note covers how to build the set and what goes in each item. It also covers how to run the set as a gate and how to stop it going stale. It builds on the [failure split](#/writing/retrieval-vs-generation-failures) and on [calibrating the judge](#/writing/calibrate-your-llm-judge). I use regression tests on a ground-truth benchmark for the production assistant described in the [case study](#/experience/enterprise-ai-quality). The sources below are the published evidence I found on how to do this well.
 
 ## Two kinds of eval, one pipeline
 
-Anthropic's [guide to agent evals](https://anthropic.com/engineering/demystifying-evals-for-ai-agents) separates two jobs that people often mix up.
+Anthropic, the company that makes the Claude models, has a [guide to agent evals](https://anthropic.com/engineering/demystifying-evals-for-ai-agents) An eval (short for evaluation) is a repeatable test of an AI system's output. The guide separates two jobs that people often mix up.
 
 A **capability eval** asks what the system can do well. It should start with a low pass rate, because it targets things the system still struggles with. A **regression eval** asks whether the system still handles everything it used to. It should sit near 100%. A drop means something broke.
 
-The two are connected. Tasks that reach a high pass rate in a capability eval can graduate into the regression suite. So the set is not static. Hard cases enter as goals. They move into the guard rail once you solve them.
+The two are connected. When a task reaches a high pass rate in a capability eval, it can move into the regression suite. So the set changes over time. Hard cases start as goals, and once the system solves them, they become regression checks.
 
-One side effect is worth knowing. An eval at 100% still catches regressions, but it gives no signal about improvement. If every score is pinned at the top, it is time to add harder cases.
+One side effect: an eval at 100% still catches regressions, but it gives no signal about improvement. If every score is pinned at the top, it is time to add harder cases.
 
 ## Where the examples come from
 
 Start from real failures, not from invented questions.
 
-Anthropic's advice is that 20 to 50 simple tasks drawn from real failures is a good start. The reason is that early changes have large effects and small samples are enough. Draw them from the manual checks you already run, and from your bug tracker and support queue. Langfuse's guide on [golden datasets](https://langfuse.com/resources/engineering/golden-dataset-evaluation) says the same. Use production traces as the primary source. Add a flagged trace while the failure is still fresh. For this system, a thumbs-down with its trace ID is the natural feed. It connects to the [trace plumbing](#/writing/traces-people-can-reach).
+Anthropic's advice is that 20 to 50 simple tasks drawn from real failures is a good start. The reason is that early changes have large effects and small samples are enough. Draw them from the manual checks you already run, and from your bug tracker and support queue. Langfuse, a company that makes an open-source tool for LLM tracing and evaluation, has a guide on [golden datasets](https://langfuse.com/resources/engineering/golden-dataset-evaluation) that says the same. Use production traces as the primary source. Add a flagged trace while the failure is still fresh. For this system, a thumbs-down with its trace ID is the natural feed. It connects to the [trace plumbing](#/writing/traces-people-can-reach).
 
-Hamel Husain's [evals FAQ](https://hamel.dev/blog/posts/evals-faq/) adds the step before that. Read about 100 real traces, write notes on what went wrong, group them into failure modes, and count them. That tells you what to test. He recommends real traces over synthetic data, and notes that synthetic data cannot tell you how common a problem is in real use.
+Hamel Husain adds the step before that in his [evals FAQ](https://hamel.dev/blog/posts/evals-faq/). He is a machine learning engineer, formerly at GitHub and Airbnb, who now teaches a course on AI evaluation. Read about 100 real traces, write notes on what went wrong, group them into failure modes, and count them. That tells you what to test. He recommends real traces over synthetic data, and notes that synthetic data cannot tell you how common a problem is in real use.
 
 ### What synthetic questions miss
 
@@ -45,7 +45,7 @@ The expected source document is my addition to what the sources say, and it matt
 
 Two quality rules from Anthropic apply here. A task should be clear enough that two domain experts would reach the same verdict on their own. And each task benefits from a reference solution, a known good output that passes every grader. That proves the task can be solved and that the grader is set up correctly.
 
-Also keep the set balanced. Test cases where a behavior should happen and cases where it should not. A set made only of easy, positive cases tells you almost nothing. Langfuse puts it bluntly: it will score 95% forever.
+Also keep the set balanced. Test cases where a behavior should happen and cases where it should not. A set made only of easy, positive cases tells you almost nothing. Langfuse warns that such a set will score 95% forever.
 
 ## How big
 
@@ -62,13 +62,13 @@ So you can use two tiers: a small, fast set on every change, and a larger one on
 
 Langfuse describes three parts. The first is the dataset. The second is an experiment that runs your application on every item and scores it. The third is a threshold check that fails the run if the score drops below it.
 
-Four design choices matter.
+Four design choices are important.
 
-**Gate on aggregates, not single items.** Averaging across the whole set dampens noise. Set the threshold with a margin below your baseline. Their example is 0.8 against a baseline of 0.88, so ordinary variance doesn't fail the build.
+**Gate on the average, not on single items.** Averaging across the whole set dampens noise. Set the threshold with a margin below your baseline. Their example is 0.8 against a baseline of 0.88, so ordinary variance doesn't fail the build.
 
 **Block on code checks. Warn on the judge.** Deterministic checks make reliable gates. Langfuse suggests treating judge-based metrics as warnings at first. This is where [judge calibration](#/writing/calibrate-your-llm-judge) matters. Pin the judge model version and use a binary rubric with explicit criteria to reduce variability.
 
-**Show which items broke.** A fail with no detail is not useful. The comparison view should list the specific questions that changed, so you can read them.
+**Show which items broke.** A failed run with no detail does not help. The comparison view should list the specific questions that changed, so you can read them.
 
 **Record the dataset version with every run.** Without it, you can't tell a real drop from a changed set. Langfuse versions datasets by timestamp and stores the version with each experiment, so you can rerun any past comparison exactly.
 
@@ -76,7 +76,7 @@ Husain also draws a line between uses. In continuous integration, evals gate cod
 
 ## Keep the set alive
 
-Langfuse's guide makes a sharp point: freshness is the property that decays silently. Documents change. Products change. A set that was right in March can be quietly wrong by autumn.
+Langfuse's guide warns that a set goes stale without any visible sign. Documents and products change. A set that was right in March can be wrong by autumn.
 
 Four habits slow the decay.
 
@@ -101,8 +101,8 @@ If you tune your prompt against the same items every time, the score rises witho
 
 **Run cost.** Each run is a batch of model calls plus judge calls. Keep the per-change set small and the big set scheduled.
 
-**Maintenance.** The set needs an owner and a calendar. A set nobody maintains turns into false confidence.
+**Maintenance.** The set needs an owner and a calendar. When nobody maintains the set, its passing scores stop meaning anything.
 
-## The test
+## A simple test
 
-Pick the last change you shipped. Ask whether you can show which questions got better and which got worse. The check must use a fixed set and a recorded baseline, and take under a few minutes. If you can, you have regression testing. If you can only say it felt better, start with 20 real failures and a single threshold.
+Pick the last change you shipped. Can you show which questions got better and which got worse? The check should use a fixed set and a recorded baseline, and take a few minutes at most. If you can, you have regression testing. If you can only say it felt better, I would start with 20 real failures and one threshold.

@@ -1,4 +1,4 @@
-Most chat assistants keep a growing message history and replay it on every turn. That makes them hard to reason about. The answer depends on a transcript you can't see. I wanted a personal assistant where I can always point at the file that fed a wrong answer.
+Many chat assistants keep a growing message history and send it to the model again on every turn. I found that hard to debug, because the answer depends on a long history I can't easily see. I wanted a personal assistant where I can always point to the file that caused a wrong answer.
 
 This note covers a local-first assistant I'm building around that idea. It describes the design, where it came from, what it costs, and what I'm still working out.
 
@@ -23,9 +23,9 @@ It does not need to serve anyone else, hold long chats, or run as a hosted servi
 
 **Single-process command-line tool, plus two optional helpers on localhost.** The helpers are a background watcher and a small status dashboard. They are separate processes that I start myself. They share files with the main tool. They do not talk over a message bus, and nothing listens on a public port.
 
-My design doc states a rule for this tier. If a part of the plan seems to need a service, a queue, a second daemon, or a sign-in flow, the design is wrong. It is a useful test, because each of those is easy to add and hard to remove.
+My design doc states a rule for this tier. If a part of the plan seems to need a service, a queue, a second daemon, or a sign-in flow, the design is wrong. I find the rule useful, because each of those parts is easy to add and hard to remove.
 
-## The core bet: rebuild context on every call
+## The main choice: rebuild context on every call
 
 Every command assembles a fresh block of context from named files and sends it in a single model call. It then prints a short plain-text answer. There is no chat server, no saved conversation, and no database for the assistant's own state.
 
@@ -39,7 +39,7 @@ The block is built in layers, in a fixed order:
 | Retrieved notes | Keyword-matched passages from my notes | Only when a query asks for them |
 | Recent activity | What I did lately in git, my journal, my notes apps and my other tools | Only when a command opts in |
 
-I keep the layers narrow on purpose. Durable memory holds what stays true. Recent activity holds what just happened. Retrieval holds supporting facts. If those blur together, the assistant starts sounding aware while it is really guessing at my state. That is my reasoning, and it is why each layer has one job.
+I keep the layers narrow on purpose. Durable memory holds what stays true. Recent activity holds what just happened. Retrieval holds supporting facts. If those mix, the assistant can sound as if it knows my current state when it is only guessing. That is my reasoning, and it is why each layer has one job.
 
 The same question with the same files gives the same context. When an answer is wrong, I open the file that fed it and fix it.
 
@@ -48,7 +48,7 @@ The same question with the same files gives the same context. When an answer is 
 <figcaption>Three layers are always in. Two are added only when a query or a command asks for them.</figcaption>
 </figure>
 
-## Two boundaries that matter
+## Two boundaries in the code
 
 **Orchestration versus capability.** One file only routes commands. One module only builds context. One module only talks to models. A workflow module calls into those, and it never opens a model connection itself.
 
@@ -71,7 +71,7 @@ There are four call types, split by how much thinking a task needs: fast, deep, 
 | Rebuild context on every call | Slightly more work per call, and no natural follow-up questions. |
 | No saved chat history | I have to restate things the files don't hold. |
 | Plain files, no database | No fast queries. Event logs need a stable line format so summaries stay easy. |
-| Keyword retrieval, not vectors | It misses paraphrases. Simple and explainable matters more at my scale. |
+| Keyword retrieval, not vectors | It misses paraphrases. At my scale I prefer simple and explainable. |
 | Local by default, cloud optional | Local models are weaker, especially on deep tasks. |
 | One tier, no services | No multi-device access. |
 
