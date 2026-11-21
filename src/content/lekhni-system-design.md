@@ -1,4 +1,4 @@
-Lekhni is my meeting-notes app for the Mac. It records a call, writes a transcript and turns it into notes, all on my own laptop. I wrote a [build log](#/writing/lekhni-recording-to-knowledge) about how it works. This note covers the system design: the parts, the data flow, how it fails, and what I gave up.
+Lekhni (लेखनी, "pen") is my meeting-notes app for the Mac. It records a call, writes a transcript and turns it into notes, all on my own laptop. I record many talks, calls and study sessions. For a long time I turned them into transcripts and then did nothing with them, because a transcript records what was said, not what I learned. This note covers the system design: the parts, the data flow, how it fails, and what I gave up.
 
 ## Where it came from
 
@@ -44,15 +44,25 @@ It is two processes because the capture code is Swift. It has to run inside an a
 
 *Caption: the two processes never share memory. They share a folder on disk and one HTTP call that says "the transcript is ready".*
 
-**Capture (Swift).** Microphone audio comes from the default input. Audio from the other side of a call comes from a macOS process tap. This is a Core Audio feature that gives an app a copy of what other apps are playing. That avoids installing a virtual audio driver. Transcription runs on the device with Parakeet, a speech model I run through a Core ML port. My design notes put it at about 20 seconds per hour of audio. The capture code started as [Quill](https://github.com/digimata/quill), an MIT-licensed recorder. I vendored it (copied its code into my app) once keeping it as a separate menu-bar app became the thing that slowed my workflow down.
+**Capture (Swift).** Microphone audio comes from the default input. Audio from the other side of a call comes from a macOS process tap. This is a Core Audio feature that gives an app a copy of what other apps are playing. That avoids installing a virtual audio driver. Transcription runs on the device with Parakeet, a speech model I run through a Core ML port. My design notes put it at about 20 seconds per hour of audio. The capture code started as [Quill](https://github.com/digimata/quill), an MIT-licensed recorder. At first I used Quill as a separate menu-bar app and did not build a recorder, because that would have taken months to solve problems Quill had already solved. Then switching between the two apps slowed me down. On 2026-09-23 I vendored Quill's capture code (copied it into my app) under its MIT license.
 
 **The session folder.** Every input becomes a folder: audio, a transcript, my scratch notes, the generated notes, and a few marker files. This folder is the contract between the two processes and the source of truth. The SQLite database is a mirror for browsing, stats, and traces. It can be rebuilt from the folders at any time.
 
-**Notes generation (Python).** It cleans the transcript, picks a note type, calls the model, normalizes the output, and writes the notes. Note types follow intent, not file format. A talk may become a system-design note, a paper walkthrough, or a debugging session, depending on what I wanted to learn from it. Long transcripts are split into overlapping chunks, and a smaller model can handle the chunk step.
+**Notes generation (Python).** It cleans the transcript, picks a note type, calls the model, normalizes the output, and writes the notes. The note type follows what I want to learn, not the file format. Each type has its own structure:
+
+- **System design:** requirements, architecture, bottlenecks, trade-offs
+- **Paper or research:** problem, method, results, limitations
+- **Debugging session:** symptoms, hypotheses, experiments, fix
+- **AI engineering:** retrieval, agents, evals, serving, observability
+- **Meeting:** decisions, action items, open questions
+
+A YouTube talk might become a system-design note. Long transcripts are split into overlapping chunks, and a smaller model can handle the chunk step.
 
 **Health checks.** One shared extraction reads each session for status, decisions, action items, open questions, and uncertainty. Every view reads from it. The checks are deterministic on purpose. When a session looks wrong, I want a reason like "transcript missing", not a model's opinion.
 
-**Traces and evals.** Each generation logs the backend, model, prompt version, input size, raw output, and latency. Each edit I make logs a diff. A small eval set of synthetic transcripts with known decisions and action items checks that each one shows up in the notes.
+**Traces and evals.** Each generation logs the backend, model, prompt version, input size, raw output, and latency. Each edit I make logs a diff. A small eval set of synthetic transcripts with known decisions and action items checks that each one shows up in the notes. A 30-second smoke test runs one real session from start to end.
+
+**Handoff to SakethWiki.** Most notes stay session notes. Technical notes also get a **Reusable Patterns** section, for ideas worth keeping, such as how a system handles backpressure. When the health report says a note has something worth keeping, I can send those patterns to SakethWiki. Each one lands in SakethWiki's review queue, where I approve or reject it. If the same pattern shows up again later, it adds to the existing page.
 
 ## The path of one recording
 

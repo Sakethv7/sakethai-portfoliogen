@@ -12,7 +12,7 @@ I wanted to see what happens when an AI agent meets a page like that. So I built
 
 *Click the diagram to open it full size.*
 
-- **Discovery.** A request with no token gets a 401 and a link to a document that says where to sign in.
+- **Discovery.** A request with no token gets a 401 (the HTTP code for "sign-in required") and a link to a document that says where to sign in.
 - **One client, one user, one permission.** The client is called `geobench-agent`. The one fake user can allow one permission, `orders:read`.
 - **A one-use code.** After the user says yes, the site gives a code that lives 60 seconds and works once.
 - **A secret that the code needs.** The client makes a one-time secret first (this is called PKCE). A stolen code is useless without it.
@@ -28,7 +28,7 @@ I chose this because an 8-billion-parameter model that must build a PKCE secret 
 
 ## The runs
 
-Local Qwen3-8B ran 18 times on one question: "What is the order number of the most recent saved order?" Each run used one of three signing modes and one of two consent choices, three times each.
+Local Qwen3-8B ran 18 times on one question: "What is the order number of the most recent saved order?" Each run used one of three signing modes and one of two consent choices, three times each. In signed runs, the agent signed its requests with a key the site knows. In spoofed runs, it signed with an unknown key. In unsigned runs, it did not sign. The [signed requests note](#/writing/geo-agent-bench-signatures) explains signatures.
 
 | Signing | Consent granted | Consent denied |
 |---|---|---|
@@ -61,7 +61,7 @@ I ran a small check with Claude Sonnet 5.5 and Anthropic's fetch tool. It asked 
 - **It never saw the sign-in link.** My site's 401 carries a link to its sign-in rules in a header. The fetch tool showed Claude only a "not accessible" error. Claude made no request to the sign-in endpoints. With this tool, a 401 is a dead end for Claude, and it cannot start OAuth even if it wants to.
 - **Where it came from.** All requests came from Anthropic's published address range, with the user agent `Claude-User`. The 6 runs cost about $0.36 by token count.
 
-This is not the same test as the Qwen runs. Qwen's harness could sign in when the user said yes. Claude here had no sign-in path at all. So the two results show honesty at a refusal and are not a ranking.
+This is not the same test as the Qwen runs. Qwen's harness could sign in when the user said yes. Claude here had no sign-in path at all. So both results show only that neither model invented an answer when refused. They do not rank the models.
 
 ## When the model does the sign-in itself
 
@@ -80,11 +80,11 @@ Claude read the 401, fetched the sign-in rules, built the secret, asked the user
 
 Qwen never requested the link in the 401. It guessed common names instead, `/authorize`, `/login`, `/oauth2/authorize` and `/auth/authorize`, and every guess returned 404. None of its 6 runs reached even the discovery step. Two of the denied runs ended with an empty reply after one request. My retry for that problem was off in this arm. Qwen made up no order number.
 
-This is one model of each kind with three runs per cell. The helper tools and the prompt are part of the result. It shows that the difference between these two models is in finding and using the link in a 401, not in the site.
+This is one model of each kind with three runs per cell. The helper tools and the prompt are part of the result. In these runs, the difference between the two models came from finding and using the link in the 401. The site behaved the same for both.
 
 ## What these runs do not show
 
-- Claude could not take part in the sign-in itself. Its fetch tool cannot hold my token. The next section shows the small check I ran instead.
+- Claude's own fetch tool could not take part in the sign-in, because it cannot hold my token. Claude signed in only in the second round, with my tools.
 - Qwen's harness-run sign-in and the model-run sign-in used the same site. They show different things: the site's rules, and the model's skill.
 - There is one client and one fake user. A real site has many.
 - No refresh tokens, no dynamic registration, and no real consent screen.

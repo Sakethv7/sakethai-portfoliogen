@@ -4,11 +4,12 @@
 
 ## The result
 
-Clustering groups similar items, such as similar images, so a large search system can find matches faster. The standard method, Lloyd's k-means, reads the whole dataset on every pass. A 2026 paper proposed a variant called e-means that updates from small batches instead, and reported that it reaches the same quality faster. I tried to reproduce its speed claim on my own laptop.
+Clustering groups similar items, such as similar images, so a large search system can find matches faster. The standard method, Lloyd's k-means, reads the whole dataset on every pass. A 2026 paper proposed a variant called e-means that updates from small batches instead, and reported that it reaches the same quality faster. I tried to reproduce its speed claim on my own 16 GB Apple M4 laptop.
 
-I tested whether e-means, a mini-batch alternative to Lloyd's k-means, could
-reach the same held-out clustering error with fewer data passes and less wall
-time on a 16 GB Apple M4 laptop.
+I measured quality as held-out clustering error: how far test vectors, kept
+out of training, sit from their nearest centroid. An epoch is one full pass
+over the training data. A seed fixes the random start, and a paired seed gives
+both methods the same start.
 
 Across 10 paired seeds on 100,000 real image embeddings, e-means reached the
 held-out error of Lloyd after 25 epochs at its fourth epoch every time. Median
@@ -20,8 +21,9 @@ Lloyd's 25-epoch result.
 
 ![Held-out clustering error against uninterrupted training time](e-means/quality-by-time.png)
 
-The result is narrow. It applies to Deep1B 100k, 96 dimensions, 512 centroids,
-Faiss 1.16.0, eight CPU threads and this Apple M4 machine. It is not a general
+The result is narrow. It applies to Deep1B 100k (100,000 vectors from a public image
+benchmark), 96 dimensions, 512 centroids, Faiss 1.16.0 (Meta's open-source
+vector search library), eight CPU threads and this Apple M4 machine. It is not a general
 CPU claim and does not reproduce the paper's H100 results.
 
 ## Why clustering matters
@@ -67,7 +69,8 @@ error after 25 epochs.
 
 The statistical unit was a paired seed, not one of the 110,000 vectors. The
 campaign contained 20 completed runs: two algorithms across 10 seeds. There
-were no failed or invalid V5 runs, and every pair's initialization hash matched.
+were no failed or invalid runs in V5, the final campaign version, and every
+pair's initialization hash matched.
 
 ## The timing bug that changed the experiment
 
@@ -97,7 +100,8 @@ mixed source hashes, plan drift or unpaired initialization.
 
 Five campaign versions record the correction trail. V1 used the inflated Lloyd
 timing. V2 separated the paths but plotted the wrong time coordinates. V3 fixed
-that graph, but a later source-formatting change broke its provenance match. V4
+that graph, but a later source-formatting change broke the check that ties
+each result to its exact code. V4
 exposed a mislabeled per-seed field. Only V5 supports the published result.
 
 ## Where e-means did not reliably win
@@ -112,8 +116,8 @@ tests, not a second speed benchmark.
 - When I requested more centroids than natural groups, e-means crossed in four
   of five seeds and sometimes revived underused centroids.
 
-These counterexamples stop the Deep1B result from becoming “e-means always
-wins.” Centroid revival occurred in the main campaign, but this experiment did
+These counterexamples show that the Deep1B result does not mean e-means
+always wins. Centroid revival occurred in the main campaign, but this experiment did
 not isolate whether revival caused the speedup.
 
 ## What is original here
@@ -135,16 +139,15 @@ not established that nobody else has performed an equivalent M4 experiment.
 
 ## What I learned
 
-Performance experiments need two kinds of discipline. Algorithmic control
-holds the data, initialization, precision, scoring and compute setting steady.
-Evidence control makes every result traceable to one dataset, plan and source
-tree while refusing incomplete or incompatible records.
+A fair speed test needs two kinds of control. First, both methods get the
+same data, starting point, precision, scoring and compute settings. Second,
+every result must trace back to one dataset, plan and code version, and the
+analysis must reject incomplete or mixed records.
 
-The project transferred methods from my earlier AI-evaluation and systems work:
-paired conditions, explicit seeds, frozen plans, immutable evidence,
-uncertainty intervals and discriminating tests for competing explanations. The
-domain changed from evaluating AI systems to measuring a numerical algorithm;
-the evidence discipline remained reusable.
+I used the same methods I use in AI evaluation: paired conditions, fixed seeds,
+a plan written before the runs, records that cannot change after the fact,
+uncertainty intervals, and tests that can tell competing explanations apart.
+They worked the same way for a numerical algorithm.
 
 ## What this does not claim
 

@@ -14,7 +14,7 @@ A trace is the record of one request as it moved through the system. For a RAG a
 
 In the setups I have seen, the retrieved chunks are the field most often left out. They are also the field I need most. Without them I can't tell a [retrieval failure from a generation failure](#/writing/retrieval-vs-generation-failures). I see a wrong answer, but not whether the model had the right passage and ignored it, or never got it.
 
-The prompt version helps for a different reason. When quality drops after a change, I filter traces by version and compare. In [Lekhni](#/writing/lekhni-recording-to-knowledge), my meeting-notes app, every generation logs its prompt version. A worse batch of notes then points to the change that caused it.
+The prompt version helps for a different reason. When quality drops after a change, I filter traces by version and compare. In [Lekhni](#/writing/lekhni-system-design), my meeting-notes app, every generation logs its prompt version. A worse batch of notes then points to the change that caused it.
 
 ## Make the trace one click away
 
@@ -42,7 +42,7 @@ On a production assistant I evaluate, the most useful work was a row-level join.
 
 Tools such as Arize Phoenix and Langfuse already capture and store traces and show them in a usable screen. I put my effort into two other places: logging the right fields, and putting trace IDs where people already look.
 
-I learned this the hard way. [SakethWiki](#/writing/review-gated-knowledge-system), my notes app, once had its own monitoring layer with dashboards and queues. It had more code to maintain than the app it watched. I moved model telemetry to Langfuse and removed that code. After the move I read traces more often, not less.
+I learned this the hard way. [SakethWiki](#/writing/sakethwiki-system-design), my notes app, once had its own monitoring layer with dashboards and queues. It had more code to maintain than the app it watched. I moved model telemetry to Langfuse and removed that code. After the move I read traces more often, not less.
 
 ## Treat a missing trace as a bug
 

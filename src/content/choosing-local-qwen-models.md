@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-10-28 · from Lekhni, my local meeting-notes app*
 
-> **In one paragraph.** I run Qwen models locally through Ollama on a 16 GB Mac. I started by looking for "the best model". I found that each step of a pipeline needs a model that fits in memory next to everything else, returns output the code can parse, and passes that step's checks. This note covers why I chose Qwen, a benchmark against Llama, Mistral and newer Qwen models, the GPU memory limit on a 16 GB Mac, the context-window setting that cost me 3.3 GiB, schema-constrained JSON, and how a model becomes the default.
+> **In one paragraph.** I run Qwen models, open AI models from Alibaba, on my 16 GB Mac through Ollama. I started by looking for "the best model". I found that each step of a pipeline needs a model that fits in memory next to everything else, returns output the code can parse, and passes that step's checks. This note covers why I chose Qwen, a benchmark against Llama, Mistral and newer Qwen models, the GPU memory limit on a 16 GB Mac, the context-window setting that cost me 3.3 GiB, schema-constrained JSON, and how a model becomes the default.
 
 ## One app, several model jobs
 
@@ -15,7 +15,7 @@ Lekhni turns recordings into notes. It does not make one model call. It makes se
 | JSON repair | Fixes a broken JSON answer, under the same schema | Valid JSON |
 | Privacy filter, continuity check | Short yes/no or filter decisions | Speed, low memory |
 
-Each step can have a different best model. So Lekhni has two settings: `OLLAMA_MODEL` for the final note, revisions and the privacy filter, and `OLLAMA_CHUNK_MODEL` for chunk extraction and JSON repair. The default for both is `qwen3:8b`. On this Mac a separate chunk model turned out not to pay off, and the benchmark below shows why.
+Each step can have a different best model. So Lekhni has two settings: `OLLAMA_MODEL` for the final note, revisions and the privacy filter, and `OLLAMA_CHUNK_MODEL` for chunk extraction and JSON repair. The default for both is `qwen3:8b`. On this Mac a separate chunk model did not help, and the benchmark below shows why.
 
 ## Why Qwen, and why an 8B model
 
@@ -48,7 +48,7 @@ Stage 2 used a 58-minute system-design mock interview. It takes the chunked path
 | `llama3.1:8b` | 13.5 min | 9,178 chars | 281 of 281 | 3/4 (no WebSockets) |
 | `qwen3:8b` + `qwen3.5:4b` for chunks | 23.1 min | 21,378 chars | 341 of 385 | 4/4 |
 
-**`qwen3:8b` stays the default.** It was the only single-model setup that reached every late topic and kept all its evidence. Llama was 40% faster, but its note was half as long and lost a topic. For notes I read later, a complete note beats a fast one.
+**`qwen3:8b` stays the default.** It was the only single-model setup that reached every late topic and kept all its evidence. Llama was 40% faster, but its note was half as long and lost a topic. For notes I read later, I care more about a complete note than a fast one.
 
 **The smaller chunk model did not help.** It was not faster in total, and its note dropped 44 evidence items. Ollama logged "model predicted to exceed available memory, evicting" at each switch between the 4B and 8B model. The two do not fit in GPU memory together, so every switch reloads one. The GPU section below explains why.
 

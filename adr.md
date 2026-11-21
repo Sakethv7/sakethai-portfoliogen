@@ -2205,3 +2205,46 @@ Caption: Grey exists today: the request and the deploy step. Blue is new. Red is
 **What we gave up.** The notes are longer in places, because a gloss adds words. Some voice is lost: a few lines that read well as slogans are now plain. The résumé bullets on the Experience page were not rewritten, because they must match the published résumé. The GEO series and the newer local-model notes got only light edits, because they already followed most of the rules.
 
 **Open questions.** Saketh mentioned a repo with anti-slop rules. No link reached this session. Its rules are not applied yet.
+
+## ADR-065: Merge two build logs into their system design notes, and trim the Phase C repeat
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Line-by-line review finds three overlapping notes] --> B[Move unique parts of each build log into its system design note]
+    B --> C[Delete the two build logs and their records]
+    C --> D[Old addresses redirect to the merged notes]
+    D --> E[Cut Phase C to a short summary with links]
+    E --> F{Do tests and the build pass?}
+    F -- no --> G[Fix it. Do not deploy]
+    F -- yes --> H{Do old addresses open the merged notes in a preview?}
+    H -- no --> I[Fix the redirect. Do not deploy]
+    H -- yes --> J[Merge to main and deploy]
+
+    classDef old fill:#e5e5e5,stroke:#777,color:#222
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,J old
+    class B,C,D,E,F,H new
+    class G,I fail
+```
+
+Caption: Grey exists today: the review and the deploy step. Blue is new. Red is a failure path. Level 3 explainer: skipped. The only new flow is a redirect, and level 2 shows every step and both failure paths.
+
+**Status:** Accepted 2026-11-21 (Saketh: "Yes").
+
+**Context.** The line-by-line review after ADR-064 found three overlaps. "Building a review-gated personal knowledge system" repeated the SakethWiki system design note: the review gate, the page-update table and the removed monitoring layer. "From recording to durable knowledge with Lekhni" repeated the Lekhni system design note: the session folder, note types, health checks, traces and the vendored recorder. The Phase C half of the Phase B and C note repeated the 18-run table and the signature results that the OAuth and signatures notes cover in full.
+
+**Options.**
+1. Keep all notes and add cross-links.
+2. Merge each build log into its system design note, and cut Phase C to a summary (this ADR).
+3. Merge the other way, keeping the shorter build logs.
+
+**Decision.** Option 2. Each system design note takes the unique parts of its build log: the motivation, the page-update table, the retrieval detail of the undo, the note-type list, the smoke test and the handoff to SakethWiki. The two build logs and their publication records are removed. Their old addresses redirect in React to the merged notes, and each keeps a prerendered file with a canonical link to the merged note, as with `/research` (ADR-047). Phase C becomes three short points with links.
+
+**Evidence invariant.** No fact or number is lost. Every fact from a removed note now appears in the merged note or was already there.
+
+**Consequences.** Two fewer notes on /writing. The SakethWiki and Lekhni Work cards list one fewer note each. `App.tsx`, `scripts/routes.ts` and the route test change.
+
+**What we gave up.** The short build logs were quicker to read than the system design notes. A reader who wanted only the decisions now reads a longer note. Phase B and C no longer stands alone for Phase C. A reader must open two more notes for the detail.

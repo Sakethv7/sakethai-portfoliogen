@@ -2,7 +2,7 @@
 
 *Research note · 2026-11-03 · from the request log of my own test website*
 
-I put two versions of a small fictional company site online. One is plain HTML. The other has the same pages plus an `llms.txt` file and a markdown copy of every page. I logged every request for 29 hours and 30 minutes, from 2026-11-02 22:00 UTC to 2026-11-04 03:27 UTC. The log holds 4,422 requests. This note covers the visitors that were not me.
+I put two versions of a small fictional company site online. One is plain HTML. The other has the same pages plus an `llms.txt` file and a markdown copy of every page. I logged every request for 29 hours and 30 minutes, from 2026-11-02 22:00 UTC to 2026-11-04 03:27 UTC. The log holds 4,422 requests. This note covers the visitors that were not me. A crawler is a program that an AI company runs to collect web pages, for example to train or index. It is different from an agent, which visits a site to answer one user's question.
 
 ## The two sites
 
@@ -14,6 +14,8 @@ I did not announce either site, and as far as I know no page links to them. Visi
 ## Who came
 
 3,170 requests came from visitors with no run token that were not my laptop. Only 119 of them, about 4%, came from named AI crawlers. The table lists them.
+
+`robots.txt` is the file where a site states which crawlers may read which pages.
 
 | Crawler | Requests | Addresses | Address check | Read `robots.txt` |
 |---|---:|---:|---|---:|
@@ -27,7 +29,7 @@ OAI-SearchBot asked only for `robots.txt` and left. I do not know why. GPTBot se
 
 Both did the same thing. On each site they fetched all 9 pages, one time each.
 
-On the `ai` site they also fetched all 9 markdown copies and `llms.txt` once. So the crawl on the `ai` site was 19 requests for content, against 9 on the plain site. Neither crawler asked for markdown with the `Accept` header. They requested the `.md` paths. All 9 of GPTBot's markdown requests carried a referer, so it followed the links on the pages. None of ClaudeBot's did, so it may have read the paths from `llms.txt`.
+On the `ai` site they also fetched all 9 markdown copies and `llms.txt` once. So the crawl on the `ai` site was 19 requests for content, against 9 on the plain site. Neither crawler asked for markdown with the `Accept` header. They requested the `.md` paths. All 9 of GPTBot's markdown requests carried a referer (a header that names the page with the link), so it followed the links on the pages. None of ClaudeBot's did, so it may have read the paths from `llms.txt`.
 
 Both reached the plain site first, on the evening of 2026-11-02. They reached the `ai` site six to seven hours later.
 

@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-11-03 · from my own test site and its log*
 
-A user agent is a name that a client types into a header. Anyone can type any name. On my test site, one address sent 397 requests with the name `Claude-User`. All of them were probes for secret files such as `/.env`. They hit every host I run. The address belongs to a hosting company, not to Anthropic. I caught it because it was outside Anthropic's published address range.
+A user agent is a name that a client types into a header, a labeled line sent with each web request. Anyone can type any name. On my test site, one address sent 397 requests with the name `Claude-User`. All of them were probes for secret files such as `/.env`. They hit every host I run. The address belongs to a hosting company, not to Anthropic. I caught it because it was outside Anthropic's published address range.
 
 An address check has limits. Vendors change their ranges. An agent can also run on a user's own machine, where the range does not apply. So I tested a stronger check: a signature.
 
@@ -54,7 +54,7 @@ Reading the standard did not show this bug. Running another person's code did. T
 
 ## Blocking
 
-Until now the site never blocked. That left one question: does a signature work as a gate? I added an optional policy, off by default. When it is on, the site answers 403 only if three things are true. The host is the account host, the user agent claims my own bot name, and the signature is not valid. Other clients, other hosts and other bot names are never blocked. I can test a gate only on a name that I own. I cannot sign for `Claude-User`.
+Until now the site never blocked. That left one question: does a signature work as a gate? I added an optional policy, off by default. When it is on, the site answers 403 (the HTTP code for "forbidden") only if three things are true. The host is the account host, the user agent claims my own bot name, and the signature is not valid. Other clients, other hosts and other bot names are never blocked. I can test a gate only on a name that I own. I cannot sign for `Claude-User`.
 
 I ran the same Qwen agent as before in three modes, three times each, with the gate on:
 

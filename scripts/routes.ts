@@ -39,6 +39,11 @@ export function buildRoutes({ work, publications, experiences }: SiteData): Rout
     // /research redirects in React. It gets a file so the host answers 200 (ADR-047).
     { path: '/research/', title: titleOf('Writing'), description: writingText, type: 'website', sitemap: false, canonicalPath: '/writing/' },
   ];
+  // Merged notes redirect in React (ADR-065). Each old address keeps a file so the host answers 200.
+  for (const [from, to] of [['review-gated-knowledge-system', 'sakethwiki-system-design'], ['lekhni-recording-to-knowledge', 'lekhni-system-design']]) {
+    const target = publications.find((note) => note.slug === to);
+    if (target) routes.push({ path: `/writing/${from}/`, title: titleOf(target.title), description: target.plain, type: 'article', sitemap: false, canonicalPath: `/writing/${to}/` });
+  }
   for (const item of work) {
     if (item.caseStudy) routes.push({ path: `/work/${item.slug}/`, title: titleOf(item.title), description: item.plain, type: 'article', sitemap: true, lastmod: item.updated, body: item.caseStudy });
   }

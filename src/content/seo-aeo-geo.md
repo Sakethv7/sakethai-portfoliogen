@@ -18,7 +18,7 @@ The same post argues that AEO and GEO are largely the same work with a different
 
 ## Where the term GEO came from
 
-The term comes from a research paper, not a marketing team. Aggarwal and co-authors introduced "Generative Engine Optimization" in 2023, and the paper was accepted to KDD 2024. They tested ways to rewrite content so generative engines show it more. The abstract reports that GEO "can boost visibility by up to 40%," and notes that the effect varies by domain ([arXiv:2311.09735](https://arxiv.org/abs/2311.09735)).
+The term comes from a research paper, not a marketing team. Aggarwal and co-authors introduced "Generative Engine Optimization" in 2023, and the paper was accepted to KDD 2024, a major data-mining conference. They tested ways to rewrite content so generative engines show it more. The abstract reports that GEO "can boost visibility by up to 40%," and notes that the effect varies by domain ([arXiv:2311.09735](https://arxiv.org/abs/2311.09735)).
 
 That "up to" matters. It is the best case in a research setup, not a promise for every site.
 
@@ -28,7 +28,7 @@ The numbers below come from Similarweb's own research, as it reports them. They 
 
 - **Fewer clicks.** The share of news-related Google searches that end with no click rose from 56% in May 2024 to 69% in May 2025.
 - **More AI referrals.** Visits referred by AI chatbots grew 357% year over year, to 1.1 billion in June 2025.
-- **Unstable visibility.** Citing an AirOps report of 45,000 citations, Similarweb says only 30% of brands stay visible from one AI answer to the next. Only 20% stay visible across five runs of the same question.
+- **Unstable visibility.** Citing a report of 45,000 citations from AirOps, a content-marketing software company, Similarweb says only 30% of brands stay visible from one AI answer to the next. Only 20% stay visible across five runs of the same question.
 
 The third point changes how a team measures results. A search ranking moves slowly. An AI answer can change each time someone asks. So GEO tools track a brand across many prompts and many runs, and report a share, not a position. Similarweb calls this "Share of Model."
 
@@ -42,7 +42,7 @@ That covers Google, not every AI tool. But it is a useful check. The `llms.txt` 
 
 These four jobs come from the sources above. The grouping is my reading.
 
-**1. Make the site readable without a browser.** Many AI crawlers read the HTML that the server sends and do not run JavaScript. LLM Pulse's checker fetches a page with and without JavaScript and reports "the share of your visible text that survives without JavaScript" ([LLM Pulse checker](https://llmpulse.ai/geo-crawlability-checker)). Bright Data publishes an open-source agent crew that audits a page against Google AI Overview results. It writes "page-level optimization suggestions in Markdown" ([Bright Data on GitHub](https://github.com/brightdata/geo-ai-agent)).
+**1. Make the site readable without a browser.** Many AI crawlers read the HTML that the server sends and do not run JavaScript. LLM Pulse's checker fetches a page with and without JavaScript and reports "the share of your visible text that survives without JavaScript" ([LLM Pulse checker](https://llmpulse.ai/geo-crawlability-checker)). Bright Data, a web-data company, publishes an open-source set of agents that audits a page against Google AI Overview results. It writes "page-level optimization suggestions in Markdown" ([Bright Data on GitHub](https://github.com/brightdata/geo-ai-agent)).
 
 **2. Be cited by other sites.** In Similarweb's travel-brand example, the brand appeared in 13 of 180 tracked prompts. The most-cited sources were third-party sites such as Cvent, Wikipedia, and TripAdvisor, not the brand's own homepage. AI answers lean on what other sites say about a business.
 
@@ -52,7 +52,7 @@ These four jobs come from the sources above. The grouping is my reading.
 
 ## My reading
 
-SEO is still the floor. A page that search engines cannot crawl or trust will not do well in AI answers either. GEO adds two things on top. It adds measurement across unstable answers. It also moves attention off the website, to the other sites that AI tools quote.
+I think SEO is still the base. A page that search engines cannot crawl or trust will not do well in AI answers either. GEO adds two things on top. It adds measurement across unstable answers. It also moves attention off the website, to the other sites that AI tools quote.
 
 For businesses where the buyer wants to act, such as booking travel, the bigger change is that direct way to act. A page helps an AI tool describe a business. An API lets an agent complete the sale.
 

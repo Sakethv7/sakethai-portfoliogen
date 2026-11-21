@@ -41,8 +41,8 @@ This is the important part.
 
 - **No practitioner has used or seen it.** I have no evidence that a maintenance engineer would trust the output. I also have no evidence that anyone would pay for it.
 - **The data is public.** The detector and agents run on recorded data. They have not met a noisy, real plant.
-- **The evidence I do have is only about the problem.** A [2025 MaintainX survey](https://www.getmaintainx.com/newsroom/state-of-industrial-maintenance-report-2025) asked 1,320 maintenance professionals in the US and Canada. It found that 58 percent spend more than half their time reacting to breakdowns. It also found that 71 percent call preventive maintenance a core strategy, yet fewer than 35 percent spend most of their time on it. That says the pain is real. It does not say my approach fixes it. MaintainX sells maintenance software, so I read the survey as direction and not proof.
-- **Trust is the hard part.** An alerting system that cries wolf loses the people it serves. Whether my agents are right often enough is something I have not measured.
+- **The evidence I do have is only about the problem.** A [2025 MaintainX survey](https://www.getmaintainx.com/newsroom/state-of-industrial-maintenance-report-2025) asked 1,320 maintenance professionals in the US and Canada. MaintainX is a company that sells maintenance software. The survey found that 58 percent spend more than half their time reacting to breakdowns. It also found that 71 percent call preventive maintenance a core strategy, yet fewer than 35 percent spend most of their time on it. That says the pain is real. It does not say my approach fixes it. Because the survey comes from a software vendor, I read it as a direction and not as proof.
+- **Trust is the hard part.** If an alerting system raises too many false alarms, people stop trusting it. Whether my agents are right often enough is something I have not measured.
 
 ## What I'm doing next
 
