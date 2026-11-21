@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-10-28 · from Lekhni, my local meeting-notes app*
 
-> **In one paragraph.** I run Qwen models locally through Ollama on a 16 GB Mac. Picking "the best model" turned out to be the wrong question. Each step of a pipeline needs a model that fits in memory next to everything else, returns output the code can parse, and passes that step's checks. This note covers why I chose Qwen, a benchmark against Llama, Mistral and newer Qwen models, the GPU memory limit on a 16 GB Mac, the context-window setting that cost me 3.3 GiB, schema-constrained JSON, and how a model becomes the default.
+> **In one paragraph.** I run Qwen models locally through Ollama on a 16 GB Mac. I started by looking for "the best model". I found that each step of a pipeline needs a model that fits in memory next to everything else, returns output the code can parse, and passes that step's checks. This note covers why I chose Qwen, a benchmark against Llama, Mistral and newer Qwen models, the GPU memory limit on a 16 GB Mac, the context-window setting that cost me 3.3 GiB, schema-constrained JSON, and how a model becomes the default.
 
 ## One app, several model jobs
 

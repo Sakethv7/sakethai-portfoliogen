@@ -1,57 +1,57 @@
-Most teams building with LLMs say they log traces. Fewer can answer a simpler question: when someone reports a bad answer, how long does it take to open the trace behind it?
+When an AI assistant gives a bad answer, someone has to find out why. The record that shows why is called a trace. This note is about one practical measure: how long it takes to open that trace after someone reports the bad answer.
 
-If the answer is "find an engineer, get the timestamp, search the logs," the traces exist but nobody reads them. Observability that takes ten minutes to reach gets used during incidents and ignored the rest of the time. The value is in the ordinary days, when one odd answer is the first sign of a pattern.
+In my experience, the usual path is slow. Someone asks an engineer, the engineer finds the timestamp, and then searches the logs. When the path takes ten minutes, people open traces during incidents and skip them on other days. I think the other days matter more, because one odd answer is often the first sign of a pattern.
 
 ## What a trace needs to hold
 
-A trace is the record of one request as it moved through the system. For a RAG assistant, the useful fields are:
+A trace is the record of one request as it moved through the system. For a RAG assistant (an assistant that first searches a document store, then writes an answer from what it found), I log these fields:
 
 - the user's question, and the rewritten query if there is one
-- the retrieved chunks, with their document IDs and scores
+- the retrieved chunks (the passages the search returned), with their document IDs and scores
 - the prompt version and the model
 - the raw model output, before any post-processing
 - latency and token counts for each step
 
-The retrieved chunks are the field people most often leave out, and the one that matters most. Without them you can't tell a [retrieval failure from a generation failure](#/writing/retrieval-vs-generation-failures). You see a wrong answer, but not whether the model had the right context and ignored it, or never had it at all.
+In the setups I have seen, the retrieved chunks are the field most often left out. They are also the field I need most. Without them I can't tell a [retrieval failure from a generation failure](#/writing/retrieval-vs-generation-failures). I see a wrong answer, but not whether the model had the right passage and ignored it, or never got it.
 
-Prompt version matters for a different reason. When quality drops after a change, you want to filter traces by version and compare. In [Lekhni](#/writing/lekhni-recording-to-knowledge), every generation logs its prompt version, so a worse batch of notes points straight at the change that caused it.
+The prompt version helps for a different reason. When quality drops after a change, I filter traces by version and compare. In [Lekhni](#/writing/lekhni-recording-to-knowledge), my meeting-notes app, every generation logs its prompt version. A worse batch of notes then points to the change that caused it.
 
 ## Make the trace one click away
 
-The fix for unread traces is mostly plumbing, not tooling.
+Most of the fix is wiring, not a new tool.
 
-**Put the trace ID where the complaint lands.** A thumbs-down, a support ticket, a row in a dashboard: each should carry the trace ID. Then "this answer was wrong" comes with its evidence attached, instead of starting a search.
+**Put the trace ID where the complaint lands.** A thumbs-down, a support ticket and a dashboard row should each carry the trace ID. Then the complaint arrives with its evidence, and nobody has to search.
 
-**Link from aggregates to examples.** A dashboard that says retrieval failures went up is a question. A dashboard where you click that number and see twenty of the failing traces is an answer. The jump from a metric to the rows behind it is the most useful link in the whole stack.
+**Link from totals to examples.** A dashboard can say that retrieval failures went up. It is more useful when I can click that number and see twenty of the failing traces.
 
-**Make traces searchable by what people know.** Engineers search by timestamp. Everyone else knows a user, a session, a document, or a topic. Index traces by those too.
+**Make traces searchable by what people know.** Engineers search by timestamp. Other people know a user, a session, a document or a topic. Index traces by those fields too.
 
 ## Let non-engineers read them
 
-Traces are usually built for the people who wrote the system. But many failures belong to someone else. A knowledge gap belongs to the person who owns the content. A routing mistake might belong to whoever owns the taxonomy.
+Engineers usually build traces for themselves. But many failures belong to other people. A knowledge gap belongs to the person who owns the content. A routing mistake can belong to the person who owns the topic list.
 
-Those people won't read a JSON span tree. Give them a plain view: the question, the documents that came back, the answer, and a label for what went wrong. If a content owner can open that view and see that no document covers the question, the owner can close the gap. No ticket needs to pass through three teams.
+Those people will not read a raw JSON log. Give them a plain view: the question, the documents that came back, the answer, and a label for what went wrong. A content owner can then see that no document covers the question and add one. The fix does not need to pass through three teams.
 
-## A trace alone isn't enough
+## A trace alone is not enough
 
-A trace tells you what the model did. It doesn't tell you what happened next. Did the user rephrase and ask again? Open a case? Give up?
+A trace shows what the model did. It does not show what the user did next. Did they ask again in other words, open a support case, or give up?
 
-On a production assistant I evaluate, the most useful work was joining traces with interaction records and ticketing data at the row level. This let me read one session from question to answer to outcome. That's what separated AI failures from routing and intake failures. The traces were necessary, but the join is what made them explain anything. The [case study](#/experience/enterprise-ai-quality) covers how that was built.
+On a production assistant I evaluate, the most useful work was a row-level join. I joined traces with interaction records and ticketing data. Then I could read one session from question to answer to outcome. That join separated AI failures from routing and intake failures. The [case study](#/experience/enterprise-ai-quality) explains how I built it.
 
-## Don't build the viewer yourself
+## Use an existing trace viewer
 
-Tools like Arize Phoenix and Langfuse already do trace capture, storage, and a usable UI. The work worth doing is on either side of them: logging the right fields, and wiring trace IDs into the places people already look.
+Tools such as Arize Phoenix and Langfuse already capture and store traces and show them in a usable screen. I put my effort into two other places: logging the right fields, and putting trace IDs where people already look.
 
-I learned this the expensive way. [SakethWiki](#/writing/review-gated-knowledge-system) once had its own self-monitoring layer with dashboards and queues. It was more code to maintain than the system it watched. Moving model telemetry to Langfuse removed that code, and I read traces more often afterward, not less.
+I learned this the hard way. [SakethWiki](#/writing/review-gated-knowledge-system), my notes app, once had its own monitoring layer with dashboards and queues. It had more code to maintain than the app it watched. I moved model telemetry to Langfuse and removed that code. After the move I read traces more often, not less.
 
 ## Treat a missing trace as a bug
 
-If traces are how you debug, a request without one is a blind spot. Check for it the same way you check for any other data problem. Lekhni's health report asks, for every session, whether a trace exists for the generation. It's a boring check, which is the point: it fails loudly and specifically.
+If I debug with traces, a request without a trace is a blind spot. I check for it like any other data problem. Lekhni's health report checks, for every session, that a trace exists for the generation. The check is simple, and when it fails it says exactly which session has no trace.
 
-## One tradeoff to name
+## One tradeoff
 
-Easy access pulls against privacy. Traces hold user questions, and sometimes the documents behind them. Making them easy to reach means deciding who can see what: redacting sensitive fields, scoping views by role, and setting how long traces are kept. Decide this up front. Locking traces down after the fact usually means locking them away, and then nobody reads them again.
+Easy access works against privacy. Traces hold user questions and sometimes the documents behind them. So easy access needs rules: hide sensitive fields, limit views by role, and set how long traces are kept. I set these rules at the start. When teams add them later, they often lock the traces away completely, and then nobody reads them.
 
-## The test
+## A simple test
 
-Pick a bad answer from last week. Time how long it takes to open its trace, see what was retrieved, and know which step failed. If that's under a minute, the observability is working. If it isn't, that's the thing to fix before adding another metric.
+Pick a bad answer from last week. Time how long it takes to open its trace, see what was retrieved, and know which step failed. If it takes less than a minute, the setup works. If it takes longer, I would fix that before I add another metric.

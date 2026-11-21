@@ -1,12 +1,12 @@
-Most of what I save, I never read again. Bookmarks, clipped articles, screenshots of slides: they pile up, and the pile gets less useful as it grows. Putting a chatbot on top doesn't fix that. It retrieves from the pile, so it retrieves the noise too.
+I save many bookmarks, clipped articles and screenshots of slides, and I rarely read most of them again. As the pile grows, it gets harder to use. A chatbot on top of the pile did not help me, because it searches the pile and returns the clutter too.
 
-[SakethWiki](https://github.com/Sakethv7/SakethWiki) is my attempt at the opposite. It's a personal knowledge system where nothing gets in without review, and pages change as my understanding changes. Here are the five decisions that shaped it, and one I had to undo.
+[SakethWiki](https://github.com/Sakethv7/SakethWiki) is my notes app built the other way. An AI model proposes what to save, and nothing gets in until I review it. Each page changes as my understanding changes. This note covers the five decisions that shaped it, and one I had to undo.
 
 ## 1. The notes are the source of truth, not the index
 
 Everything lives as plain Markdown in an Obsidian vault. I can open it, edit it, and read it without the app running. Search and chat use a SQLite index built *from* those files, and the index resyncs when files change.
 
-This sounds like a detail, but it decides what happens when something breaks. If the index is wrong, I rebuild it. If the notes were stored only in the index, a bad write would be permanent. The rule I keep coming back to: this is not a RAG app with a wiki attached. The wiki is the product, and retrieval is a service around it.
+This choice decides what happens when something breaks. If the index is wrong, I rebuild it from the files. If the notes lived only in the index, a bad write would be permanent. So the notes are the main thing I keep, and search and chat are features built around them.
 
 ## 2. Nothing is written without review
 
@@ -18,7 +18,7 @@ Before summarizing, the extractor has to decide whether the source deserves a pa
 - **source only** means it's mostly news or social context, so only the transferable core is kept
 - **reject** means it never reaches the queue
 
-That first question removes more junk than any amount of summarizing.
+In my use, this first check removes more clutter than better summaries do.
 
 ## 3. Pages evolve instead of piling up
 
@@ -40,7 +40,7 @@ The sources stay below the block as an evidence trail. The block on top is the p
 
 Every approval and rejection is logged as a trace, including what I changed. If the extractor suggests one page and I keep moving the note to another, that's a pattern worth learning.
 
-But one correction isn't a preference. A correction only starts shaping future extractions after it repeats, or after I explicitly approve it. Once a week, a model reads recent traces and writes a few short hints that get added to the extraction prompt. The system improves from how I actually use it, and I can audit every step, because the raw evidence is a plain log file.
+But one correction does not make a preference. A correction only starts shaping future extractions after it repeats, or after I explicitly approve it. Once a week, a model reads recent traces and writes a few short hints that get added to the extraction prompt. The system adjusts to how I use it. I can check every step, because the raw record is a plain log file.
 
 ## 5. Use a model only where rules fail
 
@@ -50,12 +50,12 @@ Models do the parts that need judgment: extraction, classifying how sources rela
 
 ## What I had to undo
 
-The system got too big. I added a self-monitoring layer with its own dashboards, action queues, and evals of the system's own behavior. Each piece made sense on its own. Together they were more surface to maintain than the core loop they were watching.
+The system got too big. I added a self-monitoring layer with its own dashboards, action queues, and evals of the system's own behavior. Each piece made sense on its own. Together they needed more maintenance than the core app they watched.
 
 Retrieval had the same problem. Every chat question rebuilt the index from disk first. If that found nothing, a model read excerpts of every page to choose context. If *that* found nothing, a keyword scan ran over every file.
 
-So I did a lean refactor. Retrieval now has one path and one fallback. The self-monitoring layer is switched off behind a flag, and model telemetry goes to Langfuse instead of home-grown dashboards. The refactor removed code and added no features, and the tool is better for it.
+So I did a lean refactor. Retrieval now has one path and one fallback. The self-monitoring layer is switched off behind a flag, and model telemetry goes to Langfuse instead of home-grown dashboards. The refactor removed code and added no features, and the app works better.
 
-The lesson I'd pass on: the loop that matters is capture, understand, recall. Anything that doesn't make one of those three better is a cost, even when it's interesting to build.
+What I took from this: the app has three jobs. It saves a source, updates my understanding, and helps me find it later. I now treat any part that does not help one of those jobs as a cost, even when it is interesting to build.
 
 *Code and design docs: [github.com/Sakethv7/SakethWiki](https://github.com/Sakethv7/SakethWiki). Notes from talks and meetings reach it through [Lekhni](#/writing/lekhni-recording-to-knowledge).*

@@ -2159,3 +2159,49 @@ Caption: Grey exists today: the public experiment repo and the deploy step. Blue
 **Consequences.** One Markdown file, one SVG chart under `public/goal-contract/`, one publication record and one content test.
 
 **What we gave up.** The site version drops the per-scenario detail and the deviation list. A reader who wants them must open the repo. The note is not on the home page, so fewer visitors will see it.
+
+## ADR-064: Rewrite note openings and site copy in plain language
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Saketh flags the notes as declarative and hard to read] --> B[Write the writing rules into the project CLAUDE.md]
+    B --> C[Rewrite each note opening in everyday words]
+    C --> D[Remove slogan lines and introduce each person and company]
+    D --> E[Retitle four slogan notes and update links to them]
+    E --> F[Rewrite the home hero and the case study summary]
+    F --> G{Do content tests and the build pass?}
+    G -- no --> H[Fix the copy. Do not deploy]
+    G -- yes --> I{Does Saketh approve the new copy?}
+    I -- no --> J[Revert the files he rejects]
+    I -- yes --> K[Deploy the site]
+
+    classDef old fill:#e5e5e5,stroke:#777,color:#222
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,K old
+    class B,C,D,E,F,G,I new
+    class H,J fail
+```
+
+Caption: Grey exists today: the request and the deploy step. Blue is new. Red is a failure path. Level 3 explainer: skipped. This is a copy change with no new flow, and level 2 shows every step and both failure paths.
+
+**Status:** Proposed 2026-11-21.
+
+**Context.** Saketh read the notes and found them declarative. Lines such as "Without them, quality is a feeling" and titles such as "Traces nobody opens are not observability" read as slogans. Cited people appeared with no context ("Husain", "Shankar"). Openings assumed the reader knew terms such as RAG, grain or watermark. A non-engineer could not follow the first paragraph of several notes.
+
+**Options.**
+1. Rewrite every note in full.
+2. Rewrite the parts a reader meets first, and the slogan and jargon lines anywhere in the body (this ADR).
+3. Leave the bodies and change only titles and plain lines.
+
+**Decision.** Option 2. Each note's opening now states the situation, what I did and what I found, in everyday words. Slogan sentences become plain statements. Each cited person and company gets a few words of context at first mention, taken from their own sites. Each technical term gets a plain gloss at first use, and keeps its precise name (2026-10-09 override). Four slogan titles become descriptive titles, and links that used the old titles are updated. Two notes, the trace note and the NoSQL note, were rewritten in full because most of their sentences were slogans. The home hero, the research section intro and the case study summary use the same rules. The rules are in the project CLAUDE.md under "Writing rules for notes", so later notes follow them.
+
+**Evidence invariant.** No fact, number, hedge, source or limit was removed. Content-test phrases stay as they were. The 140,000 figure still appears once on the home page (ADR-055).
+
+**Consequences.** About 30 Markdown files, `portfolio.ts`, `experience.ts`, `Index.tsx` and `CLAUDE.md` change. Slugs do not change, so no link breaks.
+
+**What we gave up.** The notes are longer in places, because a gloss adds words. Some voice is lost: a few lines that read well as slogans are now plain. The résumé bullets on the Experience page were not rewritten, because they must match the published résumé. The GEO series and the newer local-model notes got only light edits, because they already followed most of the rules.
+
+**Open questions.** Saketh mentioned a repo with anti-slop rules. No link reached this session. Its rules are not applied yet.

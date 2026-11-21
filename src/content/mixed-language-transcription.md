@@ -4,7 +4,7 @@
 
 > **In one paragraph.** Many of the meetings I record mix English with Hindi or Telugu, sometimes in the same sentence. My note-taking and meeting-summarizing app, Lekhni, transcribes on the Mac with NVIDIA's Parakeet, and the version it uses is English-only. So a mixed-language meeting gets a poor transcript before any language model sees it, and changing the notes model cannot fix that. This note collects what I read about the options: Parakeet's newer multilingual version, and Sarvam's Saaras models, which have a mode for code-mixed speech. I have not run a pilot yet. Everything below comes from the vendors' own pages, and my own reading is labelled.
 
-## The problem is the first step, not the last
+## The transcript fails first
 
 Lekhni works in two stages. A speech model turns audio into text. Then a language model, `qwen3:8b` on the same Mac, turns that text into notes. My [local model notes](#/writing/choosing-local-qwen-models) are all about the second stage.
 

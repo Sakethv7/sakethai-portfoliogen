@@ -1,4 +1,4 @@
-I wrote a short [build log](#/writing/review-gated-knowledge-system) about the decisions behind SakethWiki. This is the other half: the system design. What are the parts, how does data move, what breaks, and what did each choice cost?
+SakethWiki is my personal notes app. I send it articles, text or screenshots, and an AI model proposes how to add each one to my notes. Nothing is saved until I approve it. I wrote a short [build log](#/writing/review-gated-knowledge-system) about the decisions behind it. This note covers the system design: the parts, how data moves, what breaks, and what each choice cost.
 
 ## Where it came from
 
@@ -6,9 +6,9 @@ Two things pushed me to build it.
 
 The first was a note-taking course I was studying. It made one point clear: notes that only pile up don't help you. Notes help when you keep reshaping them as you learn.
 
-The second was Andrej Karpathy's [LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), dated April 4, 2026. His argument is about how most RAG works. A RAG system retrieves raw document chunks at question time, so it rebuilds the same understanding every time. His alternative is a wiki the model maintains, "a persistent, compounding artifact". Three layers: raw sources that never change, wiki pages the model writes, and a schema that says how to behave. Three jobs: ingest new sources, answer questions, and lint the wiki for contradictions, stale claims, and orphan pages.
+The second was a short note by Andrej Karpathy, a co-founder of OpenAI and the former head of AI at Tesla. It is his [LLM wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), dated April 4, 2026. His argument is about how most RAG works. A RAG system retrieves raw document chunks at question time, so it rebuilds the same understanding every time. His alternative is a wiki the model maintains, "a persistent, compounding artifact". Three layers: raw sources that never change, wiki pages the model writes, and a schema that says how to behave. Three jobs: ingest new sources, answer questions, and lint the wiki (check it for problems) for contradictions, stale claims, and orphan pages that nothing links to.
 
-I liked the argument and wanted to run it for real. SakethWiki is my version. The part I added on my own is the review gate. In my version the model proposes and I decide. I chose this because a wiki that quietly absorbs a wrong summary is worse than one that missed an article.
+I liked the argument and wanted to run it for real. SakethWiki is my version. The part I added on my own is the review gate. In my version the model proposes and I decide. I chose this because I would rather miss an article than save a wrong summary without noticing.
 
 ## What it has to do
 
@@ -18,7 +18,7 @@ I liked the argument and wanted to run it for real. SakethWiki is my version. Th
 4. Answer questions from my own pages, and show which pages it used.
 5. Tell me when the wiki is drifting: contradictions, orphans, thin pages.
 
-It does not have to serve other users, work offline on a phone, or scale past one person's notes. Those non-goals are what keep it small.
+It does not have to serve other users, work offline on a phone, or scale past one person's notes. Leaving these out keeps the app small.
 
 ## Complexity tier
 
@@ -114,7 +114,7 @@ Search and indexing are not the limit. The health check is. It sends the start o
 
 ## What I had to take out
 
-I added a self-monitoring layer with its own dashboards, action queues, and evals of the system itself. It became more surface to maintain than the loop it watched. I turned it off behind a flag, moved model telemetry to Langfuse, and collapsed retrieval to one path with one fallback. That change removed code and added no features. I would make the same call again.
+I added a self-monitoring layer with its own dashboards, action queues, and evals of the system itself. It became more surface to maintain than the loop it watched. I turned it off behind a flag, moved model telemetry to Langfuse, and collapsed retrieval to one path with one fallback. That change removed code and added no features. I would make the same decision again.
 
 ## Open problems
 

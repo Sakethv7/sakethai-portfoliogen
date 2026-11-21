@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-11-17, updated 2026-11-18 · from RAG Mini, my small document question-answering app*
 
-> **In one paragraph.** RAG Mini answers questions from uploaded documents with Gemini. I added a small, fast model in front of Gemini. It reads each question first and picks a label: safe, off topic, or an injection attempt. Bad questions are refused before Gemini runs. I tested three models for that step on 60 hard questions that I wrote before I saw any answers. Gemini and Jev, a non-generative model from TypeSafe, labeled 0 wrong. A prompted Qwen3-8B on my Mac labeled 2 wrong. Jev was the fastest and the steadiest. The step did not make the app safer in my test, and I say why below. I then ran the guard and router on Jev in the live app. Attacks were refused without a Gemini call, even while Gemini was failing.
+> **In one paragraph.** RAG Mini answers questions from uploaded documents with Gemini, Google's large language model. I added a small, fast model in front of Gemini. It reads each question first and picks a label: safe, off topic, or an injection attempt (a question written to trick the model into ignoring its instructions). Bad questions are refused before Gemini runs. I tested three models for that step on 60 hard questions that I wrote before I saw any answers. Gemini and Jev, a non-generative model from TypeSafe, labeled 0 wrong. A prompted Qwen3-8B, an open model from Alibaba that runs on my Mac, labeled 2 wrong. Jev was the fastest and the steadiest. The step did not make the app safer in my test, and I say why below. I then ran the guard and router on Jev in the live app. Attacks were refused without a Gemini call, even while Gemini was failing.
 
 ## What the app does
 
@@ -25,7 +25,7 @@ The added step has two decisions. A guard labels the question SAFE, OFF_TOPIC or
 
 1. **Gemini itself.** One more chat call per question.
 2. **Qwen3-8B, prompted.** A generative model on my Mac, run through Ollama. I ask it to write one label. It needs about 5 GB of memory.
-3. **Jev.** A model from TypeSafe AI that does not generate text. It takes the question and a list of labels and returns a probability for each label. I call it over HTTP.
+3. **Jev.** A model from the company TypeSafe AI. It does not generate text. It takes the question and a list of labels and returns a probability for each label. I call it over HTTP.
 
 I started with Qwen because it was already on my Mac. Later I found that Qwen is a generative model, so it is a stand-in for a System 1 model, not the real kind. That is why the write-up compares all three.
 

@@ -4,7 +4,7 @@ I'm building a system that watches industrial machines, spots a developing fault
 
 Two interests met. I wanted to build something physical. A mounted sensor on a real machine, on a bench, is a different kind of problem from software that only moves text around. I also work on telemetry triage and evaluation loops in my day job. In that work I take a stream of signals, decide which ones matter, explain why, and learn from corrections. I wanted to see whether that same loop works when the signals come from machines instead of an assistant.
 
-Predictive maintenance looked like the clearest place to try it. A broken pump or motor has an obvious cost, and the physical signals are rich. I started it in late April 2026 as a learning project. I also keep a longer ambition in the background, which is agents that multiply what people can do around physical equipment. Maintenance is the entry point, not the end goal.
+Predictive maintenance looked like the clearest place to try it. A broken pump or motor has an obvious cost, and the physical signals are rich. I started it in late April 2026 as a learning project. I also keep a longer ambition in the background, which is agents that multiply what people can do around physical equipment. Maintenance is where I chose to start.
 
 ## The idea in one paragraph
 
@@ -14,11 +14,11 @@ An alarm tells you something is wrong. A person then has to look at it, gather c
 
 **Vibration over temperature.** A rotating machine has a repeatable vibration pattern tied to its speed, load and shape. Faults change that pattern in known ways. The usual argument is that temperature is a lagging signal. A bearing starts to fail well before it gets hot. Vibration changes earlier.
 
-**Features, not raw samples.** An accelerometer produces tens of thousands of samples per second, and no model trains well on that directly. So I cut the signal into short windows and compute a few numbers per window and per axis. RMS measures overall energy. Crest factor is peak over average, which is high in early bearing wear. Kurtosis measures how spiky the signal is, so impacts show up as high values. Every data source has to produce the same record shape, so the rest of the system never cares where a reading came from.
+**Summary numbers instead of raw samples.** An accelerometer (a sensor that measures vibration) produces tens of thousands of samples per second, and no model trains well on that directly. So I cut the signal into short windows and compute a few numbers per window and per axis. RMS measures overall energy. Crest factor is peak over average, which is high in early bearing wear. Kurtosis measures how spiky the signal is, so impacts show up as high values. Every data source has to produce the same record shape, so the rest of the system never cares where a reading came from.
 
 **Two-layer detection.** A z-score check against normal readings catches obvious outliers directly. Anything less clear goes to an Isolation Forest. That model needs no labeled fault data. It learns what normal looks like and flags readings that are easy to separate from it. The z-score layer also tells me which feature drifted, so a flag is explainable.
 
-**An agent is a bounded loop, not a chatbot.** For me, "agentic" means a control loop around machine state. It gathers context, forms a fault hypothesis, passes safety gates, asks an operator to approve, and records the outcome so I can replay it later. There are four of them:
+**What I mean by an agent.** Here an agent is a loop with fixed limits, not a chatbot. For me, "agentic" means a control loop around machine state. It gathers context, forms a fault hypothesis, passes safety gates, asks an operator to approve, and records the outcome so I can replay it later. There are four of them:
 
 | Agent | When it runs | What it does |
 |---|---|---|

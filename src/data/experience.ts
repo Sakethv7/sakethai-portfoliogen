@@ -23,7 +23,7 @@ export const experiences: ExperienceItem[] = [
     period: 'Feb 2025 – Present', location: 'New Brunswick, New Jersey', workMode: 'On-site', current: true,
     caseStudy: {
       slug: 'enterprise-ai-quality', title: 'Enterprise AI quality systems',
-      plain: 'Built the data and evaluation layer for an enterprise RAG service used by approximately 140,000 employees; analysis-guided fixes raised self-service resolution by 10 percentage points.',
+      plain: 'Built the data and evaluation work for a company RAG assistant that about 140,000 employees can use. Fixes guided by my analysis raised self-service resolution by 10 percentage points.',
       summary: 'Schema-validated pipelines, LLM evaluation, trace-level observability, and lineage-aware failure triage across interaction and downstream support-intake outcomes.',
       evidenceStatus: 'Production / enterprise',
     },
