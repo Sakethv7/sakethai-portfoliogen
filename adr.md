@@ -2117,3 +2117,45 @@ flowchart TD
 6. **The RAG Mini System 1 note** shows in the notes list, not as a separate link.
 
 **Not checked:** the dev-server console kept old hot-reload errors from before the reload. The dev-server log shows no errors. Also not checked: Safari and Firefox, the tablet width, and the live Render demo after a wake.
+
+## ADR-063: Publish the goal-contract experiment as a research note
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Experiment repo is public with code, docs and write-up] --> B[Add a research note and its chart]
+    B --> C[Add the publication record]
+    C --> D{Do content tests and the build pass?}
+    D -- no --> E[Fix the note. Do not deploy]
+    D -- yes --> F[Deploy the site]
+    F --> G{Does the live page load with its chart?}
+    G -- no --> H[Revert the note and redeploy]
+    G -- yes --> I[Note is live on the Writing page]
+
+    classDef old fill:#e5e5e5,stroke:#777,color:#222
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,F old
+    class B,C,D,G,I new
+    class E,H fail
+```
+
+Caption: Grey exists today: the public experiment repo and the deploy step. Blue is new. Red is a failure path. Level 3 explainer: skipped. This change adds content and one record. It has no new flow, and level 2 shows each step and both failure paths.
+
+**Status:** Proposed 2026-11-21.
+
+**Context.** The goal-contract experiment finished with a clear result. A log that the system writes from the human's prompts kept every owner decision. Notes that the agent had to write itself scored 0.19 to 0.25. The repo is public at github.com/Sakethv7/goal-contract-experiment. The full write-up there is long and written as a lab record, with twelve scenarios and every deviation listed.
+
+**Options.**
+1. Link the repo write-up from a Work card only.
+2. Publish a short research note on the site that leads with the result, and link the repo for detail (this ADR).
+3. Copy the full write-up onto the site.
+
+**Decision.** Option 2. One Research note, dated 2026-11-21, with the S9 table and chart first, the twelve tests in four lines, the limits, and a link to the repo. No Work card and no home-page change, as with ADR-040's choice not to duplicate one artifact.
+
+**Evidence invariant.** Public copy may state: 81 valid runs, $7.38, the system-written log and the goal tree at 1.0 at 1, 3 and 6 decisions, agent notes at 0.25, 0.25 and 0.19, no memory at 0, 17 of 24 notes runs that never wrote a decision, no erasure and no drift seen. It must also state: one model (Claude Haiku), one task family, 8 runs per cell, a pilot not proof, and that the notes arm had no reminder in its prompts.
+
+**Consequences.** One Markdown file, one SVG chart under `public/goal-contract/`, one publication record and one content test.
+
+**What we gave up.** The site version drops the per-scenario detail and the deviation list. A reader who wants them must open the repo. The note is not on the home page, so fewer visitors will see it.
