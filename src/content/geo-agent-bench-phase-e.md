@@ -2,7 +2,7 @@
 
 *Research build log · 2026-11-04 · my own test site and my own runs*
 
-> **In one paragraph.** The [first pilot](#/writing/geo-agent-bench) ended at a ceiling. The site had 9 pages, and Claude answered every question correctly with or without shortcuts. In Phase E I built a site of 101 short pages in three versions. One is plain HTML. One follows the style of the payments company Stripe's developer docs, with `llms.txt` and markdown copies. In the third, the site itself sends markdown to a verified agent. I ran 24 initial cells, then reran the 8 interceptor cells after fixing a link bug: 32 runs total. The plain and `llms.txt` versions each missed one task after running out of fetch allowance. The interceptor version initially answered 0 of 8 correctly, then answered 8 of 8 after the fix. It used about one third of the input tokens of the plain version. This is one agent and one observation per final cell. It shows a direction, not a measured size.
+> **In one paragraph.** The [first pilot](#/writing/geo-agent-bench) ended at a ceiling. The site had 9 pages, and Claude answered every question correctly with or without shortcuts. In Phase E I built a site of 101 short pages in three versions. One is plain HTML. One follows the style of the payments company Stripe's developer docs, with `llms.txt` and markdown copies. In the third, the site itself sends markdown to a verified agent. I call that server step an interceptor. I ran 24 initial cells, then reran the 8 interceptor cells after fixing a link bug: 32 runs total. The plain and `llms.txt` versions each missed one task after running out of fetch allowance. The interceptor version initially answered 0 of 8 correctly, then answered 8 of 8 after the fix. It used about one third of the input tokens of the plain version. This is one agent and one observation per final cell. It shows a direction, not a measured size.
 
 ## Why a bigger site
 
@@ -67,11 +67,11 @@ Use absolute links. A fetch tool that follows only seen URLs cannot use a relati
 - One agent, one run per task and version. The 6-task table is 6 pairs. It is a direction. An interval needs more repeats. I chose not to buy them yet. A rerun of one more repeat per cell would cost about $6.
 - The interceptor bytes gain is a fact about my site. The token gain is a fact about this fetch tool. A different agent with a different tool may differ. The next step is a second cloud agent, with its own probe first.
 - Marketing value is not measured. Whether markdown for agents raises how often a generative engine cites a site needs a public, indexed site and weeks. No run here can show it.
-- Serving different content by identity is the shape of cloaking. Here the facts are the same, and I did not test how search engines treat it. Do not copy this to a public site without that check.
+- Serving different content by identity looks like cloaking, which means showing search engines different content than people see. Here the facts are the same, and I did not test how search engines treat it. Do not copy this to a public site without that check.
 - Dry runs cost about $6 by my token estimate. Real billing may differ.
 
 ## What I took from it
 
-A bigger site made the question answerable. A site that serves each verified visitor what it needs cut the bytes and the tokens for Claude, once the links were right. The main risk was not the idea. It was one detail of how the fetch tool treats a link.
+The bigger site made it possible to see a difference between the versions. Serving markdown to a verified agent cut the bytes and the tokens for Claude, once the links were right. The failure in the first set of runs came from one detail: how the fetch tool treats a link.
 
 *Related: [The first pilot](#/writing/geo-agent-bench) · [Signed requests](#/writing/geo-agent-bench-signatures) · [Who is reading your website?](#/writing/geo-interceptor) · [Phase B and C results](#/writing/geo-agent-bench-phase-b-c)*

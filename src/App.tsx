@@ -45,6 +45,9 @@ const App = () => (
             <Route path="/writing" element={<Collection />} />
             <Route path="/writing/:slug" element={<Article collection="writing" />} />
             <Route path="/research" element={<Navigate to="/writing?kind=research" replace />} />
+            {/* Merged notes keep their old addresses (ADR-065). */}
+            <Route path="/writing/review-gated-knowledge-system" element={<Navigate to="/writing/sakethwiki-system-design" replace />} />
+            <Route path="/writing/lekhni-recording-to-knowledge" element={<Navigate to="/writing/lekhni-system-design" replace />} />
             <Route path="/resume" element={<Resume />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -36,11 +36,11 @@ So the 120-second limit was below the worst case that the app's own settings all
 
 The repair limit was worse. When a chunk's JSON comes back broken, Lekhni asks the model to fix it, within 60 seconds. But JSON breaks almost only when the answer hit its 1,400-token cap and was cut off. So a repair must rewrite about 1,400 tokens, which takes more than 60 seconds every time. The repair could only fail in the one case it existed for.
 
-## Why a total-time limit is the wrong shape
+## Why a fixed total-time limit does not fit
 
 Lekhni asked Ollama for the whole answer at once (`"stream": false`). Ollama then sends nothing until it finishes. The HTTP client's timeout is a **read timeout**: the longest wait between two pieces of data. When nothing arrives until the end, "between two pieces" means "the whole call". So every limit in the app was a total-time limit, whether anyone meant it to be or not.
 
-A total-time limit cannot fit generation. How long a call takes depends on how much the model decides to write and how busy the machine is. Any fixed number is too short for a long answer on a busy day, or too long to notice a stuck model quickly.
+A fixed total-time limit does not fit text generation. How long a call takes depends on how much the model decides to write and how busy the machine is. Any fixed number is too short for a long answer on a busy day, or too long to notice a stuck model quickly.
 
 ## The design
 
@@ -73,7 +73,7 @@ The speeds of 80 and 10 tokens per second are deliberately slow. They sit 25 to 
 | JSON repair | 66 s | 246 s | 60 s |
 | Final merge | 254 s | 839 s | 900 s |
 
-The merge ceiling comes out close to the old 900 seconds. That is a useful check: the one limit that never failed is the one the formula reproduces. And when someone raises an output cap, the limit now rises with it, with no second edit.
+The merge ceiling comes out close to the old 900 seconds. That is a useful check: the formula gives almost the same value for the one limit that never failed. And when someone raises an output cap, the limit now rises with it, with no second edit.
 
 <figure class="diagram">
 <a href="diagrams/model-call-timeout-limits.svg" target="_blank" rel="noopener"><img src="diagrams/model-call-timeout-limits.svg" width="900" height="440" alt="A timeline of a worst-case chunk call: about 27 seconds reading the prompt and about 103 seconds writing, ending near 130 seconds. The old 120 second limit cuts it off before the end. The new design stops only after 91 seconds of silence and keeps a 271 second ceiling."></a>
@@ -108,7 +108,7 @@ The merge call is not retried. It is one call, and there is nothing to merge int
 | 2 | 19.3 min | 146 s | 2 | 4.2 tok/s | 0 | 0 | 346 | 18,870 chars |
 | 3 | 14.1 min | 79 s | 0 | 12.1 tok/s | 0 | 0 | 358 | 17,962 chars |
 
-All three runs produced a complete note, and every call ended with outcome `ok`. Run 2 is the one that matters. Two of its chunk calls took longer than 120 seconds, up to 146. The old code would have lost that note. The new code let both calls finish, because tokens kept arriving and both stayed under their 271-second ceiling.
+All three runs produced a complete note, and every call ended with outcome `ok`. Run 2 is the important one. Two of its chunk calls took longer than 120 seconds, up to 146. The old code would have lost that note. The new code let both calls finish, because tokens kept arriving and both stayed under their 271-second ceiling.
 
 Run 2 also broke one of my assumptions. One chunk wrote at only 4.2 tokens per second, well under the 10 tokens per second floor the limits assume. It still finished, because the ceiling has a 1.5× margin and the call did not use its full 1,400-token budget. But a call that slow and that long would pass its ceiling. So the floor is not as safe as I estimated, and measuring it on a busy Mac is now the first item below.
 

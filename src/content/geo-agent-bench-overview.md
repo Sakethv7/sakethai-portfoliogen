@@ -55,10 +55,10 @@ The background reading is in two earlier notes: [SEO, AEO, GEO](#/writing/seo-ae
 
 ## What it does not show
 
-- One agent family for most runs, and one run per cell in Phase E. The intervals collapse when every run succeeds.
+- One agent family for most runs, and one run per cell in Phase E. When every run succeeds, the confidence intervals say little about the true success rate.
 - Marketing value. Whether markdown for agents raises citations needs a public, indexed site and weeks.
-- Serving different content by identity has the shape of cloaking. I did not test how search engines treat it.
+- Serving different content by identity looks like cloaking, which means showing search engines different content than people see. Search engines penalize cloaking. I did not test how they treat this case.
 
-## What it says about my work
+## How it connects to my day job
 
-The benchmark is a systems project. It joins evaluation (exact ground truth, no model as judge), observability (a log I own), infrastructure (DNS, TLS, one VM) and security (identity, signatures, sign-in). The same habits apply to the RAG platform I work on. Write the measure before the run. Keep an independent record. Report the wrong predictions.
+I use the same three habits on the RAG platform I work on. I write down how I will measure before I run anything. I keep my own record instead of trusting the system's answer. And I report the predictions that turned out wrong.

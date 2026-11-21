@@ -6,7 +6,7 @@ Code, design docs and the full write-up: [github.com/Sakethv7/goal-contract-expe
 
 ## The result
 
-A coding agent forgets the task when its chat history is cut. A memory file brings the task back. I wanted to know which kind of memory keeps the agent on track as the owner keeps changing the goal.
+A coding agent is an AI tool that edits code on its own. Here it is Anthropic's Claude Code, running the Claude Haiku model. It forgets the task when its chat history is cut. A memory file brings the task back. I wanted to know which kind of memory keeps the agent on track as the owner keeps changing the goal.
 
 In the final test, the owner gave the agent 1, 3 or 6 decisions over several sessions, with one small task in each session. The decisions shipped together on a later "release day", so only memory could carry them there.
 
@@ -29,9 +29,9 @@ So in this test, who wrote the memory mattered more than its format. Memory that
 
 The project grew from one question: does a goal file keep a coding agent on task? I ran twelve small, scripted tests on a Python command-line tool, in four lines of questions.
 
-1. **Scope.** A stop hook that blocked unplanned file edits cut stray edits from 5 of 10 runs to 0 of 10.
+1. **Scope.** A stop hook (a script that runs when the agent tries to finish) that blocked unplanned file edits cut stray edits from 5 of 10 runs to 0 of 10.
 2. **Lost chat history.** With any memory file, the agent finished the task. With none, it forgot the task. This held on a real repo of mine, scored by that repo's own tests.
-3. **Long sessions.** Rules from the first prompt survived 2 and 3 automatic context summaries. In 1 of 2 runs they were lost at 4.
+3. **Long sessions.** When a session gets long, Claude Code replaces old messages with a summary. Rules from the first prompt survived 2 and 3 of these automatic summaries. In 1 of 2 runs they were lost at 4.
 4. **Goal changes.** Early versions were flawed. In one, the code itself carried the change, so even no memory passed. In another, an ambiguous prompt made agents wait. A clean version showed plain notes and the goal tree both at 8 of 8.
 
 Most of these tests ended at a ceiling: every memory type scored the top mark, so none could beat another. The final test, S9, fixed that. It ran three difficulty levels in one batch, so the memory types had room to separate.
@@ -62,4 +62,4 @@ The goal tree scored the same as the plain log and cost up to 1.39 times as much
 
 ## What I would use
 
-Do not rely on an agent to write its own memory. Have the system record the human's instructions, for example with a hook that logs each prompt and shows the log at the start of every session. If you use a notes file, remind the agent to update it in each prompt, and check that it does.
+Based on this pilot, I would not rely on an agent to write its own memory. Have the system record the human's instructions, for example with a hook that logs each prompt and shows the log at the start of every session. If you use a notes file, remind the agent to update it in each prompt, and check that it does.

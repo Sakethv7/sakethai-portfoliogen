@@ -2,7 +2,7 @@
 
 *Engineering note · 2026-10-29 · measured on my own Mac, mostly single runs*
 
-> **In one paragraph.** Lekhni, my local note-taking and meeting-summarizing app, runs a Qwen3-8B model through Ollama. MLX, Apple's machine-learning framework, is often called faster on Apple Silicon. I tested both with the same model on the same Mac, in four rounds over two days. MLX writes 10 to 20% faster per token and uses less energy. But MLX 4-bit dropped a deadline from a test note in 20 of 20 runs, and under a JSON schema some of its answers ran to the output cap and lost evidence. MLX 6-bit fixes the deadline but is slower per token and uses about 3 GB more memory. Lekhni stays on Ollama.
+> **In one paragraph.** Lekhni, my local note-taking and meeting-summarizing app, runs a Qwen3-8B model through Ollama, a free program that runs AI models on a laptop. MLX, Apple's machine-learning framework, is often called faster on Apple Silicon. I tested both with the same model on the same Mac, in four rounds over two days. MLX writes 10 to 20% faster per token and uses less energy. But MLX 4-bit dropped a deadline from a test note in 20 of 20 runs, and under a JSON schema some of its answers ran to the output cap and lost evidence. MLX 6-bit fixes the deadline but is slower per token and uses about 3 GB more memory. Lekhni stays on Ollama.
 
 ## The question and the setup
 
@@ -32,7 +32,7 @@ LM Studio was not installed, so I ran MLX through `mlx_lm.server`. LM Studio's [
 
 The memory row compares different things. Ollama reserves the cache for the whole 16,384-token window. MLX grows its cache with the prompt, so I report its peak. Part of the gap is a setting, not the runtime. My [other note](#/writing/choosing-local-qwen-models) has the arithmetic.
 
-MLX failed the `scratch_guided` fixture. The note dropped "on Thursday" from an action item. One failure in one run is thin evidence. Also, the [`mlx_lm.server` docs](https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md) list no schema field. Ollama takes a JSON schema in its [`format` field](https://docs.ollama.com/capabilities/structured-outputs) and constrains output to it. Both gave valid JSON every time, but on MLX that was luck, not construction.
+MLX failed the `scratch_guided` fixture. The note dropped "on Thursday" from an action item. One failure in one run is thin evidence. Also, the [`mlx_lm.server` docs](https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md) list no schema field. Ollama takes a JSON schema in its [`format` field](https://docs.ollama.com/capabilities/structured-outputs) and constrains output to it. Both gave valid JSON every time. On MLX nothing forced that, so it could break on another run.
 
 ## Rounds 2 and 3: October 28, through LM Studio
 
@@ -95,7 +95,7 @@ Both engines reached Heavy thermal pressure within 2 to 4 minutes. Under heat, l
 Lekhni stays on Ollama with `qwen3:8b`. In order:
 
 1. **Complete notes.** Ollama kept every chunk's evidence and reached every late topic in both long runs. MLX 4-bit lost evidence in one run. MLX 6-bit finds 16% fewer items.
-2. **The deadline.** MLX 4-bit dropped "Thursday" in 20 of 20 runs. A dropped deadline is the error a user does not notice until it costs them.
+2. **The deadline.** MLX 4-bit dropped "Thursday" in 20 of 20 runs. I think a dropped deadline is the worst kind of error here, because a user does not notice it until it causes a problem.
 3. **One server.** Switching needs a second model server and a new backend. Lekhni uses Ollama's streaming API and schema format. LM Studio's API differs, and its context size is fixed at load.
 
 The cut-off cause is no longer a reason, because the term cap fixes it. What I give up is 10 to 20% of writing speed and lower energy per token. That is small. This is a background job, so a minute or two changes nothing for the user, while a silent gap in a note can go unseen. The runtime was also never the main bottleneck. The hour-long talk took 9 to 16 minutes on either one. The better levers are chunking and note structure.

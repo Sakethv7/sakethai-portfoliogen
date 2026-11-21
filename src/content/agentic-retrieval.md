@@ -29,7 +29,7 @@ The loop has costs.
 
 **Unbounded loops.** An agent can keep searching, go in circles, or stop too early with confidence. It needs a step budget and a clear rule for what "enough" looks like.
 
-I ran into a version of this in [SakethWiki](#/writing/review-gated-knowledge-system). When index search found nothing, a model read excerpts of every page to choose context, which is a crude agentic fallback. It worked, but it was slow and hard to reason about. The lean refactor cut retrieval down to one path and one fallback. A model that searches is useful. A model that searches with no limit makes every question slow and expensive.
+I ran into a version of this in [SakethWiki](#/writing/sakethwiki-system-design). When index search found nothing, a model read excerpts of every page to choose context, which is a crude agentic fallback. It worked, but it was slow and hard to reason about. The lean refactor cut retrieval down to one path and one fallback. A model that searches is useful. A model that searches with no limit makes every question slow and expensive.
 
 ## Use both
 

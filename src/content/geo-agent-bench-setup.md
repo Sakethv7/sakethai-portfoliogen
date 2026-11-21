@@ -2,7 +2,7 @@
 
 *System design · 2026-11-03 · the setup behind my agent benchmark*
 
-My benchmark needs a real public website. Cloud agents cannot reach my laptop, and I want my own log of what they fetch. So I rent one small machine, point a domain at it, and log every request. This note shows how the pieces fit.
+My benchmark tests how AI agents read websites, so it needs a real public website. Cloud agents cannot reach my laptop, and I want my own log of what they fetch. So I rent one small machine, point a domain at it, and log every request. This note shows how the pieces fit.
 
 ## The pieces
 
@@ -12,7 +12,7 @@ My benchmark needs a real public website. Cloud agents cannot reach my laptop, a
 
 - **A small cloud machine.** It is a Google Cloud e2-micro with 1 GB of memory and a fixed IP address.
 - **A domain in Cloudflare.** Cloudflare only does DNS, which turns names into the machine's address.
-- **Caddy.** It gives the site HTTPS and passes each visitor's real IP address to the site.
+- **Caddy.** A web server program. It gives the site HTTPS and passes each visitor's real IP address to the site.
 - **One site process.** It serves every version of the site and writes the log.
 - **My laptop.** It runs the experiment, runs the local model, and builds the tables.
 
@@ -23,7 +23,7 @@ I added nine records in Cloudflare. All point to the machine's address, and all 
 | Name | Used for |
 |---|---|
 | `legacy`, `ai` | the plain site and the AI-readable site |
-| `native` | the same facts as MCP tools |
+| `native` | the same facts as MCP tools (functions an AI agent can call directly) |
 | `account` | an OAuth sign-in and one protected page |
 | `bot` | a public key directory for signature checks |
 | `*.legacy`, `*.ai`, `*.native`, `*.account` | one name per test run |
@@ -40,7 +40,7 @@ Claude's fetch tool keeps a copy of a page. In a probe, it returned a stored cop
 
 ## The site and the log
 
-The site is one process that serves all five kinds of host. It writes one line to the log for each request. A line holds the host, the run token, the path, the status, the size, the user agent, the IP address and a label. It also holds fields for tool calls, signatures and sign-in steps.
+The site is one process that serves all five kinds of host. It writes one line to the log for each request. A line holds the host, the run token, the path, the status, the size, the user agent (the name the client gives for itself), the IP address and a label. It also holds fields for tool calls, signatures and sign-in steps.
 
 <a href="diagrams/request-path.svg" target="_blank" rel="noopener"><img src="diagrams/request-path.svg" width="900" height="720" alt="One request through the test site: read the host name, check the signature, route by variant, label the client, write a log line, then match by token on the laptop" style="width:100%;max-width:900px;border-radius:12px"></a>
 
@@ -52,7 +52,7 @@ The label comes from a small function that I call the interceptor. It names the 
 
 ## What the machine handles
 
-The machine has 964 MB of memory in total. With the site and Caddy running, 363 MB were free. Before I added the sign-in code, the site process used about 108 MB. I had set a limit of 300 MB free. The machine passed, so the sign-in server runs in the same process as the site.
+The machine has 964 MB of memory in total. With the site and Caddy running, 363 MB were free. Before I added the sign-in code, the site process used about 108 MB. My rule was to keep at least 300 MB free. The machine met that rule, so the sign-in server runs in the same process as the site.
 
 I copy new code to the machine with `tar` over `gcloud compute ssh`. A restart takes about 15 seconds.
 

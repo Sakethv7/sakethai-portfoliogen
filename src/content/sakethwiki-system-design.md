@@ -1,8 +1,8 @@
-SakethWiki is my personal notes app. I send it articles, text or screenshots, and an AI model proposes how to add each one to my notes. Nothing is saved until I approve it. I wrote a short [build log](#/writing/review-gated-knowledge-system) about the decisions behind it. This note covers the system design: the parts, how data moves, what breaks, and what each choice cost.
+SakethWiki is my personal notes app. I send it articles, text or screenshots, and an AI model proposes how to add each one to my notes. Nothing is saved until I approve it. This note covers the system design: the parts, how data moves, what breaks, and what each choice cost.
 
 ## Where it came from
 
-Two things pushed me to build it.
+I save many bookmarks, clipped articles and screenshots of slides, and I rarely read most of them again. A chatbot on top of that pile did not help me, because it searches the pile and returns the clutter too. Two things pushed me to build something different.
 
 The first was a note-taking course I was studying. It made one point clear: notes that only pile up don't help you. Notes help when you keep reshaping them as you learn.
 
@@ -69,7 +69,17 @@ Search and indexing are not the limit. The health check is. It sends the start o
 
 **Writer.** This is the only code that changes the vault. It writes to a temporary file and renames it over the target. On the same filesystem a rename is atomic, so a crash leaves either the old page or the new page, never half of one.
 
-**Evolution.** Each page starts with a short current-understanding block. When a new source is approved, a classifier decides how it relates to that block. It extends it, refines it, supersedes it, contradicts it, or duplicates it. A duplicate writes nothing. A contradiction keeps both views and flags them for me. The block is rewritten each time. The sources below it stay as the evidence trail.
+**Evolution.** Each page starts with a short current-understanding block. My first version added every new source to the bottom of the page, and pages became long stacks of summaries. Now, when a new source is approved, a classifier decides how it relates to the current-understanding block:
+
+| Relationship | What happens |
+|---|---|
+| Extends | Adds detail. The understanding stays the same. |
+| Refines | Sharpens the current understanding. |
+| Supersedes | Replaces it with something more accurate. |
+| Contradicts | Keeps both views and flags them for me. |
+| Duplicate | Writes nothing. |
+
+The block is rewritten each time. The sources below it stay as the evidence trail. The block on top is the part I reread.
 
 **Identity.** Before anything is stored or retrieved, a shared resolver turns names into canonical slugs, so "retrieval augmented generation" and "rag" are one page. If both pages already exist, the system reports it and does not merge them.
 
@@ -114,7 +124,11 @@ Search and indexing are not the limit. The health check is. It sends the start o
 
 ## What I had to take out
 
-I added a self-monitoring layer with its own dashboards, action queues, and evals of the system itself. It became more surface to maintain than the loop it watched. I turned it off behind a flag, moved model telemetry to Langfuse, and collapsed retrieval to one path with one fallback. That change removed code and added no features. I would make the same decision again.
+I added a self-monitoring layer with its own dashboards, action queues, and evals of the system itself. Each piece made sense alone. Together they needed more maintenance than the app they watched.
+
+Retrieval had the same problem. Every chat question first rebuilt the index from disk. If that found nothing, a model read excerpts of every page to choose context. If that also found nothing, a keyword scan ran over every file.
+
+I turned the monitoring layer off behind a flag, moved model telemetry to Langfuse, and cut retrieval to one path with one fallback. That change removed code and added no features. I would make the same decision again. Since then I treat any part that does not help the app's three jobs as a cost: save a source, update my understanding, and help me find it later.
 
 ## Open problems
 

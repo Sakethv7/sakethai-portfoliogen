@@ -8,7 +8,7 @@ The companion notes cover the marketing side ([SEO, AEO, GEO](#/writing/seo-aeo-
 
 ## The question
 
-Advice on GEO (generative engine optimization) says to publish a version of your site that agents read more easily. Common examples are an `llms.txt` file and markdown copies of pages. The pilot asks a narrow question. Given those shortcuts, does an agent use them, and does it then need fewer fetches or fewer tokens?
+Advice on GEO (generative engine optimization) says to publish a version of your site that agents read more easily. Common examples are an `llms.txt` file (a plain-text list of a site's pages, written for AI tools) and markdown copies of pages (plain-text versions without the page layout). The pilot asks a narrow question. Given those shortcuts, does an agent use them, and does it then need fewer fetches or fewer tokens?
 
 ## The setup
 
@@ -36,7 +36,7 @@ I wrote design documents first. The build then broke four of my assumptions.
 
 ## Results
 
-All numbers are from my 60 runs. Intervals are 95% bootstrap intervals. I call a gap real only if the intervals do not overlap.
+All numbers are from my 60 runs. The ranges in brackets are 95% bootstrap intervals, computed by resampling the runs many times. I call a gap real only if the ranges do not overlap. The over-fetch ratio is the share of fetched pages that the task did not need.
 
 | Measure | `legacy` | `ai` |
 |---|---|---|
@@ -47,7 +47,7 @@ All numbers are from my 60 runs. Intervals are 95% bootstrap intervals. I call a
 | Fetched a markdown twin | 0 | 0 |
 | Input tokens per run (mean) | 23,712 | 25,286 |
 | Seconds per run (mean) | 14.7 | 18.4 |
-| Obeyed the planted prompt injection | 0 | 0 |
+| Obeyed the planted prompt injection (a hidden instruction in the page) | 0 | 0 |
 | Refusals | 0 | 0 |
 
 Only one measure shows a real gap: reading `llms.txt`, which the `legacy` site does not have. Nothing else separates the two versions.
@@ -73,6 +73,6 @@ The pilot does not show that `llms.txt` is useless. It shows that for one agent 
 
 ## What I would do next
 
-Make the site large enough that a shortcut can pay off, write harder tasks with answers that cannot be reached by browsing alone, and add a second cloud agent. I will do that only after I decide the first result is worth extending. The [Phase A follow-up](#/writing/geo-agent-bench-phase-a) took the first step: heavier pages, a local model and planted files.
+The next steps were a larger site where a shortcut can pay off, harder tasks, and a second agent. The [Phase A follow-up](#/writing/geo-agent-bench-phase-a) added heavier pages, a local model and planted files. [Phase E](#/writing/geo-agent-bench-phase-e) tested a 101-page site.
 
 *Related: [SEO, AEO, GEO](#/writing/seo-aeo-geo) · [Who is reading your website?](#/writing/geo-interceptor)*
