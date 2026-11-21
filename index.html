@@ -3,23 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saketh Velidimalla — Applied AI Systems Engineer</title>
-    <meta name="description" content="Applied AI systems engineer. I build evaluation, tracing and data pipelines for production RAG systems, and work with teams to turn failures into fixes and KPIs." />
+    <title>Saketh Velidimalla — AI Evaluation &amp; Data Engineer</title>
+    <meta name="description" content="AI evaluation and data engineer. I find out why production AI gives wrong answers, and I build the ETL pipelines, reports and KPIs that show it." />
     <meta name="author" content="Saketh Velidimalla" />
+    <link rel="canonical" href="https://sakethv7.github.io/sakethai-portfoliogen/" />
+
+    <!-- Set the theme class before first paint so there is no flash (ADR-051). Same key as next-themes. -->
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.className = t;
+      })();
+    </script>
+
+    <!-- Old links look like /#/writing/x?section=y. Rewrite them to /writing/x/?section=y before React starts (ADR-047). -->
+    <script>
+      (function () {
+        var h = location.hash;
+        if (h.indexOf('#/') !== 0) return;
+        var rest = h.slice(2), q = rest.indexOf('?');
+        var path = (q < 0 ? rest : rest.slice(0, q)).replace(/\/+$/, '');
+        history.replaceState(null, '', '/sakethai-portfoliogen/' + (path ? path + '/' : '') + (q < 0 ? '' : rest.slice(q)));
+      })();
+    </script>
 
     <!-- Vite rewrites this against the deployed base path; a bare /favicon.ico would escape the project subpath. -->
     <link rel="icon" type="image/svg+xml" href="/sakethai-portfoliogen/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/sakethai-portfoliogen/favicon.ico" sizes="16x16 32x32 48x48" />
 
     <!-- Social crawlers require absolute URLs, and meta content is not rewritten at build time, so these are hardcoded to the deployed origin. -->
-    <meta property="og:title" content="Saketh Velidimalla — Applied AI Systems Engineer" />
-    <meta property="og:description" content="I engineer evaluation and observability for production RAG systems: tracing failures to retrieval, ranking, generation or handoff, and building the pipelines and KPIs that show where to fix them." />
+    <meta property="og:title" content="Saketh Velidimalla — AI Evaluation &amp; Data Engineer" />
+    <meta property="og:description" content="I find out why production AI gives wrong answers. I trace each failure to retrieval, ranking, generation or handoff, and build the pipelines and KPIs that show the fix worked." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sakethv7.github.io/sakethai-portfoliogen/" />
     <meta property="og:image" content="https://sakethv7.github.io/sakethai-portfoliogen/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Saketh Velidimalla, Applied AI Systems Engineer" />
+    <meta property="og:image:alt" content="Saketh Velidimalla, AI Evaluation and Data Engineer" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@sakethv7" />
@@ -37,8 +61,8 @@
       gtag('js', new Date());
       gtag('config', 'G-8DJQK7HVC4');
     </script>  
-    <script type="module" crossorigin src="/sakethai-portfoliogen/assets/index-BDm3hTcN.js"></script>
-    <link rel="stylesheet" crossorigin href="/sakethai-portfoliogen/assets/index-BRwemrI9.css">
+    <script type="module" crossorigin src="/sakethai-portfoliogen/assets/index-D9QNzWsb.js"></script>
+    <link rel="stylesheet" crossorigin href="/sakethai-portfoliogen/assets/index-z5KLoqJM.css">
   </head>
 
   <body>

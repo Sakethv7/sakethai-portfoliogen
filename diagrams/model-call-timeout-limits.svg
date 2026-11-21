@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" role="img" aria-label="Timeline of a worst-case chunk call: about 27 seconds reading the prompt and about 103 seconds writing, ending near 130 seconds. The old 120 second limit cuts it off before the end. The new design stops only after 91 seconds of silence and keeps a 271 second ceiling." font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="440" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">Why a 120 second limit failed</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">A chunk call reads about 3,200 prompt tokens and may write up to 1,400. Worst case, about 130 seconds.</text>
+<text x="60" y="98" fill="#9aa4b8" font-size="12" font-weight="600" text-anchor="start">Worst-case chunk call</text>
+<rect x="60.0" y="110" width="78.30000000000001" height="44" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="99.15" y="124.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Reads prompt</text>
+<text x="99.15" y="140.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">27 s</text>
+<rect x="138.3" y="110" width="298.7" height="44" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="287.65" y="124.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Writes up to 1,400 tokens</text>
+<text x="287.65" y="140.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">about 103 s</text>
+<path d="M408.0 96 V320" fill="none" stroke="#f1857f" stroke-width="2"/>
+<text x="400.0" y="92" fill="#f1857f" font-size="11" font-weight="600" text-anchor="end">Old limit 120 s: cuts the call off</text>
+<path d="M845.9 96 V320" fill="none" stroke="#93c5fd" stroke-width="2"/>
+<text x="845.9" y="92" fill="#93c5fd" font-size="11" font-weight="600" text-anchor="end">New ceiling 271 s</text>
+<rect x="138.3" y="200" width="263.9" height="18" rx="4" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="146.3" y="213" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="start">Silence limit 91 s</text>
+<text x="412.2" y="214" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">The call stops early only if nothing arrives for this long.</text>
+<path d="M60 300 H872.0" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M60.0 296 V304" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<text x="60.0" y="320" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">0 s</text>
+<path d="M234.0 296 V304" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<text x="234.0" y="320" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">60 s</text>
+<path d="M408.0 296 V304" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<text x="408.0" y="320" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">120 s</text>
+<path d="M582.0 296 V304" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<text x="582.0" y="320" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">180 s</text>
+<path d="M756.0 296 V304" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<text x="756.0" y="320" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">240 s</text>
+<rect x="40" y="350" width="400" height="70" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="240.0" y="377.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Old: one 120 s read timeout</text>
+<text x="240.0" y="393.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Nothing arrived until the end, so it acted as a total limit.</text>
+<rect x="460" y="350" width="400" height="70" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="660.0" y="377.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">New: stream, and stop on silence</text>
+<text x="660.0" y="393.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Limits are sized from the prompt and the output cap.</text>
+</svg>

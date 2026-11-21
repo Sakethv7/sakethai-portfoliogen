@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 770" role="img" aria-label="Benchmark design: one model on one Mac, two runtimes, four kinds of measurement, three findings, and the decision that Lekhni stays on Ollama" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="770" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">Ollama or MLX: how the test was built</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">Everything was held the same except the runtime. Measured on one 16 GB Mac, mostly single runs.</text>
+<rect x="150" y="84" width="600" height="56" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="450.0" y="95.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">The question</text>
+<text x="450.0" y="112.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Does the faster runtime give the same notes, in a format my code can trust,</text>
+<text x="450.0" y="129.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">inside the memory I have?</text>
+<rect x="150" y="170" width="600" height="56" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="450.0" y="189.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Held the same</text>
+<text x="450.0" y="206.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">M4 Mac, 16 GB unified memory. Qwen3-8B at 4 bits, thinking off. Lekhni&#x27;s real prompts.</text>
+<text x="450" y="250" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">Changed: the runtime</text>
+<rect x="60" y="262" width="370" height="68" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="245.0" y="287.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Ollama</text>
+<text x="245.0" y="304.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">qwen3:8b, a Q4_K_M GGUF file</text>
+<rect x="470" y="262" width="370" height="68" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="655.0" y="287.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">MLX</text>
+<text x="655.0" y="304.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Round 1: mlx_lm.server. Rounds 2 and 3: LM Studio engine.</text>
+<path d="M450 226 V240" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M245 240 H655" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M245 240 V262" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M655 240 V262" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="38" y="380" width="195" height="76" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="135.5" y="401.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Raw speed</text>
+<text x="135.5" y="418.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Tokens per second,</text>
+<text x="135.5" y="435.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">short and long context</text>
+<rect x="248" y="380" width="195" height="76" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="345.5" y="409.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Memory</text>
+<text x="345.5" y="426.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Peak use on the 16 GB Mac</text>
+<rect x="458" y="380" width="195" height="76" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="555.5" y="401.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">5 eval fixtures</text>
+<text x="555.5" y="418.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">Plain string checks,</text>
+<text x="555.5" y="435.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">not an LLM judge</text>
+<rect x="668" y="380" width="195" height="76" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="765.5" y="401.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Real recordings</text>
+<text x="765.5" y="418.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">A 58-minute talk: 9 chunk</text>
+<text x="765.5" y="435.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">calls and one merge call</text>
+<path d="M245 330 V355" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M655 330 V355" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M135 355 H765" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M135 355 V380" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M345 355 V380" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M555 355 V380" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M765 355 V380" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="30" y="510" width="270" height="96" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="165.0" y="541.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Speed</text>
+<text x="165.0" y="558.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">MLX writes 10 to 20% faster</text>
+<text x="165.0" y="575.0" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">per token and uses less energy.</text>
+<rect x="315" y="510" width="270" height="96" rx="6" fill="#5b1a1f" stroke="#f1857f" stroke-width="1.5"/>
+<text x="450.0" y="532.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Quality and format</text>
+<text x="450.0" y="549.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">MLX 4-bit dropped a deadline in 20 of 20</text>
+<text x="450.0" y="566.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">runs. Under a JSON schema, some answers</text>
+<text x="450.0" y="583.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">ran to the output cap and lost evidence.</text>
+<rect x="600" y="510" width="270" height="96" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="735.0" y="532.5" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">The 6-bit fix</text>
+<text x="735.0" y="549.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">MLX 6-bit fixes the deadline, but is</text>
+<text x="735.0" y="566.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">slower per token and uses about</text>
+<text x="735.0" y="583.5" fill="#e8ebf2" font-size="12" font-weight="400" text-anchor="middle" dominant-baseline="central">3 GB more memory.</text>
+<path d="M135 456 V482" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M345 456 V482" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M555 456 V482" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M765 456 V482" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M135 482 H765" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M165 482 V510" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M450 482 V510" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M735 482 V510" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M165 606 V640" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M450 606 V640" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M735 606 V640" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M165 640 H735" fill="none" stroke="#8a94a6" stroke-width="1.5"/>
+<path d="M450 640 V664" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="200" y="664" width="500" height="70" rx="6" fill="#14532d" stroke="#86efac" stroke-width="1.5"/>
+<text x="450.0" y="699.0" fill="#e8ebf2" font-size="15" font-weight="600" text-anchor="middle" dominant-baseline="central">Decision: Lekhni stays on Ollama</text>
+</svg>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-label="Two paths through SakethWiki. Capture: source, parse, proposal, queue, review, classify against the existing page, write, update that page index entry, append a trace. Query: question, index candidates, optional rerank, model answer; a keyword scan runs if the index returns nothing; chat marks go to the trace log and never edit a page." font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker></defs>
+<rect width="900" height="650" rx="12" fill="#12161f"/>
+<text x="24" y="34" fill="#e8ebf2" font-size="18" font-weight="600" text-anchor="start">Two paths through SakethWiki</text>
+<text x="24" y="56" fill="#9aa4b8" font-size="12" font-weight="400" text-anchor="start">Nothing is written to a page without review. Chat marks are evidence only.</text>
+<text x="60" y="96" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Capture path</text>
+<text x="510" y="96" fill="#9aa4b8" font-size="13" font-weight="600" text-anchor="start">Query path</text>
+<rect x="60" y="110" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="130.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Source arrives</text>
+<rect x="60" y="166" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="186.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Parsed</text>
+<path d="M230 150 V166" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="222" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="242.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Extracted into a proposal</text>
+<path d="M230 206 V222" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="278" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="298.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Queued</text>
+<path d="M230 262 V278" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="334" width="340" height="40" rx="6" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="230.0" y="354.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Reviewed</text>
+<path d="M230 318 V334" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="390" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="410.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Classified against the existing page</text>
+<path d="M230 374 V390" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="446" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="466.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Written</text>
+<path d="M230 430 V446" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="502" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="522.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Index entry for that one page updated</text>
+<path d="M230 486 V502" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="60" y="558" width="340" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="230.0" y="578.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Trace appended</text>
+<path d="M230 542 V558" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="510" y="110" width="280" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="650.0" y="130.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">A question arrives</text>
+<rect x="510" y="180" width="280" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="650.0" y="200.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Index returns candidate chunks</text>
+<polygon points="650,252 775,290 650,328 525,290" fill="#1e3a8a" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="650" y="290.0" fill="#e8ebf2" font-size="12" text-anchor="middle" dominant-baseline="central">Anything returned?</text>
+<rect x="510" y="360" width="280" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="650.0" y="380.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">Optional rerank (embeddings on)</text>
+<rect x="510" y="430" width="280" height="40" rx="6" fill="#2a3140" stroke="#7c869a" stroke-width="1.5"/>
+<text x="650.0" y="450.0" fill="#e8ebf2" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central">A model answers from the chunks</text>
+<rect x="800" y="270" width="90" height="40" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="845.0" y="282.5" fill="#e8ebf2" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central">One keyword</text>
+<text x="845.0" y="297.5" fill="#e8ebf2" font-size="10" font-weight="400" text-anchor="middle" dominant-baseline="central">scan</text>
+<rect x="510" y="520" width="380" height="84" rx="6" fill="#5a3d0a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="700.0" y="538.0" fill="#e8ebf2" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="central">Chat answers can be marked</text>
+<text x="700.0" y="554.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Correction, contradiction, example or nuance.</text>
+<text x="700.0" y="570.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">Marks go to the trace log as evidence.</text>
+<text x="700.0" y="586.0" fill="#e8ebf2" font-size="11" font-weight="400" text-anchor="middle" dominant-baseline="central">They never edit a page by themselves.</text>
+<path d="M650 150 V180" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M650 220 V252" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M650 328 V360" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M650 400 V430" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M650 470 V520" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="664" y="344" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="start">yes</text>
+<path d="M775 290 H800" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="787" y="282" fill="#9aa4b8" font-size="11" font-weight="400" text-anchor="middle">no</text>
+<path d="M845 310 V450 H790" fill="none" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#a)"/>
+</svg>
