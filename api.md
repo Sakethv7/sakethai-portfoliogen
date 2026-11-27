@@ -1181,3 +1181,64 @@ The block draws when `results` exists and `proofLink` exists, with either `to` o
 3. No record has `category: 'Creative builds'`.
 4. Every `repos` entry has a non-empty label and an `https://github.com/` address.
 5. No file imports `CommitChart` or `@/data/commits`.
+
+## DigUp note: view contracts (ADR-066, proposed 2026-11-25)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Publication record with views] --> B[Article page]
+    B --> C{Does the hash match a view id?}
+    C -- no --> D[Public view, hash replaced]
+    C -- yes --> E[Body file for the view]
+    D --> E
+    E --> F{Does the file exist in src/content?}
+    F -- no --> G[Not found page]
+    F -- yes --> H[Rendered view]
+    I[Content test and build scan] --> J{Any forbidden string?}
+    J -- yes --> K[Test fails and the build stops]
+
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,B,C,E,F,H,I,J new
+    class D,G,K fail
+```
+
+Caption: Blue is new. Red is a failure path. The chart shows the record, the hash and the files the page reads, and the test that guards them. Level 3 explainer: [adr-066-digup-three-views.html](docs/visuals/adr-066-digup-three-views.html).
+
+### Record field
+
+`PublicationItem` in `src/data/portfolio.ts` gets one optional field:
+
+```ts
+views?: { id: 'public' | 'case-study' | 'technical'; label: string; body: string }[];
+```
+
+The first entry is the default view. Its `id` must be `public`. The record's own `slug` stays the page address. For this note:
+
+| id | label | body (file in `src/content/`) |
+| --- | --- | --- |
+| `public` | Public | `digup-parse-experiment` (the slug, so reading time and the static route work unchanged) |
+| `case-study` | Engineering case study | `digup-parse-experiment-case-study` |
+| `technical` | Technical report | `digup-parse-experiment-technical` |
+
+The record: slug `digup-parse-experiment`, kind `Research note`, status `Published`, date `2026-11-25`, title "Did a small local OCR model help my file search?". Its `plain` sentence has 25 words or fewer and states the result. The static route `body` field uses the public view's file.
+
+### Hash contract
+
+- Allowed hash values: `public`, `case-study`, `technical`. Any other value falls back to `public`.
+- The hash selects the view only. Heading links keep using `?section=`. A reader may combine them: `/writing/digup-parse-experiment/?section=what-happened#case-study`.
+- Tabs are anchors with `role="tab"` inside a `role="tablist"`, with `aria-selected` set from the active view.
+
+### Content invariants
+
+1. All three files exist. A test checks it.
+2. No file in `src/content/digup-parse-experiment*.md` contains a forbidden string: local path prefixes such as `/Users/`, the names of the private projects and files used as test artifacts, and any email address. The exact list lives in the test. The test also scans the built `dist` folder after `npm run build`.
+3. Every number in the three files matches the ledger of the experiment. The test pins: 9 of 10 questions ranked in the top three in the baseline, that only rank was scored, that no person checked any page, one failing question, the two engines' parse times of 4.1 s and 6.3 s, and the vendor numbers marked as not re-run.
+4. Each file states the limits: one failing document, synthetic scans, and that an AI assistant did the work and the only review.
+5. No file links to the local evidence repository.
+
+### Unchanged
+
+Every other record, route, test and contract stays as it is.

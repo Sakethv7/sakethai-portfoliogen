@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, type MouseEvent } from 'react';
 import { ArrowLeft, Download, Github } from 'lucide-react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PortfolioShell } from '@/components/PortfolioShell';
 import { ArticleContents } from '@/components/ArticleContents';
 import { TagPills } from '@/components/TagPills';
+import { ViewTabs } from '@/components/ViewTabs';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { endLinks, publications, work } from '@/data/portfolio';
 import { prepareArticle } from '@/lib/article';
@@ -29,18 +30,23 @@ function findRecord(collection: 'work' | 'writing' | 'experience', slug: string)
   }
   // Planned posts are previewable in `vite dev` only (logic_flow.md, detail-page flow).
   const item = publications.find((entry) => entry.slug === slug && (entry.status === 'Published' || import.meta.env.DEV));
-  return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), plain: item.plain, summary: item.summary, tags: item.tags, body: item.slug, github: undefined, back: ['/writing', 'Writing'] as const };
+  return item && { title: item.title, eyebrow: [item.kind, item.date].filter(Boolean).join(' · '), plain: item.plain, summary: item.summary, tags: item.tags, body: item.slug, views: item.views, github: undefined, back: ['/writing', 'Writing'] as const };
 }
 
 export default function Article({ collection }: { collection: 'work' | 'writing' | 'experience' }) {
   const { slug = '' } = useParams();
   const record = findRecord(collection, slug);
   usePageTitle(record?.title ?? "Page not found");
-  const body = record?.body;
+  // A note with views reads the view from the hash. An unknown or empty hash shows the first view, which is public (ADR-066).
+  const views = record && 'views' in record ? record.views : undefined;
+  const { hash } = useLocation();
+  const activeView = views?.find((view) => `#${view.id}` === hash) ?? views?.[0];
+  const body = activeView?.body ?? record?.body;
   const [markdown, setMarkdown] = useState<string | null>(null);
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const section = params.get('section');
+  const viewHash = activeView ? `#${activeView.id}` : undefined;
   // The technical focus line starts folded on a phone, so the body starts higher (ADR-045).
   const [phone] = useState(() => window.matchMedia('(max-width: 560px)').matches);
   const basePath = `/${collection}/${slug}`;
@@ -53,10 +59,22 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
     const base = import.meta.env.BASE_URL;
     if (url.origin !== window.location.origin || !url.pathname.startsWith(base)) return;
     event.preventDefault();
-    navigate(`/${url.pathname.slice(base.length)}${url.search}${url.hash}`);
+    // A heading link in a note with views keeps the view that is open (ADR-066).
+    const keep = !url.hash && viewHash && url.pathname === window.location.pathname ? viewHash : '';
+    navigate(`/${url.pathname.slice(base.length)}${url.search}${url.hash || keep}`);
   };
   const prepared = useMemo(() => markdown === null ? null : prepareArticle(markdown, basePath, import.meta.env.BASE_URL), [markdown, basePath]);
   const [missing, setMissing] = useState(false);
+
+  // A bare or unknown hash becomes #public without a history entry, so Back does not trap the reader (ADR-066).
+  useEffect(() => {
+    if (activeView && hash !== viewHash) navigate({ pathname: basePath, search: window.location.search, hash: viewHash }, { replace: true });
+  }, [activeView, hash, viewHash, basePath, navigate]);
+
+  // Switching view starts the new text from the top.
+  useEffect(() => {
+    if (activeView && !section) window.scrollTo({ top: 0 });
+  }, [activeView?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!body) return;
@@ -97,11 +115,12 @@ export default function Article({ collection }: { collection: 'work' | 'writing'
         {'tags' in record && record.tags && <TagPills tags={record.tags} />}
         <p className="plain-line">{record.plain}</p>
         {record.evidenceStatus && <p className="evidence-status">{record.evidenceStatus}</p>}
+        {activeView && views && <ViewTabs views={views} active={activeView.id} basePath={basePath} />}
         <details className="for-engineers focus-fold" open={!phone}><summary>Technical focus</summary>{record.summary}</details>
         {record.github && <div className="hero-links"><a href={record.github} target="_blank" rel="noreferrer"><Github /> Repository</a></div>}
       </header>
       <div className="editorial-section article-layout">
-        {prepared && <ArticleContents headings={prepared.headings} basePath={basePath} />}
+        {prepared && <ArticleContents headings={prepared.headings} basePath={basePath} hash={viewHash} />}
         <div className="article-body" onClick={routeSiteLinks} dangerouslySetInnerHTML={{ __html: prepared?.html ?? '' }} />
       </div>
       {ends && <nav className="editorial-section end-links" aria-label={ends.label}>

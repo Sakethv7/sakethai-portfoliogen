@@ -1149,3 +1149,57 @@ flowchart TD
 ### Open questions (ADR-060 to ADR-062)
 
 See the open questions at the end of the ADR-060 to ADR-062 block in `adr.md`. They cover RoastRank, Job Tracker, the Render demo and the SDLC tool list.
+
+## DigUp experiment: one note, three views (ADR-066, proposed 2026-11-25)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Reader opens the DigUp note] --> B[Read the view from the address hash]
+    B --> C{Is the hash public, case-study or technical?}
+    C -- no --> D[Use the public view and rewrite the hash]
+    C -- yes --> E[Load that view's Markdown file]
+    D --> E
+    E --> F{Was the file found?}
+    F -- no --> G[Show the Not found page]
+    F -- yes --> H[Show the article, contents and reading time for this view]
+    H --> I[Reader clicks another tab]
+    I --> B
+    J[Build runs the privacy test] --> K{Any private word in a note file or the built output?}
+    K -- yes --> L[Fail the build and do not deploy]
+
+    classDef old fill:#e5e5e5,stroke:#777,color:#222
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,H old
+    class B,C,E,F,I,J,K new
+    class D,G,L fail
+```
+
+Caption: Grey exists today: opening a note and showing its article. Blue is new: reading the hash, loading one of three files, switching tabs, and the privacy test. Red is a failure path. Level 3 explainer: [adr-066-digup-three-views.html](docs/visuals/adr-066-digup-three-views.html).
+
+### What this adds
+
+The Writing page already shows one note per Markdown file. This change adds one note whose record has three views. Each view has its own Markdown file. The page loads only the file for the active view. The hash in the address picks the view, so each view is a bookmark: `/writing/digup-parse-experiment/#public`, `#case-study` and `#technical`.
+
+A **hash** is the part of a web address after `#`. A browser does not send it to the server, and it does not reload the page when it changes. That makes it a good switch for a static site with no server. The router in `App.tsx` does not use the hash, and the contents list uses `?section=` for headings (ADR-043). So the hash is free.
+
+### Complexity tier
+
+**Single-process static tool, unchanged.** No server, no CMS, no new library. The change adds one optional field to a publication record, one small tab component, and three content files. The smaller change would be three separate notes with links between them. That change adds no code. It does not meet the request for one page, so I chose the larger one and say so here.
+
+### Why separate files and not a CSS filter
+
+A single file with three sections hidden by CSS would ship all three in the page. Today all three views are safe for the public, so that would work. But it makes safety depend on every future edit. With three files, the browser fetches only the file for the active view, and a test scans every file. A view is also a reading unit: it gets its own reading time and its own contents list.
+
+### Boundaries
+
+- Every file is written for the public site. The technical view uses artifact ids, not the names of private files, and it holds no local paths.
+- The DigUp evidence repo is local and holds excerpts of private files. The note must not link it.
+- The note is a Research note, dated 2026-11-25. It lists once in Writing, with the public view's plain sentence.
+- The static route file for the page uses the public view for its title and description. Search engines see one URL, so they see the public view only.
+
+### Open questions (ADR-066)
+
+See the open questions at the end of the ADR-066 block in `adr.md`.

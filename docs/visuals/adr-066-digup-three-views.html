@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR-066: one note, three views</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111827; --muted: #4b5563; --line: #6b7280;
+    --grey-f: #e5e7eb; --grey-s: #6b7280;
+    --blue-f: #dbeafe; --blue-s: #2563eb;
+    --red-f: #fee2e2; --red-s: #dc2626;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a; --fg: #f1f5f9; --muted: #cbd5e1; --line: #94a3b8;
+      --grey-f: #334155; --grey-s: #94a3b8;
+      --blue-f: #1e3a8a; --blue-s: #60a5fa;
+      --red-f: #7f1d1d; --red-s: #f87171;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f172a; --fg: #f1f5f9; --muted: #cbd5e1; --line: #94a3b8;
+    --grey-f: #334155; --grey-s: #94a3b8;
+    --blue-f: #1e3a8a; --blue-s: #60a5fa;
+    --red-f: #7f1d1d; --red-s: #f87171;
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+  svg { width: 100%; height: auto; display: block; }
+  text { fill: var(--fg); font-size: 13px; font-family: system-ui, sans-serif; text-anchor: middle; }
+  .lbl { fill: var(--muted); font-size: 12px; }
+  .grey { fill: var(--grey-f); stroke: var(--grey-s); stroke-width: 1.5; }
+  .blue { fill: var(--blue-f); stroke: var(--blue-s); stroke-width: 1.5; }
+  .red  { fill: var(--red-f);  stroke: var(--red-s);  stroke-width: 1.5; }
+  .edge { stroke: var(--line); stroke-width: 1.5; fill: none; }
+  .redge { stroke: var(--red-s); stroke-width: 1.5; fill: none; }
+  .arrow { fill: var(--line); }
+  .rarrow { fill: var(--red-s); }
+  .sep { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 4; }
+</style>
+</head>
+<body>
+<main>
+  <h1>ADR-066: one note, three views</h1>
+  <p>What happens when a reader opens the DigUp note, switches tabs, and when the site builds. Grey exists today. Blue is new. Red is a failure path.</p>
+  <svg viewBox="0 0 800 890" role="img" aria-label="Flowchart of how the DigUp note picks a view and how the build guards it">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker>
+      <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="rarrow"/></marker>
+    </defs>
+
+    <!-- R1 -->
+    <rect class="grey" x="150" y="10" width="300" height="44" rx="6"/>
+    <text x="300" y="29">Reader opens the note address</text><text x="300" y="45">/writing/digup-parse-experiment/</text>
+    <path class="edge" d="M300 54 V78" marker-end="url(#a)"/>
+
+    <!-- R2 diamond -->
+    <polygon class="blue" points="300,78 450,106 300,134 150,106"/>
+    <text x="300" y="110">Record has views?</text>
+    <path class="edge" d="M450 106 H520" marker-end="url(#a)"/><text class="lbl" x="485" y="99">no</text>
+    <rect class="grey" x="520" y="84" width="260" height="44" rx="6"/>
+    <text x="650" y="103">Show the single body as today</text><text x="650" y="119">End: nothing changes</text>
+    <path class="edge" d="M300 134 V162" marker-end="url(#a)"/><text class="lbl" x="314" y="152">yes</text>
+
+    <!-- R3 -->
+    <rect class="blue" x="150" y="162" width="300" height="44" rx="6"/>
+    <text x="300" y="189">Read the hash after the #</text>
+    <path class="edge" d="M300 206 V230" marker-end="url(#a)"/>
+
+    <!-- R4 diamond -->
+    <polygon class="blue" points="300,230 450,258 300,286 150,258"/>
+    <text x="300" y="255">Hash is public, case-study</text><text x="300" y="270">or technical?</text>
+    <path class="redge" d="M450 258 H520" marker-end="url(#r)"/><text class="lbl" x="485" y="251">no</text>
+    <rect class="red" x="520" y="236" width="260" height="44" rx="6"/>
+    <text x="650" y="255">Use public, replace the hash</text><text x="650" y="271">Then load the public file</text>
+    <path class="redge" d="M650 280 V336 H450" marker-end="url(#r)"/>
+    <path class="edge" d="M300 286 V314" marker-end="url(#a)"/><text class="lbl" x="314" y="304">yes</text>
+
+    <!-- R5 -->
+    <rect class="blue" x="150" y="314" width="300" height="44" rx="6"/>
+    <text x="300" y="333">Load that view's Markdown file</text><text x="300" y="349">Only this one file downloads</text>
+    <path class="edge" d="M300 358 V382" marker-end="url(#a)"/>
+
+    <!-- R6 diamond -->
+    <polygon class="blue" points="300,382 450,410 300,438 150,410"/>
+    <text x="300" y="414">File found?</text>
+    <path class="redge" d="M450 410 H520" marker-end="url(#r)"/><text class="lbl" x="485" y="403">no</text>
+    <rect class="red" x="520" y="388" width="260" height="44" rx="6"/>
+    <text x="650" y="407">Show the Not found page</text><text x="650" y="423">End: nothing is shown</text>
+    <path class="edge" d="M300 438 V466" marker-end="url(#a)"/><text class="lbl" x="314" y="456">yes</text>
+
+    <!-- R7 -->
+    <rect class="blue" x="150" y="466" width="300" height="44" rx="6"/>
+    <text x="300" y="485">Show article, contents list</text><text x="300" y="501">and reading time for this view</text>
+    <path class="edge" d="M300 510 V538" marker-end="url(#a)"/>
+
+    <!-- R8 -->
+    <rect class="blue" x="150" y="538" width="300" height="44" rx="6"/>
+    <text x="300" y="557">Reader clicks another tab</text><text x="300" y="573">The tab sets a new hash</text>
+    <path class="edge" d="M150 560 H90 V184 H150" marker-end="url(#a)"/>
+    <text class="lbl" x="60" y="380" transform="rotate(-90 60 380)">back to reading the hash</text>
+
+    <!-- build separator -->
+    <line class="sep" x1="20" y1="612" x2="780" y2="612"/>
+    <text class="lbl" x="400" y="606">At build time</text>
+
+    <!-- R9 -->
+    <rect class="blue" x="150" y="632" width="300" height="44" rx="6"/>
+    <text x="300" y="651">Privacy test scans the three</text><text x="300" y="667">note files and the built output</text>
+    <path class="edge" d="M300 676 V698" marker-end="url(#a)"/>
+
+    <!-- R10 diamond -->
+    <polygon class="blue" points="300,698 450,726 300,754 150,726"/>
+    <text x="300" y="723">Any private path, project</text><text x="300" y="738">or file name found?</text>
+    <path class="redge" d="M450 726 H520" marker-end="url(#r)"/><text class="lbl" x="485" y="719">yes</text>
+    <rect class="red" x="520" y="704" width="260" height="44" rx="6"/>
+    <text x="650" y="723">Build fails. Nothing deploys</text><text x="650" y="739">End: author removes the text</text>
+    <path class="edge" d="M300 754 V782" marker-end="url(#a)"/><text class="lbl" x="314" y="772">no</text>
+
+    <!-- R11 -->
+    <rect class="grey" x="150" y="782" width="300" height="44" rx="6"/>
+    <text x="300" y="809">Deploy the site as today</text>
+
+    <!-- Key -->
+    <rect class="grey" x="150" y="850" width="22" height="16" rx="3"/><text class="lbl" x="180" y="863" style="text-anchor:start">Exists today</text>
+    <rect class="blue" x="300" y="850" width="22" height="16" rx="3"/><text class="lbl" x="330" y="863" style="text-anchor:start">New or changed</text>
+    <rect class="red" x="470" y="850" width="22" height="16" rx="3"/><text class="lbl" x="500" y="863" style="text-anchor:start">Failure path</text>
+  </svg>
+  <p>The chart adds what level 2 leaves out: the old single-body path, where each failure ends, and the build gate. A tab click returns to the hash step, so the loop shows how bookmarks and tabs use one mechanism.</p>
+</main>
+</body>
+</html>
