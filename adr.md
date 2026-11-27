@@ -2248,3 +2248,58 @@ Caption: Grey exists today: the review and the deploy step. Blue is new. Red is 
 **Consequences.** Two fewer notes on /writing. The SakethWiki and Lekhni Work cards list one fewer note each. `App.tsx`, `scripts/routes.ts` and the route test change.
 
 **What we gave up.** The short build logs were quicker to read than the system design notes. A reader who wanted only the decisions now reads a longer note. Phase B and C no longer stands alone for Phase C. A reader must open two more notes for the detail.
+
+## ADR-066: One DigUp note with three views, each its own Markdown file
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Experiment finished with a decision] --> B[Write three redacted Markdown files]
+    B --> C[Add one record with three views]
+    C --> D{Do content tests and the privacy scan pass?}
+    D -- no --> E[Fix the text. Do not deploy]
+    D -- yes --> F[Deploy the site]
+    F --> G{Does each of the three addresses load its own view?}
+    G -- no --> H[Revert the record and redeploy]
+    G -- yes --> I[Note is live with three bookmarkable views]
+
+    classDef old fill:#e5e5e5,stroke:#777,color:#222
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,F old
+    class B,C,D,G,I new
+    class E,H fail
+```
+
+Caption: Grey exists today: the finished experiment and the deploy step. Blue is new. Red is a failure path. Level 3 explainer: [adr-066-digup-three-views.html](docs/visuals/adr-066-digup-three-views.html).
+
+**Status:** Proposed 2026-11-25.
+
+**Context.** I ran a frozen experiment on whether local OCR (OCRia-nano through LiteParse) improves DigUp, my local file search. DigUp alone passed 9 of 10 questions. The one failure was a dense table, and neither Tesseract nor OCRia-nano fixed it. Saketh wants three write-ups: a public one, an engineering case study and a technical report. He wants them on one page, switchable like bookmarks. The site is public. The experiment repo holds excerpts of private files.
+
+**Options.**
+1. Three separate notes in Writing, each with a link to the other two. This is the smallest change. It adds no code. It does not give one page, and it puts three entries in the list.
+2. One Markdown file with all three versions, and a script that hides two of them. One file is easy to edit. All three versions ship in the page. Safety depends on every future edit.
+3. One record with three views, each its own Markdown file. The page loads only the file for the active view. The hash in the address picks the view (this ADR).
+
+**Decision.** Option 3. The hash values are `public`, `case-study` and `technical`. An unknown value shows the public view. The bare address shows the public view. Each file is written for the public site, and a test scans the files and the built output for private strings.
+
+**Evidence invariant (corrected 2026-11-27).** Public copy may state: 10 files, 10 questions saved before any parser ran on them, 9 of 10 ranked in the top three by DigUp alone, one failing document, one AI assistant review of page 6 in which both outputs broke the table, parse times of 4.1 s and 6.3 s for 26 pages, and the vendor numbers labelled as not re-run. It must also state: n=1, synthetic scans, that rank only was scored, that no person checked any page, that an AI assistant wrote the questions and did the one review, the OCRia-nano license is separate from LiteParse, and the second search was written after the results.
+
+**Consequences.** One optional record field, one small tab component, a few lines in `Article.tsx`, three Markdown files, one record and one content test. The Writing list shows one entry. Each view has its own reading time and contents list.
+
+**What we gave up.**
+- Search engines see one address, so they index only the public view. The hash is not sent to a server.
+- A reader sees one view at a time. Comparing two means switching tabs.
+- `Article.tsx` gets a special case for records with views. If a second note wants views, this becomes a general feature.
+- A heading link into a non-default view needs both parts: `?section=` and the hash.
+- The three files repeat some text. A fix to a shared number must be made three times, and the test pins the numbers to catch drift.
+
+### Open questions (ADR-066)
+
+1. **Names.** The note does not say where the four private test files came from. Should the technical view name their sources? I left them out on purpose.
+2. **Repo link.** The DigUp experiment repo is local only and holds private excerpts. The note links nothing. Do you plan to publish a clean copy, with the evidence for the public files only?
+3. **Where it lists.** The note lists in Writing as a Research note. Should it also appear on the home page, as ADR-063 chose not to for the goal-contract note?
+4. **Drafts.** Approved 2026-11-25 and moved to `src/content/`. The public file takes the note's slug as its name.
+5. **Code against docs.** None found. ADR-043 keeps `?section=` for headings, and this ADR does not change it.

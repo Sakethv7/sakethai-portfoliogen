@@ -23,7 +23,11 @@ export interface PublicationItem {
   date?: string; // required once Published
   series?: string; // notes that belong to one project are grouped under it on /writing
   stack?: string[]; // 1 to 6 tools, services, models or methods named in the note, shown as chips on home (ADR-059)
+  views?: NoteView[]; // one note with several Markdown files. The first view is public and the default (ADR-066)
 }
+
+export type NoteViewId = 'public' | 'case-study' | 'technical';
+export interface NoteView { id: NoteViewId; label: string; body: string }
 
 export interface ActivityItem { date: string; title: string; summary: string; href?: string; series?: string; }
 
@@ -73,6 +77,8 @@ export const work: WorkItem[] = [
 ];
 
 export const publications: PublicationItem[] = [
+  { slug: 'digup-parse-experiment', plain: 'I tested whether a small text-reading model on my Mac would help my file search find hard pages. It did not.', title: 'Did a small local OCR model help my file search?', kind: 'Research note', tags: ['Search evaluation', 'OCR', 'Local-first AI'], status: 'Published', date: '2026-11-25', summary: 'Ten files and ten questions saved before the runs. DigUp alone ranked the right page in its top three for 9. Neither Tesseract nor OCRia-nano fixed the miss. One failing document, so a case study.', stack: ['DigUp', 'LiteParse', 'Tesseract', 'OCRia-nano'],
+    views: [{ id: 'public', label: 'Public', body: 'digup-parse-experiment' }, { id: 'case-study', label: 'Engineering case study', body: 'digup-parse-experiment-case-study' }, { id: 'technical', label: 'Technical report', body: 'digup-parse-experiment-technical' }] },
   { slug: 'goal-contract-experiment', plain: 'I tested what keeps a coding agent on task. A system-written log kept every owner decision. Notes the agent wrote missed most.', title: 'Who should write a coding agent\'s memory?', kind: 'Research note', tags: ['Agent evaluation', 'Memory', 'Claude Code'], status: 'Published', date: '2026-11-21', summary: 'Twelve scripted Claude Code tests. In the final sweep, a system-written prompt log scored 1.0 at 1, 3 and 6 decisions. Agent-written notes scored 0.19 to 0.25, because the agent rarely wrote the decisions down. No erasure, no drift.', stack: ['Claude Code hooks', 'Claude Haiku', 'Hidden tests', 'Bootstrap intervals'] },
   { slug: 'e-means-reproduction-lab', plain: 'I tested whether mini-batch e-means could match standard k-means faster on an Apple M4; it did on one dataset, but struggled when the clusters were imbalanced.', title: 'When do mini-batch updates beat Lloyd\'s k-means?', kind: 'Research note', tags: ['Clustering', 'Benchmarks', 'Reproducibility'], status: 'Published', date: '2026-11-14', summary: 'Ten paired seeds on Deep1B 100k. E-means crossed paired Lloyd@25 at epoch 4 with a 2.55x median time-to-target speedup. Separate trajectory and uninterrupted timing paths, exact equivalence checks, immutable evidence, and retained counterexamples.' },
   { slug: 'retrieval-vs-generation-failures', plain: 'Scoring retrieval and the written answer separately shows which step failed, so you fix the right one.', title: 'Evaluating retrieval failures separately from generation failures', kind: 'Engineering note', tags: ['RAG', 'Evaluation', 'Failure analysis'], pin: 3, status: 'Published', date: '2026-09-23', summary: 'Separate retrieval and generation evaluation so a failing answer points to the broken stage and an actionable remedy.', stack: ['Two-by-two failure grid', 'Separate retrieval and answer scores', 'Knowledge-gap label', 'Suspicious-pass check'] },

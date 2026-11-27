@@ -900,3 +900,59 @@ flowchart TD
 | `FINDINGS.md` changes upstream | The site section shows old text | The author, at review |
 
 There are no retries and no loading states.
+
+## DigUp note: choosing a view (ADR-066, proposed 2026-11-25)
+
+### Visual Level
+
+```mermaid
+flowchart TD
+    A[Article page opens a record] --> B{Does the record have views?}
+    B -- no --> C[Load the single body as today]
+    B -- yes --> D[Read the hash]
+    D --> E{Is it one of the three view ids?}
+    E -- no --> F[Use public and replace the hash]
+    E -- yes --> G[Pick that view's body]
+    F --> G
+    G --> H[Load the Markdown file]
+    H --> I{Was it found?}
+    I -- no --> J[Show the Not found page]
+    I -- yes --> K[Render article, contents and reading time]
+    K --> L[Tab click sets the hash and returns to step D]
+
+    classDef old fill:#e5e5e5,stroke:#777,color:#222
+    classDef new fill:#cfe3ff,stroke:#2a62b8,color:#10264d
+    classDef fail fill:#ffd6d6,stroke:#b82a2a,color:#4d1010
+    class A,C,H,K old
+    class B,D,E,G,L new
+    class F,J fail
+```
+
+Caption: Grey exists today. Blue is new or changed. Red is a failure path. Level 3 explainer: [adr-066-digup-three-views.html](docs/visuals/adr-066-digup-three-views.html).
+
+### Path: open the note
+
+1. The Article page finds the record by slug. Records without `views` follow the existing path and nothing changes for them.
+2. For a record with `views`, the page reads `location.hash`, removes the `#`, and checks it against the view ids.
+3. An unknown or empty hash selects `public`. The page replaces the hash with `#public` without adding a history entry, so the Back button does not trap the reader.
+4. The page loads the Markdown file of that view. The loader is the existing `loadBody`.
+5. The page renders the article, the contents list and the reading time from that file. The reading-progress bar resets.
+
+### Path: switch view
+
+1. The reader clicks a tab. Each tab is a link with `href="#<id>"`, so a middle click or a copied link also works.
+2. The browser fires `hashchange`. The page runs steps 2 to 5 again for the new id and scrolls to the top of the article body.
+3. Back and Forward move between views, because each click adds a history entry.
+
+### Failure and retry
+
+| Event | What the reader sees | Recovery |
+| --- | --- | --- |
+| Unknown hash such as `#private` | The public view, hash replaced with `#public` | None needed |
+| The file for a view is missing | The Not found page | An author fixes the record. A test checks that all three files exist |
+| The chunk fails to download | The Not found page, as for any note | The reader reloads. There is no automatic retry, as today |
+| A private word is found in a note file or the build | The build fails and nothing deploys | The author removes the text |
+
+### State
+
+The only state is the active view id. It lives in the hash. It is not stored anywhere else, so a reload returns the same view.

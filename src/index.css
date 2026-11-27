@@ -82,6 +82,10 @@ h1, h2 { font-family: Georgia, 'Times New Roman', serif; }
 .for-engineers span { display: block; color: hsl(var(--primary)); text-transform: uppercase; letter-spacing: .12em; font-size: .62rem; font-weight: 700; margin-bottom: 3px; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; padding-top: 22px; }
 .tag-row span { border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 3px 9px; color: hsl(var(--muted-foreground)); font-size: .72rem; }
+.view-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+.view-tabs a { border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 6px 14px; font-size: .86rem; color: hsl(var(--muted-foreground)); }
+.view-tabs a[aria-current='page'] { border-color: hsl(var(--primary)); background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+.view-tabs a:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
 .card-links { margin-top: 20px; font-size: .78rem; color: hsl(var(--muted-foreground)); }
 .card-links a, .archive-line-links a { display: inline-flex; align-items: center; gap: 6px; }
 .card-links svg, .archive-line-links svg, .activity-list svg { width: 14px; height: 14px; }
